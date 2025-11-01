@@ -4,8 +4,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --port 3000",
-    "preview": "bun run build && vite preview",
     "build": "vite build --mode production && tsc --noEmit",
+    "build:staging": "vite build --mode staging && tsc --noEmit",
+    "staging": "bun --env-file=.env.staging run build:staging && vite preview --mode staging",
+    "preview": "bun run build && vite preview",
     "deploy": "bun run build && wrangler deploy",
     "cf-typegen": "wrangler types",
     "test": "vitest run",

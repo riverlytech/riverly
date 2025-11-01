@@ -39,11 +39,7 @@ export namespace Database {
   // where functions are short-lived.
   // Connection options keep the pool to a single client and disable prepared statements.
   function createScopedDb() {
-    const raw = postgres(connectionString, {
-      max: 1,
-      idle_timeout: 0,
-      prepare: false,
-    });
+    const raw = postgres(connectionString);
     const db = drizzle(raw, { casing: "snake_case" });
     return {
       db,
@@ -82,7 +78,10 @@ export namespace Database {
 
     if (errored) {
       cleanupErrors.forEach((error) => {
-        console.error("Database scope cleanup failed after request error:", error);
+        console.error(
+          "Database scope cleanup failed after request error:",
+          error
+        );
       });
       return;
     }

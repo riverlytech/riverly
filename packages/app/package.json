@@ -2,6 +2,14 @@
   "name": "@riverly/app",
   "type": "module",
   "version": "0.0.0",
+  "scripts": {
+    "db:push": "bun drizzle-kit push",
+    "db:generate": "bun drizzle-kit generate",
+    "db:migrate": "bun drizzle-kit migrate",
+    "staging:db:push": "bun --env-file=.env.staging drizzle-kit push",
+    "staging:db:generate": "bun --env-file=.env.staging drizzle-kit generate",
+    "staging:db:migrate": "bun --env-file=.env.staging drizzle-kit migrate"
+  },
   "exports": {
     ".": "./src/index.ts",
     "./ty": "./src/ty/index.ts",
