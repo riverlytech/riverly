@@ -1,12 +1,18 @@
 import "dotenv/config";
 import { AsyncLocalStorage } from "node:async_hooks";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
-import type { PostgresJsQueryResultHKT } from "drizzle-orm/postgres-js";
-import { PgTransaction, type PgTransactionConfig } from "drizzle-orm/pg-core";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
+import {
+  type PgTransaction,
+  type PgTransactionConfig,
+  PgQueryResultHKT,
+} from "drizzle-orm/pg-core";
 import type { ExtractTablesWithRelations } from "drizzle-orm";
 import { env } from "../env";
 
+/* -----------------------------------------------------
+ * Utility: Lazy memoization with optional async cleanup
+ * --------------------------------------------------- */
 function memo<T>(fn: () => T, cleanup?: (value: T) => Promise<void>) {
   let value: T | undefined;
   let loaded = false;
@@ -27,6 +33,9 @@ function memo<T>(fn: () => T, cleanup?: (value: T) => Promise<void>) {
   return getter;
 }
 
+/* -----------------------------------------------------
+ * Context store for transaction scope isolation
+ * --------------------------------------------------- */
 namespace Context {
   export class NotFound extends Error {}
 
@@ -45,23 +54,76 @@ namespace Context {
   }
 }
 
+/* -----------------------------------------------------
+ * Database module (optimized for persistent servers)
+ * --------------------------------------------------- */
 export namespace Database {
   export type Transaction = PgTransaction<
-    PostgresJsQueryResultHKT,
+    PgQueryResultHKT,
     Record<string, never>,
     ExtractTablesWithRelations<Record<string, never>>
   >;
 
   const connectionString = env.DATABASE_URL;
 
-  // This uses a memoized, singleton pattern to create a single,
-  // persistent database connection that is reused for all requests.
-  // This is ideal for traditional, long-running server processes.
-  const client = memo(() => {
-    const result = postgres(connectionString);
-    const db = drizzle(result, { casing: "snake_case" });
-    return db;
-  });
+  /* ---------------------------------------------
+   * Pool configuration (env-driven, safe defaults)
+   * ------------------------------------------- */
+  const poolMax = Number.parseInt(process.env.PGPOOL_MAX ?? "5");
+  const idleTimeoutMillis = Number.parseInt(
+    process.env.PGPOOL_IDLE_TIMEOUT ?? "30000"
+  );
+  const connectionTimeoutMillis = Number.parseInt(
+    process.env.PGPOOL_CONNECT_TIMEOUT ?? "5000"
+  );
+  const useSSL = Number.parseInt(process.env.PGPOOL_SSL ?? "0") === 1;
+
+  /* ---------------------------------------------
+   * Singleton client (memoized)
+   * ------------------------------------------- */
+  const client = memo(
+    () => {
+      const pool = new Pool({
+        connectionString,
+        max: poolMax,
+        idleTimeoutMillis,
+        connectionTimeoutMillis,
+        ssl: useSSL ? { rejectUnauthorized: false } : undefined,
+      });
+
+      // ---- Observability hooks ----
+      pool.on("connect", () =>
+        console.log(`[DB] Connected — total: ${pool.totalCount}`)
+      );
+
+      pool.on("acquire", () =>
+        console.log(
+          `[DB] Connection acquired — idle: ${pool.idleCount}, total: ${pool.totalCount}`
+        )
+      );
+
+      pool.on("release", () =>
+        console.log(
+          `[DB] Connection released — idle: ${pool.idleCount}, total: ${pool.totalCount}`
+        )
+      );
+
+      pool.on("error", (err) => {
+        console.error("[DB] Unexpected pool error:", err);
+      });
+
+      const db = drizzle({ client: pool, casing: "snake_case" });
+      return db;
+    },
+    async (db) => {
+      // graceful cleanup handler
+      const pool = (db as any)?.client as Pool;
+      if (pool && typeof pool.end === "function") {
+        console.log("[DB] Closing connection pool...");
+        await pool.end();
+      }
+    }
+  );
 
   export type TxOrDb = Transaction | ReturnType<typeof client>;
 
@@ -70,6 +132,9 @@ export namespace Database {
     effects: (() => void | Promise<void>)[];
   }>();
 
+  /* ---------------------------------------------
+   * Public API
+   * ------------------------------------------- */
   export function db() {
     try {
       const { tx } = TransactionContext.use();
@@ -77,14 +142,9 @@ export namespace Database {
     } catch (err) {
       if (err instanceof Context.NotFound) {
         const effects: (() => void | Promise<void>)[] = [];
-        const result = TransactionContext.provide(
-          {
-            effects,
-            tx: client(),
-          },
-          () => client()
+        return TransactionContext.provide({ effects, tx: client() }, () =>
+          client()
         );
-        return result;
       }
       throw err;
     }
@@ -98,10 +158,7 @@ export namespace Database {
       if (err instanceof Context.NotFound) {
         const effects: (() => void | Promise<void>)[] = [];
         const result = await TransactionContext.provide(
-          {
-            effects,
-            tx: client(),
-          },
+          { effects, tx: client() },
           () => callback(client())
         );
         await Promise.all(effects.map((x) => x()));
@@ -147,4 +204,13 @@ export namespace Database {
       throw err;
     }
   }
+
+  /* ---------------------------------------------
+   * Graceful shutdown hook for long-lived processes
+   * ------------------------------------------- */
+  process.on("SIGTERM", async () => {
+    console.log("[DB] SIGTERM received — shutting down pool...");
+    await client.reset();
+    process.exit(0);
+  });
 }

@@ -1,11 +1,24 @@
 import "dotenv/config";
 import { AsyncLocalStorage } from "node:async_hooks";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
-import type { PostgresJsQueryResultHKT } from "drizzle-orm/postgres-js";
-import { PgTransaction, type PgTransactionConfig } from "drizzle-orm/pg-core";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
+import {
+  type PgTransaction,
+  type PgTransactionConfig,
+  PgQueryResultHKT,
+} from "drizzle-orm/pg-core";
 import type { ExtractTablesWithRelations } from "drizzle-orm";
 import { env } from "../env";
+
+const poolMax = Number.parseInt(process.env.PGPOOL_MAX ?? "1");
+const idleTimeoutMillis = Number.parseInt(
+  process.env.PGPOOL_IDLE_TIMEOUT ?? "30000"
+);
+const connectionTimeoutMillis = Number.parseInt(
+  process.env.PGPOOL_CONNECT_TIMEOUT ?? "5000"
+);
+
+const useSSL = Number.parseInt(process.env.PGPOOL_SSL ?? "0") === 1;
 
 namespace Context {
   export class NotFound extends Error {}
@@ -27,23 +40,41 @@ namespace Context {
 
 export namespace Database {
   export type Transaction = PgTransaction<
-    PostgresJsQueryResultHKT,
+    PgQueryResultHKT,
     Record<string, never>,
     ExtractTablesWithRelations<Record<string, never>>
   >;
 
   const connectionString = env.DATABASE_URL;
 
-  // This function creates a new database connection for each request.
-  // This is ideal for serverless environments like Cloudflare Workers
-  // where functions are short-lived.
-  // Connection options keep the pool to a single client and disable prepared statements.
+  // Keep a global singleton pool across invocations (Cloud Run, Neon).
+  let globalPool: Pool | null = null;
+
+  function getPool() {
+    if (!globalPool) {
+      globalPool = new Pool({
+        connectionString,
+        max: poolMax,
+        idleTimeoutMillis,
+        connectionTimeoutMillis,
+        ssl: useSSL ? { rejectUnauthorized: false } : undefined,
+      });
+
+      globalPool.on("error", (err) => {
+        console.error("Unexpected PostgreSQL pool error:", err);
+        globalPool = null; // force recreation next time
+      });
+    }
+
+    return globalPool;
+  }
+
   function createScopedDb() {
-    const raw = postgres(connectionString);
-    const db = drizzle(raw, { casing: "snake_case" });
+    const pool = getPool();
+    const db = drizzle(pool, { casing: "snake_case" });
     return {
       db,
-      close: () => raw.end({ timeout: 0 }),
+      close: async () => {}, // no-op; reuse pool between requests
     };
   }
 
@@ -53,40 +84,27 @@ export namespace Database {
     errored: boolean
   ) {
     const effectResults = await Promise.allSettled(
-      effects.map((effect) => {
-        try {
-          return Promise.resolve(effect());
-        } catch (error) {
-          return Promise.reject(error);
-        }
-      })
+      effects.map((e) => Promise.resolve().then(e))
     );
 
-    const closeResult = await Promise.resolve(close())
-      .then(() => ({ status: "fulfilled" as const }))
-      .catch((reason) => ({ status: "rejected" as const, reason }));
-
-    const failedEffects = effectResults.filter(
-      (result): result is PromiseRejectedResult => result.status === "rejected"
+    const failed = effectResults.filter(
+      (r): r is PromiseRejectedResult => r.status === "rejected"
     );
-    const cleanupErrors = [
-      ...failedEffects.map((result) => result.reason),
-      ...(closeResult.status === "rejected" ? [closeResult.reason] : []),
-    ];
 
-    if (cleanupErrors.length === 0) return;
-
-    if (errored) {
-      cleanupErrors.forEach((error) => {
-        console.error(
-          "Database scope cleanup failed after request error:",
-          error
+    if (failed.length > 0) {
+      if (errored) {
+        failed.forEach((r) =>
+          console.error("DB cleanup failed after request error:", r.reason)
         );
-      });
-      return;
+      } else {
+        throw new AggregateError(
+          failed.map((r) => r.reason),
+          "Cleanup failed"
+        );
+      }
     }
 
-    throw cleanupErrors[0];
+    await close();
   }
 
   type DrizzleDb = ReturnType<typeof createScopedDb>["db"];
@@ -103,7 +121,7 @@ export namespace Database {
       return tx;
     } catch (err) {
       if (err instanceof Context.NotFound)
-        throw new Error("Database.db() is not available outside request scope");
+        throw new Error("Database.db() used outside a request scope");
       throw err;
     }
   }
@@ -119,10 +137,7 @@ export namespace Database {
         let caught: unknown;
         try {
           return await TransactionContext.provide(
-            {
-              effects,
-              tx: scope.db,
-            },
+            { effects, tx: scope.db },
             () => callback(scope.db)
           );
         } catch (error) {

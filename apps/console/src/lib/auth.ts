@@ -2,8 +2,9 @@ import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { jwt } from 'better-auth/plugins'
 import { reactStartCookies } from 'better-auth/react-start'
-import postgres from 'postgres'
-import { drizzle } from 'drizzle-orm/postgres-js'
+// import { drizzle } from 'drizzle-orm/node-postgres'
+// import { Pool } from 'pg'
+import { Database } from '@riverly/app/db'
 import {
   UserType,
   accounts,
@@ -87,8 +88,9 @@ export const authConfig = {
 // })
 
 export const auth = (env: Env): ReturnType<typeof betterAuth> => {
-  const result = postgres(env.DATABASE_URL)
-  const db = drizzle(result, { casing: 'snake_case' })
+  // const pool = new Pool({ connectionString: env.DATABASE_URL })
+  // const db = drizzle({ client: pool, casing: 'snake_case' })
+  const db = Database.db()
   return betterAuth({
     appName: 'Riverly',
     ...authConfig,
