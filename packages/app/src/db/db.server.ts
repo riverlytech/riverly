@@ -91,21 +91,21 @@ export namespace Database {
       });
 
       // ---- Observability hooks ----
-      pool.on("connect", () =>
-        console.log(`[DB] Connected — total: ${pool.totalCount}`)
-      );
+      pool.on("connect", () => {
+        // console.log(`[DB] Connected — total: ${pool.totalCount}`)
+      });
 
-      pool.on("acquire", () =>
-        console.log(
-          `[DB] Connection acquired — idle: ${pool.idleCount}, total: ${pool.totalCount}`
-        )
-      );
+      pool.on("acquire", () => {
+        // console.log(
+        //   `[DB] Connection acquired — idle: ${pool.idleCount}, total: ${pool.totalCount}`
+        // );
+      });
 
-      pool.on("release", () =>
-        console.log(
-          `[DB] Connection released — idle: ${pool.idleCount}, total: ${pool.totalCount}`
-        )
-      );
+      pool.on("release", () => {
+        // console.log(
+        //   `[DB] Connection released — idle: ${pool.idleCount}, total: ${pool.totalCount}`
+        // );
+      });
 
       pool.on("error", (err) => {
         console.error("[DB] Unexpected pool error:", err);

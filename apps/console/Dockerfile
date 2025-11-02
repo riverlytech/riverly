@@ -41,6 +41,7 @@ FROM base AS release
 ENV NODE_ENV=production \
     PORT=3000
 COPY --from=production /usr/src/app/node_modules ./node_modules
+COPY --from=production /usr/src/app/apps/console/node_modules ./apps/console/node_modules
 COPY --from=build /usr/src/app/package.json ./package.json
 COPY --from=build /usr/src/app/bun.lock ./bun.lock
 COPY --from=build /usr/src/app/apps/console/package.json ./apps/console/package.json
