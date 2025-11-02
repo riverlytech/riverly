@@ -1,24 +1,28 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { getRequestHeaders } from '@tanstack/react-start/server'
 import { env } from '@riverly/app/env'
 import axios from 'axios'
 import type { BetterAuthSession } from '@/lib/auth-types'
 import { auth } from '@/lib/auth'
+import { Database } from '@riverly/app/db'
 
 export const Route = createFileRoute('/api/sync/v1')({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        const session = (await auth(env).api.getSession({
-          headers: getRequestHeaders(),
-        })) as BetterAuthSession | null
-        if (!session)
+        const session = (await Database.use((db) =>
+          auth(db, env).api.getSession({
+            headers: request.headers,
+          }),
+        )) as BetterAuthSession | null
+        if (!session) {
           return Response.json(
             {
               error: { message: 'Unauthorized' },
             },
             { status: 401 },
           )
+        }
+
         const requestUrl = new URL(request.url)
         const electricUrl = new URL(`${env.ELECTRIC_SYNC_BASEURL}/v1/shape`)
         const params = new URLSearchParams()

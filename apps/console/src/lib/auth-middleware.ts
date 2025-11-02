@@ -4,6 +4,7 @@ import { User } from '@riverly/app'
 import type { BetterAuthSession } from './auth-types'
 import { auth } from './auth'
 import { env } from '@riverly/app/env'
+import { Database } from '@riverly/app/db'
 
 // export const authMiddleware = createMiddleware().server(async ({ next }) => {
 //   const result = await authClient.getSession({
@@ -25,14 +26,16 @@ import { env } from '@riverly/app/env'
 // })
 
 export const authMiddleware = createMiddleware().server(async ({ next }) => {
-  const session = (await auth(env).api.getSession({
-    headers: getRequest().headers,
-    query: {
-      //
-      // https://www.better-auth.com/docs/concepts/session-management#session-caching
-      disableCookieCache: true,
-    },
-  })) as BetterAuthSession | null
+  const session = (await Database.use((db) =>
+    auth(db, env).api.getSession({
+      headers: getRequest().headers,
+      query: {
+        //
+        // https://www.better-auth.com/docs/concepts/session-management#session-caching
+        disableCookieCache: true,
+      },
+    }),
+  )) as BetterAuthSession | null
 
   return await next({
     context: {

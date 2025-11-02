@@ -78,7 +78,9 @@ type CustomUser = BaseSession['user'] & AuthUser
 /**
  * Final session type that you can use for:
  * ```ts
- * const session = (await auth(env).api.getSession(...)) as CustomBetterAuthSession | null;
+ * const session = (await Database.use((db) =>
+ *   auth(db, env).api.getSession(...)
+ * )) as CustomBetterAuthSession | null;
  * ```
  */
 export type BetterAuthSession = Omit<BaseSession, 'user'> & {

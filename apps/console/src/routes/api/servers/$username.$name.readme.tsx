@@ -1,20 +1,21 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { getRequestHeaders } from '@tanstack/react-start/server'
 import { Server } from '@riverly/app'
 import { ServerVisibilityEnum } from '@riverly/app/ty'
 import type { BetterAuthSession } from '@/lib/auth-types'
 import { auth } from '@/lib/auth'
 import { env } from '@riverly/app/env'
+import { Database } from '@riverly/app/db'
 
 export const Route = createFileRoute('/api/servers/$username/$name/readme')({
   server: {
     handlers: {
       GET: async ({ request, params }) => {
-        const session = (await auth(env).api.getSession({
-          headers: getRequestHeaders(),
-        })) as BetterAuthSession | null
+        const session = (await Database.use((db) =>
+          auth(db, env).api.getSession({
+            headers: request.headers,
+          }),
+        )) as BetterAuthSession | null
         if (!session) return Response.redirect(new URL('/login', request.url))
-
         const { username, name } = params
 
         const server = await Server.fromName({

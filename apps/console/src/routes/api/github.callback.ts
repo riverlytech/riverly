@@ -6,6 +6,7 @@ import { env } from '@riverly/app/env'
 import type { UserTable } from '@riverly/app/db/schema'
 import type { BetterAuthSession } from '@/lib/auth-types'
 import { auth } from '@/lib/auth'
+import { Database } from '@riverly/app/db'
 
 const callbackSearchSchema = z.object({
   installationId: z.number(),
@@ -21,27 +22,24 @@ export const Route = createFileRoute('/api/github/callback')({
   server: {
     handlers: {
       GET: async ({ request }) => {
+        const session = (await Database.use((db) =>
+          auth(db, env).api.getSession({
+            headers: request.headers,
+          }),
+        )) as BetterAuthSession | null
+        if (!session) return Response.redirect(new URL('/login', request.url))
+
         const url = new URL(request.url)
         const { searchParams } = url
         const installationId = searchParams.get('installation_id')
         const setupAction = searchParams.get('setup_action')
-
         const parsedParams = {
           installationId: installationId ? Number(installationId) : undefined,
           setupAction: setupAction ?? undefined,
         }
 
         try {
-          const session = (await auth(env).api.getSession({
-            headers: request.headers,
-          })) as BetterAuthSession | null
-
-          if (!session) {
-            return Response.redirect(new URL('/login', request.url))
-          }
-
           const sessionUser = User.toSession(session.user as UserTable)
-
           const validatedParams = callbackSearchSchema.parse(parsedParams)
           const installationDetails = await GitHub.installationDetails(
             validatedParams.installationId,

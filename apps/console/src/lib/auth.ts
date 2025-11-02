@@ -2,9 +2,9 @@ import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { jwt } from 'better-auth/plugins'
 import { reactStartCookies } from 'better-auth/react-start'
+import { Database } from '@riverly/app/db'
 // import { drizzle } from 'drizzle-orm/node-postgres'
 // import { Pool } from 'pg'
-import { Database } from '@riverly/app/db'
 import {
   UserType,
   accounts,
@@ -87,10 +87,12 @@ export const authConfig = {
 //   ], // make sure this is the last plugin in the array
 // })
 
-export const auth = (env: Env): ReturnType<typeof betterAuth> => {
+export const auth = (
+  db: Database.TxOrDb,
+  env: Env,
+): ReturnType<typeof betterAuth> => {
   // const pool = new Pool({ connectionString: env.DATABASE_URL })
   // const db = drizzle({ client: pool, casing: 'snake_case' })
-  const db = Database.db()
   return betterAuth({
     appName: 'Riverly',
     ...authConfig,
