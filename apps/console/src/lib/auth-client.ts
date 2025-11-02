@@ -1,11 +1,12 @@
 import { createAuthClient } from 'better-auth/react'
 import type { AuthenticatedUser } from '@/lib/auth-types'
+import type { SessionUser } from '@riverly/app/ty'
 
 export const authClient = createAuthClient({
   baseURL: import.meta.env.VITE_BASE_URL,
 })
 
-export const toSession = (user: AuthenticatedUser) => {
+export const toSession = (user: AuthenticatedUser): SessionUser => {
   const avatarUrl = user.image || `https://avatar.vercel.sh/${user.username}`
   return {
     userId: user.id,

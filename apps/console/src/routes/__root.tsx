@@ -5,6 +5,7 @@ import {
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import { SessionUser } from '@riverly/app/ty'
 
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
@@ -13,6 +14,7 @@ import appCss from '@/styles/app.css?url'
 
 export interface RouterContext {
   queryClient: QueryClient
+  sessionUser: SessionUser
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
