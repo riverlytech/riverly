@@ -57,7 +57,7 @@ type MapFields<T extends Record<string, FieldConfig>> = {
 /**
  * Your custom user type derived from `additionalFields`.
  */
-export type AuthUser = MapFields<AdditionalFields>
+export type AuthUserFieldExtras = MapFields<AdditionalFields>
 
 /**
  * The built-in Better Auth session type (when a session exists).
@@ -73,7 +73,7 @@ type BaseSession = NonNullable<
  *  - Built-in: id, name, email, image, etc.
  *  - Custom: username, githubId, isStaff, isBlocked
  */
-type CustomUser = BaseSession['user'] & AuthUser
+export type AuthenticatedUser = BaseSession['user'] & AuthUserFieldExtras
 
 /**
  * Final session type that you can use for:
@@ -84,5 +84,5 @@ type CustomUser = BaseSession['user'] & AuthUser
  * ```
  */
 export type BetterAuthSession = Omit<BaseSession, 'user'> & {
-  user: CustomUser
+  user: AuthenticatedUser
 }
