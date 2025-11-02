@@ -14,3 +14,6 @@ dist-ssr
 wrangler.jsonc
 .dev.vars
 .env.*
+
+/bin/
+/node_modules/
