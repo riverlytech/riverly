@@ -19,6 +19,7 @@ console-build:
 
 .PHONY: console-run
 console-run:
+	@docker rm -f $(CONSOLE_APP_NAME) >/dev/null 2>&1 || true
 	@echo "Running console Docker container..."
 	docker run -d --rm --name $(CONSOLE_APP_NAME) -p $(CONSOLE_PORT):3000 --env-file $(CONSOLE_ENV_FILE) $(CONSOLE_APP_NAME):$(CONSOLE_TAG)
 
