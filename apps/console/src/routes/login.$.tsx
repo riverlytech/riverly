@@ -12,7 +12,9 @@ function RouteComponent() {
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-6">
             <div className="flex flex-col items-center gap-2">
-              <h1 className="text-4xl font-semibold">Log in to a0</h1>
+              <h1 className="text-4xl font-semibold">
+                Log in to a0({import.meta.env.VITE_BASE_URL})
+              </h1>
             </div>
             <GitHubLoginButton />
             <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t"></div>

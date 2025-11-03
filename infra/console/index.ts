@@ -103,7 +103,7 @@ const image = new docker.Image(
 );
 
 // Create a Cloud Run service that is only accessible from the load balancer
-const service = new gcp.cloudrunv2.Service( // Corrected: gcp.cloudrunv2.Service
+const service = new gcp.cloudrunv2.Service(
   "consoleservice",
   {
     location: region,
@@ -112,7 +112,7 @@ const service = new gcp.cloudrunv2.Service( // Corrected: gcp.cloudrunv2.Service
     template: {
       containers: [
         {
-          image: image.imageName,
+          image: image.repoDigest, // Use the unique repoDigest
           resources: {
             limits: {
               memory: "512Mi",
