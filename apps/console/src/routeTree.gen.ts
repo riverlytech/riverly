@@ -15,7 +15,6 @@ import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as AuthIndexRouteImport } from './routes/_auth/index'
 import { Route as LoginSplatRouteImport } from './routes/login.$'
 import { Route as GithubInstalledRouteImport } from './routes/github/installed'
-import { Route as ApiEnvRouteImport } from './routes/api/env'
 import { Route as ApiSyncV1RouteImport } from './routes/api/sync/v1'
 import { Route as ApiGithubReposRouteImport } from './routes/api/github.repos'
 import { Route as ApiGithubInstallsRouteImport } from './routes/api/github.installs'
@@ -84,11 +83,6 @@ const LoginSplatRoute = LoginSplatRouteImport.update({
 const GithubInstalledRoute = GithubInstalledRouteImport.update({
   id: '/github/installed',
   path: '/github/installed',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiEnvRoute = ApiEnvRouteImport.update({
-  id: '/api/env',
-  path: '/api/env',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiSyncV1Route = ApiSyncV1RouteImport.update({
@@ -315,7 +309,6 @@ const AuthUsernameServersOwnerNameServerDeploymentsPreviewRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/api/env': typeof ApiEnvRoute
   '/github/installed': typeof GithubInstalledRoute
   '/login/$': typeof LoginSplatRoute
   '/': typeof AuthIndexRoute
@@ -358,7 +351,6 @@ export interface FileRoutesByFullPath {
   '/$username/servers/$owner/$name/deployments/': typeof AuthUsernameServersOwnerNameServerDeploymentsIndexRoute
 }
 export interface FileRoutesByTo {
-  '/api/env': typeof ApiEnvRoute
   '/github/installed': typeof GithubInstalledRoute
   '/login/$': typeof LoginSplatRoute
   '/': typeof AuthIndexRoute
@@ -395,7 +387,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_auth': typeof AuthRouteRouteWithChildren
-  '/api/env': typeof ApiEnvRoute
   '/github/installed': typeof GithubInstalledRoute
   '/login/$': typeof LoginSplatRoute
   '/_auth/': typeof AuthIndexRoute
@@ -443,7 +434,6 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/api/env'
     | '/github/installed'
     | '/login/$'
     | '/'
@@ -486,7 +476,6 @@ export interface FileRouteTypes {
     | '/$username/servers/$owner/$name/deployments/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/api/env'
     | '/github/installed'
     | '/login/$'
     | '/'
@@ -522,7 +511,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_auth'
-    | '/api/env'
     | '/github/installed'
     | '/login/$'
     | '/_auth/'
@@ -570,7 +558,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
-  ApiEnvRoute: typeof ApiEnvRoute
   GithubInstalledRoute: typeof GithubInstalledRoute
   LoginSplatRoute: typeof LoginSplatRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -616,13 +603,6 @@ declare module '@tanstack/react-router' {
       path: '/github/installed'
       fullPath: '/github/installed'
       preLoaderRoute: typeof GithubInstalledRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/env': {
-      id: '/api/env'
-      path: '/api/env'
-      fullPath: '/api/env'
-      preLoaderRoute: typeof ApiEnvRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/sync/v1': {
@@ -1137,7 +1117,6 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   AuthRouteRoute: AuthRouteRouteWithChildren,
-  ApiEnvRoute: ApiEnvRoute,
   GithubInstalledRoute: GithubInstalledRoute,
   LoginSplatRoute: LoginSplatRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,

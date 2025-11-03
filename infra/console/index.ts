@@ -23,7 +23,7 @@ const secretEnvVarNames = [
   "ELECTRIC_SYNC_BASEURL",
 ] as const;
 
-const plainBuildArgNames: readonly string[] = [];
+const plainBuildArgNames = ["VITE_BASE_URL"] as const;
 const secretBuildArgNames: readonly string[] = [];
 const optionalPlainBuildArgNames = ["BUILD_DATABASE_SERVERLESS"] as const;
 

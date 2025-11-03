@@ -9,11 +9,11 @@ config:
   console:DATABASE_URL:
     secure: v1:kK+FtK8MQ+etVxg8:rJxbZNDCMTNTM+5rU6CwjN/wMMv0VIktZo6cFVshlm+6JPW2b5IYWjIQEOJLmc9iSmcwDKnCLbGkPcJ/tJKL6cWLOzPUXvnbfDEyaxh0eIE+SFgJgjh8jtlEDO+/V+MyB4r57ykdcBBDmJkVrc2K+f7ehw5nN9KvOy4082T6JMHvGBDaLmwMHPAxK4UNeoSck8Z2Uiy6Vi/xewpKz0aWKZA=
   console:BETTER_AUTH_SECRET:
-    secure: v1:sydRaJyEivXxfK1l:jezDV4tkHkm3oELxgKaMJukY731TUKymTKlvOR6RG4EAZSy8MF4qtfPRnCHjgtKC
+    secure: v1:XJWPOvWhdonH8IYs:GhcaIOw2fo4QEr3wuM5PzECUPax7qQudXbSVPgIH72gSRbdjvMl77/G0fNrUjbQV
   console:GITHUB_CLIENT_ID:
-    secure: v1:1dro0cNvZhun5vW6:M+6C5sDihhYBuXWMWTIiCC3FqmMBlZRSnQRmNPrZa+g2+p6+
+    secure: v1:VphBYefU7CiRlpqd:5eohTdid5EuDKCWx2afu8b7iMfAAcH0qmaHk7gG85LDrtnTu
   console:GITHUB_CLIENT_SECRET:
-    secure: v1:zBhueSxYwnZdtDkk:jblTA99teYSStNPjXov2f0s3yWyQCbMB7xfZnPVy0B3CgFaNo/Uk/lg2RN3ryQKZOF71Zt68ur4=
+    secure: v1:fJxeM7as1hU5dwsM:/VZ8e8t8OTEgph8ITKsHSDBQfu7YP1bOnpm67s8yVtP4UU7wE3f0Sh24iXpEbJ/7JZL7a5qzKQ0=
   console:GITHUB_APP_ID:
     secure: v1:o38jN/BFAf91mWUE:R0/rGzP25DvViWlPCnF5L8lD6/lzUQI=
   console:GITHUB_PRIVATE_KEY_BASE64:
