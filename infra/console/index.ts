@@ -5,24 +5,26 @@ import * as docker from "@pulumi/docker";
 const consoleConfig = new pulumi.Config("console");
 
 const plainEnvVarNames = [
-  "DATABASE_SERVERLESS",
   "BETTER_AUTH_URL",
-  "GITHUB_APP_ID",
-  "GITHUB_CLIENT_ID",
   "BASEURL",
   "API_BASEURL",
   "VITE_BASE_URL",
-  "INTERNAL_WEBHOOK_USERNAME",
-  "ELECTRIC_SYNC_BASEURL",
 ] as const;
 
 const secretEnvVarNames = [
   "DATABASE_URL",
   "BETTER_AUTH_SECRET",
+  "GITHUB_CLIENT_ID",
   "GITHUB_CLIENT_SECRET",
+  "GITHUB_APP_ID",
   "GITHUB_PRIVATE_KEY_BASE64",
+  "INTERNAL_WEBHOOK_USERNAME",
   "INTERNAL_WEBHOOK_PASSWORD",
+  "ELECTRIC_SYNC_BASEURL",
 ] as const;
+
+const plainBuildArgNames = ["BUILD_DATABASE_SERVERLESS"] as const;
+const secretBuildArgNames: readonly string[] = [];
 
 const envs = [
   ...plainEnvVarNames.map((name) => ({
@@ -34,6 +36,15 @@ const envs = [
     value: consoleConfig.requireSecret(name),
   })),
 ];
+
+const buildArgs: Record<string, pulumi.Input<string>> = {
+  ...Object.fromEntries(
+    plainBuildArgNames.map((name) => [name, consoleConfig.require(name)])
+  ),
+  ...Object.fromEntries(
+    secretBuildArgNames.map((name) => [name, consoleConfig.requireSecret(name)])
+  ),
+};
 
 // Enable required services
 const artifactRegistry = new gcp.projects.Service("artifactregistry", {
@@ -71,6 +82,7 @@ const image = new docker.Image(
       context: "../../",
       dockerfile: "../../apps/console/Dockerfile",
       platform: "linux/amd64",
+      args: buildArgs,
     },
   },
   { dependsOn: [cloudBuild] }

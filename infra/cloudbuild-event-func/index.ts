@@ -66,7 +66,7 @@ const enabledServices = requiredServices.map(
     )
 );
 
-const functionSourceDir = path.resolve(__dirname, "function");
+const functionSourceDir = path.resolve(__dirname, "func");
 
 if (!fs.existsSync(functionSourceDir)) {
   throw new Error(

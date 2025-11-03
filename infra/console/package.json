@@ -1,13 +1,14 @@
 {
-  "name": "console",
+  "name": "@infra/console",
+  "private": true,
   "main": "index.ts",
-  "devDependencies": {
-    "@types/node": "^18",
-    "typescript": "^5.0.0"
-  },
   "dependencies": {
     "@pulumi/gcp": "^9.0.0",
     "@pulumi/pulumi": "^3.113.0",
     "@pulumi/docker": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18",
+    "typescript": "^5.0.0"
   }
 }

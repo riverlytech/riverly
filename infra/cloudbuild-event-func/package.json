@@ -1,11 +1,10 @@
 {
   "name": "@infra/cloudbuild-event-func",
   "private": true,
-  "main": "setup.ts",
-  "type": "commonjs",
+  "main": "index.ts",
   "dependencies": {
-    "@pulumi/pulumi": "^3.0.0",
-    "@pulumi/gcp": "^7.0.0"
+    "@pulumi/gcp": "^9.0.0",
+    "@pulumi/pulumi": "^3.113.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

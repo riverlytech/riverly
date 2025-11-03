@@ -1,12 +1,17 @@
 {
   "compilerOptions": {
-    "module": "CommonJS",
-    "target": "ES2022",
-    "esModuleInterop": true,
-    "moduleResolution": "Node",
     "strict": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true
+    "outDir": "bin",
+    "target": "es2020",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "pretty": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["setup.ts", "function/**/*.ts"]
+  "files": ["index.ts"],
+  "include": ["index.ts", "func/**/*.ts"]
 }
