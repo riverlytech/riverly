@@ -1,0 +1,14 @@
+**/node_modules
+**/.turbo
+**/.next
+**/dist
+.git
+.gitignore
+.env
+.env.*
+docker-compose.yml
+compose.yml
+tmp
+coverage
+*.log
+.DS_Store

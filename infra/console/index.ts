@@ -2,7 +2,38 @@ import * as pulumi from "@pulumi/pulumi";
 import * as gcp from "@pulumi/gcp";
 import * as docker from "@pulumi/docker";
 
-const config = new pulumi.Config();
+const consoleConfig = new pulumi.Config("console");
+
+const plainEnvVarNames = [
+  "DATABASE_SERVERLESS",
+  "BETTER_AUTH_URL",
+  "GITHUB_APP_ID",
+  "GITHUB_CLIENT_ID",
+  "BASEURL",
+  "API_BASEURL",
+  "VITE_BASE_URL",
+  "INTERNAL_WEBHOOK_USERNAME",
+  "ELECTRIC_SYNC_BASEURL",
+] as const;
+
+const secretEnvVarNames = [
+  "DATABASE_URL",
+  "BETTER_AUTH_SECRET",
+  "GITHUB_CLIENT_SECRET",
+  "GITHUB_PRIVATE_KEY_BASE64",
+  "INTERNAL_WEBHOOK_PASSWORD",
+] as const;
+
+const envs = [
+  ...plainEnvVarNames.map((name) => ({
+    name,
+    value: consoleConfig.require(name),
+  })),
+  ...secretEnvVarNames.map((name) => ({
+    name,
+    value: consoleConfig.requireSecret(name),
+  })),
+];
 
 // Enable required services
 const artifactRegistry = new gcp.projects.Service("artifactregistry", {
@@ -60,6 +91,7 @@ const service = new gcp.cloudrun.Service(
                 memory: "512Mi",
               },
             },
+            envs,
           },
         ],
       },
@@ -83,4 +115,4 @@ const iamMember = new gcp.cloudrun.IamMember("console-iam-member", {
 });
 
 // Export the URL of the service
-export const url = service.statuses[0].url;
+export const url = service.statuses.apply((statuses) => statuses?.[0]?.url);

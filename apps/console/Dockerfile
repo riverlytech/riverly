@@ -1,53 +1,57 @@
-# Dockerfile for apps/console, to be built from the monorepo root
-
+# use the official Bun image
+# see all versions at https://hub.docker.com/r/oven/bun/tags
 FROM oven/bun:1.3 AS base
 WORKDIR /usr/src/app
 
-# keep bun's global cache/downloads across stages to speed up builds
-ENV BUN_INSTALL_CACHE_DIR=/var/cache/bun
-ENV BUN_INSTALL_BIN_DIR=/usr/local/bin
-
-# Copy only manifest files so dependency installs can be cached.
-FROM base AS deps
+# install dependencies into temp directory
+# this will cache them and speed up future builds
+FROM base AS install
+WORKDIR /temp/dev
 COPY package.json bun.lock ./
-COPY apps/console/package.json apps/console/
-COPY apps/api/package.json apps/api/
-COPY apps/docs/package.json apps/docs/
-COPY apps/worker/package.json apps/worker/
-COPY packages/app/package.json packages/app/
-COPY packages/utils/package.json packages/utils/
-RUN bun install --frozen-lockfile --no-cache
+COPY apps/console/package.json apps/console/package.json
+COPY apps/api/package.json apps/api/package.json
+COPY apps/docs/package.json apps/docs/package.json
+COPY apps/worker/package.json apps/worker/package.json
+COPY packages/app/package.json packages/app/package.json
+COPY packages/utils/package.json packages/utils/package.json
+RUN bun install --frozen-lockfile
 
-# Build the console application using the shared workspace dependencies.
-FROM base AS build
-COPY --from=deps /usr/src/app/node_modules ./node_modules
-COPY . .
+# install with --production (exclude devDependencies)
+FROM base AS install-prod
+WORKDIR /temp/prod
+COPY package.json bun.lock ./
+COPY apps/console/package.json apps/console/package.json
+COPY apps/api/package.json apps/api/package.json
+COPY apps/docs/package.json apps/docs/package.json
+COPY apps/worker/package.json apps/worker/package.json
+COPY packages/app/package.json packages/app/package.json
+COPY packages/utils/package.json packages/utils/package.json
+RUN bun install --frozen-lockfile --production
+
+# copy node_modules from temp directory
+# then copy all (non-ignored) project files into the image
+FROM base AS prerelease
 ENV NODE_ENV=production
+COPY --from=install /temp/dev/node_modules ./node_modules
+COPY --from=install /temp/dev/apps/console/node_modules ./apps/console/node_modules
+COPY --from=install /temp/dev/packages/app/node_modules ./packages/app/node_modules
+COPY --from=install /temp/dev/packages/utils/node_modules ./packages/utils/node_modules
+COPY . .
+RUN bun run --filter=console test
 RUN bun run --filter=console build
 
-# Install a production-only node_modules tree that can be reused in release.
-FROM base AS production
-COPY package.json bun.lock ./
-COPY apps/console/package.json apps/console/
-COPY apps/api/package.json apps/api/
-COPY apps/docs/package.json apps/docs/
-COPY apps/worker/package.json apps/worker/
-COPY packages/app/package.json packages/app/
-COPY packages/utils/package.json packages/utils/
-RUN bun install --frozen-lockfile --production --no-cache
-
-# Assemble the runtime image.
+# copy production dependencies and source code into final image
 FROM base AS release
-ENV NODE_ENV=production \
-    PORT=3000
-COPY --from=production /usr/src/app/node_modules ./node_modules
-COPY --from=production /usr/src/app/apps/console/node_modules ./apps/console/node_modules
-COPY --from=build /usr/src/app/package.json ./package.json
-COPY --from=build /usr/src/app/bun.lock ./bun.lock
-COPY --from=build /usr/src/app/apps/console/package.json ./apps/console/package.json
-COPY --from=build /usr/src/app/apps/console/server.ts ./apps/console/server.ts
-COPY --from=build /usr/src/app/apps/console/dist ./apps/console/dist
-
+ENV NODE_ENV=production
+COPY package.json bun.lock ./
+COPY --from=prerelease /usr/src/app/apps/console/package.json ./apps/console/package.json
+COPY --from=prerelease /usr/src/app/apps/console/server.ts ./apps/console/server.ts
+COPY --from=prerelease /usr/src/app/apps/console/dist ./apps/console/dist
+COPY --from=prerelease /usr/src/app/apps/console/public ./apps/console/public
+COPY --from=install-prod /temp/prod/node_modules ./node_modules
+COPY --from=install-prod /temp/prod/apps/console/node_modules ./apps/console/node_modules
+COPY --from=install-prod /temp/prod/packages/app/node_modules ./packages/app/node_modules
+COPY --from=install-prod /temp/prod/packages/utils/node_modules ./packages/utils/node_modules
 WORKDIR /usr/src/app/apps/console
 USER bun
 EXPOSE 3000/tcp
