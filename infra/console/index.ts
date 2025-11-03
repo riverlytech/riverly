@@ -23,8 +23,12 @@ const secretEnvVarNames = [
   "ELECTRIC_SYNC_BASEURL",
 ] as const;
 
-const plainBuildArgNames = ["BUILD_DATABASE_SERVERLESS"] as const;
+const plainBuildArgNames: readonly string[] = [];
 const secretBuildArgNames: readonly string[] = [];
+const optionalPlainBuildArgNames = ["BUILD_DATABASE_SERVERLESS"] as const;
+
+const region =
+  gcp.config.region ?? consoleConfig.get("region") ?? "us-central1";
 
 const envs = [
   ...plainEnvVarNames.map((name) => ({
@@ -44,6 +48,16 @@ const buildArgs: Record<string, pulumi.Input<string>> = {
   ...Object.fromEntries(
     secretBuildArgNames.map((name) => [name, consoleConfig.requireSecret(name)])
   ),
+  ...(() => {
+    const optionalArgs: Record<string, pulumi.Input<string>> = {};
+    for (const name of optionalPlainBuildArgNames) {
+      const value = consoleConfig.get(name);
+      if (value !== undefined) {
+        optionalArgs[name] = value;
+      }
+    }
+    return optionalArgs;
+  })(),
 };
 
 // Enable required services
@@ -63,7 +77,7 @@ const cloudRun = new gcp.projects.Service("cloudrun", {
 const repository = new gcp.artifactregistry.Repository(
   "consolerepo",
   {
-    location: "us-central1",
+    location: region,
     repositoryId: "consolerepo",
     format: "DOCKER",
   },
@@ -88,43 +102,43 @@ const image = new docker.Image(
   { dependsOn: [cloudBuild] }
 );
 
-// Create a Cloud Run service
-const service = new gcp.cloudrun.Service(
+// Create a Cloud Run service that is only accessible from the load balancer
+const service = new gcp.cloudrunv2.Service( // Corrected: gcp.cloudrunv2.Service
   "consoleservice",
   {
-    location: "us-central1",
+    location: region,
+    name: "console", // Explicitly name the service 'console'
+    ingress: "INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER", // Restrict access to the LB
     template: {
-      spec: {
-        containers: [
-          {
-            image: image.imageName,
-            resources: {
-              limits: {
-                memory: "512Mi",
-              },
+      containers: [
+        {
+          image: image.imageName,
+          resources: {
+            limits: {
+              memory: "512Mi",
             },
-            envs,
           },
-        ],
-      },
-      metadata: {
-        annotations: {
-          "autoscaling.knative.dev/maxScale": "3",
-          "autoscaling.knative.dev/minScale": "0",
+          envs: envs,
         },
+      ],
+      scaling: {
+        maxInstanceCount: 3,
+        minInstanceCount: 0,
       },
     },
   },
   { dependsOn: [cloudRun] }
 );
 
-// Allow unauthenticated access to the service
-const iamMember = new gcp.cloudrun.IamMember("console-iam-member", {
-  service: service.name,
-  location: "us-central1",
+// Allow invocations from the load balancer (and other internal traffic)
+// This is safe because the ingress setting above restricts access to only the LB.
+const invoker = new gcp.cloudrunv2.ServiceIamMember("invoker", {
+  project: service.project,
+  location: service.location,
+  name: service.name,
   role: "roles/run.invoker",
   member: "allUsers",
 });
 
 // Export the URL of the service
-export const url = service.statuses.apply((statuses) => statuses?.[0]?.url);
+export const url = service.uri;

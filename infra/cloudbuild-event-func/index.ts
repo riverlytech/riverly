@@ -66,6 +66,30 @@ const enabledServices = requiredServices.map(
     )
 );
 
+let managedCloudBuildTopic: gcp.pubsub.Topic | undefined;
+let cloudBuildTopicNameOutput: pulumi.Output<string>;
+let cloudBuildTopicIdOutput: pulumi.Output<string>;
+
+if (cloudBuildTopicName === "cloud-builds") {
+  const existingCloudBuildTopic = gcp.pubsub.Topic.get(
+    "existing-cloudbuild-topic",
+    `projects/${project}/topics/${cloudBuildTopicName}`
+  );
+  cloudBuildTopicNameOutput = existingCloudBuildTopic.name;
+  cloudBuildTopicIdOutput = existingCloudBuildTopic.id;
+} else {
+  managedCloudBuildTopic = new gcp.pubsub.Topic(
+    "cloudbuild-topic",
+    {
+      name: cloudBuildTopicName,
+      project,
+    },
+    { dependsOn: enabledServices }
+  );
+  cloudBuildTopicNameOutput = managedCloudBuildTopic.name;
+  cloudBuildTopicIdOutput = managedCloudBuildTopic.id;
+}
+
 const functionSourceDir = path.resolve(__dirname, "func");
 
 if (!fs.existsSync(functionSourceDir)) {
@@ -193,20 +217,15 @@ const sourceArchive = new gcp.storage.BucketObject(
   { dependsOn: enabledServices }
 );
 
-const cloudBuildTopic = new gcp.pubsub.Topic(
-  "cloudbuild-topic",
-  {
-    name: cloudBuildTopicName,
-    project,
-  },
-  { dependsOn: enabledServices }
-);
-
 const projectDetails = pulumi.output(
   gcp.organizations.getProject({
     projectId: project,
   })
 );
+
+const cloudFunctionDependsOn = managedCloudBuildTopic
+  ? [...enabledServices, managedCloudBuildTopic]
+  : enabledServices;
 
 const cloudFunction = new gcfv2.Function(
   "cloudbuild-event-forwarder",
@@ -237,41 +256,45 @@ const cloudFunction = new gcfv2.Function(
     },
     eventTrigger: {
       eventType: "google.cloud.pubsub.topic.v1.messagePublished",
-      pubsubTopic: cloudBuildTopic.id,
+      pubsubTopic: cloudBuildTopicIdOutput,
       retryPolicy: "RETRY_POLICY_RETRY",
     },
   },
-  { dependsOn: enabledServices, deleteBeforeReplace: true }
+  { dependsOn: cloudFunctionDependsOn, deleteBeforeReplace: true }
 );
 
 const projectNumber = projectDetails.apply(({ number }) => number);
+
+const topicIamDependsOn = managedCloudBuildTopic
+  ? [managedCloudBuildTopic, ...enabledServices]
+  : enabledServices;
 
 new gcp.pubsub.TopicIAMMember(
   "cloudbuild-eventarc-subscriber",
   {
     project,
-    topic: cloudBuildTopic.name,
+    topic: cloudBuildTopicNameOutput,
     role: "roles/pubsub.subscriber",
     member: projectNumber.apply(
       (number) =>
         `serviceAccount:service-${number}@gcp-sa-pubsub.iam.gserviceaccount.com`
     ),
   },
-  { dependsOn: [cloudBuildTopic, ...enabledServices] }
+  { dependsOn: topicIamDependsOn }
 );
 
 new gcp.pubsub.TopicIAMMember(
   "cloudbuild-topic-publisher",
   {
     project,
-    topic: cloudBuildTopic.name,
+    topic: cloudBuildTopicNameOutput,
     role: "roles/pubsub.publisher",
     member: projectNumber.apply(
       (number) =>
         `serviceAccount:service-${number}@gcp-sa-cloudbuild.iam.gserviceaccount.com`
     ),
   },
-  { dependsOn: [cloudBuildTopic, ...enabledServices] }
+  { dependsOn: topicIamDependsOn }
 );
 
 export const cloudBuildForwarderName = cloudFunction.name;
