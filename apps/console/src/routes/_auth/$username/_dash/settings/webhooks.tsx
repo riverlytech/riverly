@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export const Route = createFileRoute(
   '/_auth/$username/_dash/settings/webhooks',
@@ -9,10 +9,15 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   return (
-    <Card className="max-w-4xl shadow-none">
-      <CardContent className="font-thin">
-        <p>Coming Soon...</p>
-      </CardContent>
-    </Card>
+    <div className="flex flex-col space-y-4 w-full md:w-3/4">
+      <Card className="shadow-none">
+        <CardHeader>
+          <CardTitle>Webhooks</CardTitle>
+        </CardHeader>
+        <CardContent className="font-thin">
+          <p>Coming Soon...</p>
+        </CardContent>
+      </Card>
+    </div>
   )
 }

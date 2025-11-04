@@ -5,7 +5,7 @@
     "eslint.config.js",
     "prettier.config.js",
     "vite.config.js"
-  ],
+, "src/routes/_auth/$username/_dash/route.tsx.backup"  ],
 
   "compilerOptions": {
     "target": "ES2022",

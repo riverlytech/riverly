@@ -15,8 +15,8 @@ export const Route = createFileRoute('/_auth/$username/_dash/settings/')({
 function RouteComponent() {
   const { sessionUser } = Route.useRouteContext()
   return (
-    <div className="flex flex-col space-y-8">
-      <Card className="max-w-4xl shadow-none">
+    <div className="flex flex-col space-y-4 w-full md:w-3/4">
+      <Card className="shadow-none">
         <CardHeader>
           <CardTitle>Name</CardTitle>
           <CardDescription>
@@ -27,7 +27,7 @@ function RouteComponent() {
           <ProfileForm defaultName={sessionUser.name} />
         </CardContent>
       </Card>
-      <Card className="max-w-4xl shadow-none">
+      <Card className="shadow-none">
         <CardHeader>
           <CardTitle>Update other details</CardTitle>
           <CardDescription>

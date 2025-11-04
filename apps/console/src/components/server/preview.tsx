@@ -14,9 +14,9 @@ export function UserServerCard({
   const avatarUrl =
     server.avatarUrl || `https://avatar.vercel.sh/${server.name}`
   return (
-    <Card className="gap-2 group focus:outline-none p-0 rounded-sm  flex min-h-[80px] bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors duration-150 shadow-none group-focus:ring-2 group-focus:ring-zinc-400">
+    <Card className="gap-2 group focus:outline-none p-0 rounded-sm  flex min-h-20 bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors duration-150 shadow-none group-focus:ring-2 group-focus:ring-zinc-400">
       <CardContent className="flex flex-col lg:flex-row gap-3 p-2 w-full h-full">
-        <div className="w-20 h-20 min-w-[80px] min-h-[80px] overflow-hidden bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center border border-zinc-200 dark:border-zinc-700 self-start">
+        <div className="w-20 h-20 min-w-20 min-h-20 overflow-hidden bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center border border-zinc-200 dark:border-zinc-700 self-start">
           <img
             src={avatarUrl}
             alt={server.name}

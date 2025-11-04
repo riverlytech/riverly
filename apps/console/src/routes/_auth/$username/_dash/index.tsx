@@ -46,9 +46,9 @@ function RouteComponent() {
   const { sessionUser } = Route.useRouteContext()
   const { deployments } = Route.useLoaderData()
   return (
-    <div className="py-12 px-4">
+    <div className="p-4">
       <div className="max-w-7xl mx-auto">
-        <div className="h-20">
+        <div className="mb-4">
           <h1 className="text-2xl mb-2 font-mono font-semibold">
             Welcome to Riverly!
           </h1>

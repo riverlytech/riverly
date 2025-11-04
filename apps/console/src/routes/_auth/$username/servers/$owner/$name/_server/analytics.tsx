@@ -11,7 +11,7 @@ function RouteComponent() {
   return (
     <div className="py-12 px-4">
       <div className="max-w-7xl mx-auto">
-        <div className="h-20">
+        <div className="h-18">
           <h1 className="text-2xl mb-2 font-mono font-semibold">Analytics</h1>
         </div>
         <hr className="py-4" />

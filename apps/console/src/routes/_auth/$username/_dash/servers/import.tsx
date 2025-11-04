@@ -61,7 +61,7 @@ function RouteComponent() {
   return (
     <div className="py-12 px-4">
       <div className="max-w-7xl mx-auto">
-        <div className="h-20">
+        <div className="h-18">
           <div>
             <h1 className="text-2xl font-mono font-semibold">
               Import from GitHub
