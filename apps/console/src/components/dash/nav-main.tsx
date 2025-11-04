@@ -29,9 +29,14 @@ import {
 } from 'lucide-react'
 import { GitHubIcon } from '@/components/icons/icons'
 
-export function NavMain({ username }: { username: string }) {
+export function NavMain({
+  username,
+  ...props
+}: {
+  username: string
+} & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   return (
-    <SidebarGroup>
+    <SidebarGroup {...props}>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
         <SidebarMenuItem>
