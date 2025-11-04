@@ -66,3 +66,4 @@ export const ServerLicenseSchema = z.object({
 });
 
 export type ServerLicense = z.infer<typeof ServerLicenseSchema>;
+

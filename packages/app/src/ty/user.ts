@@ -14,3 +14,15 @@ export const sessionUserSchema = z.object({
   updatedAt: z.coerce.date(),
 });
 export type SessionUser = z.infer<typeof sessionUserSchema>;
+
+
+export const UserRoleEnum = {
+  owner: "owner",
+  admin: "admin",
+  member: "member"
+} as const;
+export const UserRole = z.enum(Object.values(UserRoleEnum));
+
+
+export type UserRole = z.infer<typeof UserRole>;
+
