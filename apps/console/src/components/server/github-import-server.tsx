@@ -95,7 +95,6 @@ export function GitHubImportServerForm({
                   <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input
-                      className="bg-background"
                       placeholder="acme"
                       disabled={form.formState.isSubmitting}
                       {...field}
@@ -117,7 +116,6 @@ export function GitHubImportServerForm({
                   <FormLabel>Title</FormLabel>
                   <FormControl>
                     <Input
-                      className="bg-background"
                       placeholder="Acme MCP Server"
                       disabled={form.formState.isSubmitting}
                       {...field}

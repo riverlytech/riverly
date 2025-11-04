@@ -106,7 +106,6 @@ export function AddServerForm({ username }: { username: string }) {
                   <FormLabel>Title</FormLabel>
                   <FormControl>
                     <Input
-                      className="bg-background"
                       placeholder="Acme MCP Server"
                       disabled={form.formState.isSubmitting}
                       {...field}

@@ -139,7 +139,6 @@ export function GitHubDeployServerForm({
                   <FormLabel>Root Directory</FormLabel>
                   <FormControl>
                     <Input
-                      className="bg-background"
                       placeholder="./"
                       disabled={form.formState.isSubmitting}
                       {...field}

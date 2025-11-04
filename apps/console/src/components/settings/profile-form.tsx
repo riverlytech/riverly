@@ -39,7 +39,6 @@ export function ProfileForm({ defaultName }: { defaultName: string }) {
               <FormLabel>Name</FormLabel>
               <FormControl>
                 <Input
-                  className="bg-background"
                   placeholder="Your name"
                   disabled={form.formState.isSubmitting}
                   {...field}
