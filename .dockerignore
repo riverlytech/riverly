@@ -1,20 +1,11 @@
-# Dependencies and build artifacts
-**/node_modules
-**/dist
-**/build
-**/.next
-**/.nuxt
-**/.nitro
-**/.output
-**/.turbo
-**/.vite-cache
-**/.parcel-cache
-**/coverage
-
 # Git and version control
 .git
 .gitignore
 .gitattributes
+
+# Dependencies
+**/node_modules
+.pnpm-lock.yaml
 
 # Environment and configuration
 .env
@@ -23,80 +14,44 @@
 .dev.vars
 .dev.vars.*
 wrangler.jsonc
-
-# Docker compose files (avoid recursion)
-docker-compose*.yml
-compose.yml
-**/Dockerfile*
-**/.dockerignore
-
-# Runtime and logs
-tmp/
-temp/
-logs/
-*.log
-*.pid
-*.seed
-*.pid.lock
-.npm
-.pnpm-debug.log*
-
-# IDE and OS
-.vscode/
-.idea/
-.DS_Store
-.DS_Store?
-._*
-Thumbs.db
-ehthumbs.db
-*.swp
-*.swo
-
-# Testing
-**/jest-cache
-**/.jest-cache
-.nyc_output
-**/.eslintcache
-
-# TypeScript
-*.tsbuildinfo
-**/.tscache
-
-# Security sensitive files
-*.pem
-*.key
-*.p12
-*.p8
-*.crt
-*.cer
-gh.pem
-
-# Documentation and misc
-README.md
-*.md
-!package.json
-!**/package.json
-LICENSE
-.editorconfig
-.prettier*
-**/tsconfig*.json
-**/vite.config.*
-**/jest.config.*
-**/eslint.config.*
-
-# Pulumi (if building infrastructure images)
 **/Pulumi.*.yaml
 !**/Pulumi.yaml
 
-# Go specific (for cbuilder)
-vendor/
-*.test
-*.prof
+# Docker specific files
+**/Dockerfile
+**/docker-compose*.yml
+**/compose.yml
+**/.dockerignore
 
-# Bun specific
-bun.lock
+# Logs and runtime data
+logs/
+*.log
+.npm
+.pnpm-debug.log*
+tmp/
+temp/
 
-# Development only scripts
+# IDE and OS specific
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Test files and coverage
+**/__tests__
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+coverage*
+.nyc_output
+
+# Documentation and license
+README.md
+*.md
+LICENSE
+
+# Local development
+.turbo
 Makefile
-scripts/
-.github/
+snippets/

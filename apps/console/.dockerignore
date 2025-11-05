@@ -1,16 +1,26 @@
-
+# Dependencies
 node_modules
+
+# Docker specific
 Dockerfile*
 docker-compose*
 .dockerignore
+
+# Git and version control
 .git
 .gitignore
+
+# Secrets
+.env
+.dev.vars
+
+# Documentation
 README.md
 LICENSE
+
+# Local development
 .vscode
-Makefile
-helm-charts
-.env
-.editorconfig
 .idea
+Makefile
+.editorconfig
 coverage*

@@ -1,5 +1,5 @@
 # Dependencies
-node_modules/
+**/node_modules
 .pnp
 .pnp.js
 
@@ -121,11 +121,14 @@ vendor/
 *.test
 *.prof
 
+# Terraform
+*.tfstate
+*.tfstate.backup
+
 # Pulumi
 **/node_modules/
 **/Pulumi.*.yaml
 !**/Pulumi.yaml
-!**/Pulumi.staging.yaml
 
 # Docker
 .dockerignore
