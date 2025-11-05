@@ -5,10 +5,12 @@ export const NewServerForm = z.object({
   name: z
     .string()
     .min(1, { message: 'Name is required.' })
-    .max(39, { message: 'Name must not be longer than 39 characters.' })
-    .regex(/^(?!-)(?!.*--)[a-zA-Z0-9-]+(?<!-)$/, {
-      message: 'Name can only contain letters, numbers, and hyphens.',
-    }),
+    .max(32, { message: 'Name must not be longer than 32 characters.' })
+    .regex(/^(?!-)(?!.*--)[a-zA-Z0-9._-]+(?<!-)$/, {
+      message:
+        'Name can only contain letters, numbers, hyphens, periods, and underscores.',
+    })
+    .transform((val) => val.toLowerCase()),
   title: z
     .string()
     .min(3, { message: 'Title must be at least 3 characters.' })
@@ -26,10 +28,12 @@ export const GitHubImportForm = z.object({
   name: z
     .string()
     .min(1, { message: 'Name is required.' })
-    .max(39, { message: 'Name must not be longer than 39 characters.' })
-    .regex(/^(?!-)(?!.*--)[a-zA-Z0-9-]+(?<!-)$/, {
-      message: 'Name can only contain letters, numbers, and hyphens.',
-    }),
+    .max(32, { message: 'Name must not be longer than 32 characters.' })
+    .regex(/^(?!-)(?!.*--)[a-zA-Z0-9._-]+(?<!-)$/, {
+      message:
+        'Name can only contain letters, numbers, hyphens, periods, and underscores.',
+    })
+    .transform((val) => val.toLowerCase()),
   title: z
     .string()
     .min(3, { message: 'Title must be at least 3 characters.' })

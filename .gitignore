@@ -1,19 +1,136 @@
-.DS_Store
-node_modules
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Production builds
+dist/
+dist-ssr/
+build/
+out/
+.output/
+.next/
+.nuxt/
+.nitro/
+.vinxi/
+
+# Environment variables
 .env
-.idea
+.env.*
+!.env.example
+.dev.vars
 .dev.vars.*
-dist
-dist-ssr
-.nitro
-.tanstack
-.output
-.vinxi
-.wrangler
+
+# Runtime data
+*.pid
+*.seed
+*.pid.lock
+.pids/
+.npm
+.yarn-integrity
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+.nyc_output/
+
+# ESLint cache
+.eslintcache
+
+# TypeScript
+*.tsbuildinfo
+.tscache/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# IDE and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.settings/
+.classpath
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Framework specific
+.tanstack/
+.wrangler/
+.nitro/
 *.local
 wrangler.jsonc
-.dev.vars
-.env.*
 
-/bin/
-/node_modules/
+# Testing
+.jest-cache/
+
+# Temporary folders
+tmp/
+temp/
+
+# Binaries and executables
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Security
+*.pem
+*.key
+*.p12
+*.p8
+*.crt
+*.cer
+*.csr
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Go specific
+vendor/
+*.test
+*.prof
+
+# Pulumi
+**/node_modules/
+**/Pulumi.*.yaml
+!**/Pulumi.yaml
+!**/Pulumi.staging.yaml
+
+# Docker
+.dockerignore
+
+# Misc
+.cache/
+.parcel-cache/
+.vite-cache/

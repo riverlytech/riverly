@@ -58,7 +58,7 @@ export function GitHubSelectRepo({ username }: { username: string }) {
 
   const handleInstallClick = () => {
     const popup = window.open(
-      'https://github.com/apps/riverly/installations/new',
+      `${import.meta.env.VITE_GITHUB_APP_INSTALL_URL}`,
       'Installing a0',
       'width=800,height=700,scrollbars=yes,resizable=yes,centerscreen=yes',
     )
@@ -89,7 +89,7 @@ export function GitHubSelectRepo({ username }: { username: string }) {
 
   if (isLoading || isInstallsLoading) {
     return (
-      <div className="p-4 border border-border/70 hover:border-border/100 transition-colors">
+      <div className="p-4 border border-border/70 hover:border-border transition-colors">
         <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
           <div className="flex items-center gap-2">
             <GitHubIcon className="h-4 w-4" />
@@ -190,7 +190,7 @@ export function GitHubSelectRepo({ username }: { username: string }) {
   }
 
   return (
-    <div className="p-4 border border-border/70 hover:border-border/100 transition-colors">
+    <div className="p-4 border border-border/70 hover:border-border transition-colors">
       <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
         <div className="flex items-center gap-2">
           <GitHubIcon className="h-4 w-4" />

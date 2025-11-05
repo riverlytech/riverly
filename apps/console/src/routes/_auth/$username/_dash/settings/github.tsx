@@ -21,7 +21,7 @@ export const Route = createFileRoute('/_auth/$username/_dash/settings/github')({
 })
 
 function RouteComponent() {
-    const { workspace } = Route.useRouteContext()
+  const { workspace } = Route.useRouteContext()
   const { installation } = Route.useLoaderData()
   return (
     <div className="flex flex-col space-y-4 w-full md:w-3/4">
@@ -37,7 +37,9 @@ function RouteComponent() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-2">
               <GitHubIcon className="h-4 w-4" />
-              <span className="text-sm font-medium font-mono">{workspace.username}</span>
+              <span className="text-sm font-medium font-mono">
+                {workspace.username}
+              </span>
             </div>
 
             {installation ? (
@@ -49,7 +51,7 @@ function RouteComponent() {
                   </span>
                 </div>
                 <a
-                  href="https://github.com/apps/riverly/installations/new"
+                  href={`${import.meta.env.VITE_GITHUB_APP_INSTALL_URL}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:text-blue-800 text-sm transition-colors"
@@ -69,7 +71,7 @@ function RouteComponent() {
                 className="gap-2 w-full sm:w-auto"
               >
                 <a
-                  href="https://github.com/apps/riverly/installations/new"
+                  href={`${import.meta.env.VITE_GITHUB_APP_INSTALL_URL}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

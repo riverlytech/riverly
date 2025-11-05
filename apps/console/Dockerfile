@@ -33,6 +33,10 @@ RUN bun install --frozen-lockfile --production
 FROM base AS prerelease
 ARG VITE_BASE_URL
 ENV VITE_BASE_URL=$VITE_BASE_URL
+
+ARG VITE_GITHUB_APP_INSTALL_URL
+ENV VITE_GITHUB_APP_INSTALL_URL=$VITE_GITHUB_APP_INSTALL_URL
+
 ENV NODE_ENV=production
 COPY --from=install /temp/dev/node_modules ./node_modules
 COPY --from=install /temp/dev/apps/console/node_modules ./apps/console/node_modules
