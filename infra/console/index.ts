@@ -9,6 +9,7 @@ const plainEnvVarNames = [
   "BASEURL",
   "API_BASEURL",
   "VITE_BASE_URL",
+  "VITE_GITHUB_APP_INSTALL_URL",
 ] as const;
 
 const secretEnvVarNames = [
@@ -23,7 +24,10 @@ const secretEnvVarNames = [
   "ELECTRIC_SYNC_BASEURL",
 ] as const;
 
-const plainBuildArgNames = ["VITE_BASE_URL"] as const;
+const plainBuildArgNames = [
+  "VITE_BASE_URL",
+  "VITE_GITHUB_APP_INSTALL_URL",
+] as const;
 const secretBuildArgNames: readonly string[] = [];
 const optionalPlainBuildArgNames = ["BUILD_DATABASE_SERVERLESS"] as const;
 
