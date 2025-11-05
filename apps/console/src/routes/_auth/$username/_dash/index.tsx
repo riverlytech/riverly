@@ -43,7 +43,7 @@ export const Route = createFileRoute('/_auth/$username/_dash/')({
 })
 
 function RouteComponent() {
-  const { sessionUser } = Route.useRouteContext()
+  const { workspace } = Route.useRouteContext()
   const { deployments } = Route.useLoaderData()
   return (
     <div className="p-4">
@@ -76,7 +76,7 @@ function RouteComponent() {
                     <Button size="sm" asChild variant="outline">
                       <Link
                         to="/$username/deployments"
-                        params={{ username: sessionUser.username }}
+                        params={{ username: workspace.username }}
                       >
                         View More
                       </Link>
@@ -110,7 +110,7 @@ function RouteComponent() {
                     </div>
 
                     <div className="space-y-4 mb-6">
-                      <GitHubSelectRepo username={sessionUser.username} />
+                      <GitHubSelectRepo username={workspace.username} />
 
                       {/* <div className="flex flex-col space-y-2">
                         {tryForFreeServers.map((server) => {

@@ -17,7 +17,7 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
-  const { sessionUser } = Route.useRouteContext()
+  const { workspace } = Route.useRouteContext()
   const { deployment } = Route.useLoaderData()
   const { username, deploymentId } = Route.useParams()
   return (
@@ -32,7 +32,7 @@ function RouteComponent() {
           <DeploymentDetail username={username} deployment={deployment} />
           <WithClient>
             <DeploymentLogs
-              userId={sessionUser.userId}
+              userId={workspace.userId}
               deploymentId={deploymentId}
             />
           </WithClient>

@@ -21,8 +21,8 @@ export const Route = createFileRoute('/_auth/$username/_dash/settings/github')({
 })
 
 function RouteComponent() {
+    const { workspace } = Route.useRouteContext()
   const { installation } = Route.useLoaderData()
-  const { username } = Route.useParams()
   return (
     <div className="flex flex-col space-y-4 w-full md:w-3/4">
       <Card className="shadow-none">
@@ -37,7 +37,7 @@ function RouteComponent() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-2">
               <GitHubIcon className="h-4 w-4" />
-              <span className="text-sm font-medium font-mono">{username}</span>
+              <span className="text-sm font-medium font-mono">{workspace.username}</span>
             </div>
 
             {installation ? (

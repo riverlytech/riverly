@@ -24,8 +24,8 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
+  const { workspace } = Route.useRouteContext()
   const { server } = Route.useLoaderData()
-  const { username } = Route.useParams()
   const serverAvatarUrl =
     server.avatarUrl || `https://avatar.vercel.sh/${server.name}`
 
@@ -49,7 +49,7 @@ function RouteComponent() {
         </div>
       </div>
       <GitHubDeployServerForm
-        username={username}
+        username={workspace.username}
         name={server.name}
         repo={server.repository as string}
       />

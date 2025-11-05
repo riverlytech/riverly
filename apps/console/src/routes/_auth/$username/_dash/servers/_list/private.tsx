@@ -19,15 +19,15 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
+  const { workspace } = Route.useRouteContext()
   const { servers } = Route.useLoaderData()
-  const { username } = Route.useParams()
   return (
     <div className="flex flex-col space-y-4 w-full md:w-3/4">
       {servers.length > 0 ? (
         servers.map((server) => (
           <UserServerCard
             key={server.serverId}
-            username={username}
+            username={workspace.username}
             server={server}
           />
         ))

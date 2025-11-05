@@ -22,14 +22,14 @@ export const Route = createFileRoute('/_auth/$username/_dash/servers/import')({
     name,
     owner,
   }),
-  loader: async ({ deps, context: { sessionUser } }) => {
+  loader: async ({ deps, context: { workspace } }) => {
     let repo: Awaited<ReturnType<typeof githubRepoDetailFn>> | null = null
-    const owner = deps.owner || sessionUser.username
+    const owner = deps.owner || workspace.username
     const name = deps.name
     try {
       if (name) {
         const ghInstalled = await githubUserInstallationFn({
-          data: { account: owner, userId: sessionUser.userId },
+          data: { account: owner, userId: workspace.userId },
         })
 
         if (ghInstalled) {
@@ -56,7 +56,7 @@ export const Route = createFileRoute('/_auth/$username/_dash/servers/import')({
 })
 
 function RouteComponent() {
-  const { sessionUser } = Route.useRouteContext()
+  const { workspace } = Route.useRouteContext()
   const { repo, owner, name } = Route.useLoaderData()
   return (
     <div className="py-12 px-4">
@@ -102,7 +102,7 @@ function RouteComponent() {
                 </Alert>
               ) : (
                 <GitHubImportServerForm
-                  sessionUser={sessionUser}
+                  workspace={workspace}
                   name={repo.name}
                   fullName={repo.fullName}
                   isPrivate={repo.private}

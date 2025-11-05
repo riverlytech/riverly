@@ -22,11 +22,10 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
     context: {
       user: session
         ? toSession({
-          ...session.user,
-          image: session.user.image as string,
-        })
+            ...session.user,
+            image: session.user.image as string,
+          })
         : null,
     },
   })
 })
-

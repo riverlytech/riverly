@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { ServerVisibilityEnum } from '@riverly/app/ty'
 import { useNavigate } from '@tanstack/react-router'
 import type z from 'zod/v4'
-import type { SessionUser } from '@riverly/app/ty'
+import { Workspace } from '@riverly/app'
 import { Alert, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import {
@@ -38,12 +38,12 @@ import { importServerFromGitHub } from '@/funcs'
 type GitHubImportFormValues = z.infer<typeof GitHubImportForm>
 
 export function GitHubImportServerForm({
-  sessionUser,
+  workspace: workspace,
   name,
   fullName,
   isPrivate,
 }: {
-  sessionUser: SessionUser
+  workspace: Workspace.WorkspaceWithMembership
   name: string // mcping
   fullName: string // sanchitrk/mcping
   isPrivate: boolean
@@ -75,7 +75,7 @@ export function GitHubImportServerForm({
     navigate({
       to: '/$username/servers/$owner/$name',
       params: {
-        username: sessionUser.username,
+        username: workspace.username,
         owner: res.username,
         name: res.name,
       },

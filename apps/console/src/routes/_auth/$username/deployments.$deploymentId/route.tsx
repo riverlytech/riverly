@@ -31,10 +31,10 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
-  const { sessionUser } = Route.useRouteContext()
+  const { workspace } = Route.useRouteContext()
   const avatarUrl =
-    sessionUser.image || `https://avatar.vercel.sh/${sessionUser.username}`
-  const username = sessionUser.username
+    workspace.image || `https://avatar.vercel.sh/${workspace.username}`
+  const username = workspace.username
   return (
     <div className="flex-1">
       <header className="flex shrink-0 items-center justify-between gap-3 px-4 pt-2 sm:px-8">
@@ -116,7 +116,7 @@ function RouteComponent() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>{sessionUser.name}</DropdownMenuLabel>
+              <DropdownMenuLabel>{workspace.name}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
                 <Link to="/$username" params={{ username }}>

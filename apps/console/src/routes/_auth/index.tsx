@@ -33,7 +33,7 @@ function App() {
   const { sessionUser } = Route.useRouteContext()
   const username = sessionUser.username
   const avatarUrl = sessionUser.image || `https://avatar.vercel.sh/${username}`
-  const teams = [
+  const orgs = [
     {
       username,
       name: sessionUser.name,
@@ -122,17 +122,6 @@ function App() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>{sessionUser.name}</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link to="/$username" params={{ username }}>
-                  Dashboard
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/$username/settings" params={{ username }}>
-                  Settings
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
               <DropdownMenuItem>Log Out</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -145,25 +134,22 @@ function App() {
             <p className="text-sm text-muted-foreground">
               Signed in as {sessionUser.name}
             </p>
-            <h1 className="font-mono text-2xl font-semibold">Select a Team</h1>
-            <p className="text-muted-foreground">
-              Choose a team to continue to your dashboard.
-            </p>
+            <h1 className="font-mono text-2xl font-semibold">Select a Org</h1>
           </div>
 
           <ul className="space-y-3">
-            {teams.map((team) => (
-              <li key={team.username}>
+            {orgs.map((org) => (
+              <li key={org.username}>
                 <Link
                   to="/$username"
-                  params={{ username: team.username }}
+                  params={{ username: org.username }}
                   className="bg-card text-card-foreground hover:border-primary/50 hover:bg-card/80 focus-visible:ring-ring block rounded-xl border p-4 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 >
                   <div className="flex items-center gap-4">
                     <Avatar className="size-12">
-                      <AvatarImage src={team.avatarUrl} alt={team.name} />
+                      <AvatarImage src={org.avatarUrl} alt={org.name} />
                       <AvatarFallback className="text-lg font-medium">
-                        {team.name
+                        {org.name
                           .split(' ')
                           .map((word) => word.charAt(0))
                           .join('')
@@ -172,9 +158,9 @@ function App() {
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
-                      <span className="text-lg font-medium">{team.name}</span>
+                      <span className="text-lg font-medium">{org.name}</span>
                       <span className="text-muted-foreground">
-                        @{team.username}
+                        @{org.username}
                       </span>
                     </div>
                   </div>

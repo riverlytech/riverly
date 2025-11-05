@@ -12,8 +12,9 @@ export const membershipServerFn = createServerFn({ method: 'GET' })
       setResponseStatus(401)
       throw new BetterAuthError('Unauthorized')
     }
-    const workspace = await Workspace.withMembership({ slug: data.slug, sessionUser: user })
-    console.log("************ workspace", workspace)
-    return workspace;
+    const workspace = await Workspace.withMembership({
+      slug: data.slug,
+      sessionUser: user,
+    })
+    return workspace
   })
-

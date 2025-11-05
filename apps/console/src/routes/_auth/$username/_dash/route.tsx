@@ -12,10 +12,10 @@ export const Route = createFileRoute('/_auth/$username/_dash')({
 })
 
 function RouteComponent() {
-  const { username } = Route.useParams()
+  const { workspace } = Route.useRouteContext()
   return (
     <SidebarProvider>
-      <AppSidebar username={username} />
+      <AppSidebar username={workspace.username} />
       <SidebarInset>
         <header className="flex h-14 shrink-0 items-center gap-2">
           <div className="flex items-center gap-2 px-4">
@@ -27,14 +27,6 @@ function RouteComponent() {
           </div>
         </header>
         <Outlet />
-        {/* <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="bg-muted/50 aspect-video rounded-xl" />
-            <div className="bg-muted/50 aspect-video rounded-xl" />
-            <div className="bg-muted/50 aspect-video rounded-xl" />
-          </div>
-          <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
-        </div> */}
       </SidebarInset>
     </SidebarProvider>
   )

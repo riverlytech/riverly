@@ -6,7 +6,7 @@ export const Route = createFileRoute('/_auth/$username/_dash/servers/_list')({
 })
 
 function RouteComponent() {
-  const { sessionUser } = Route.useRouteContext()
+  const { workspace } = Route.useRouteContext()
   return (
     <div className="p-4">
       <div className="max-w-7xl mx-auto">
@@ -14,14 +14,14 @@ function RouteComponent() {
           <div>
             <h1 className="text-2xl mb-2 font-mono font-semibold">Servers</h1>
             <p className="text-muted-foreground">
-              Servers from {sessionUser.username} and other publicly installed
+              Servers from {workspace.username} and other publicly installed
               servers.
             </p>
           </div>
           <Button size="default" asChild>
             <Link
               to="/$username/servers/new"
-              params={{ username: sessionUser.username }}
+              params={{ username: workspace.username }}
             >
               Add New
             </Link>

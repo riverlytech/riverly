@@ -29,26 +29,37 @@ export namespace Workspace {
   // For now, we only support personal workspace
   // Keeping org features for future use.
   // Modify for org requires permission and roles
-  export const withMembership = fn(z.object({ slug: z.string(), sessionUser: sessionUserSchema }), async (filter) =>
-    Database.transaction(async (tx) => {
-      const [userOrOrg] = await tx
-        .select({
-          userId: users.id,
-          username: users.username,
-          image: users.image,
-          name: users.name,
-          type: users.type,
-          createdAt: users.createdAt,
-          updatedAt: users.updatedAt,
-        })
-        .from(users)
-        .where(and(eq(users.id, filter.sessionUser.userId), eq(users.username, filter.slug)))
+  export const withMembership = fn(
+    z.object({ slug: z.string(), sessionUser: sessionUserSchema }),
+    async (filter) =>
+      Database.transaction(async (tx) => {
+        const [userOrOrg] = await tx
+          .select({
+            userId: users.id,
+            username: users.username,
+            image: users.image,
+            name: users.name,
+            type: users.type,
+            createdAt: users.createdAt,
+            updatedAt: users.updatedAt,
+          })
+          .from(users)
+          .where(
+            and(
+              eq(users.id, filter.sessionUser.userId),
+              eq(users.username, filter.slug)
+            )
+          );
 
-      if (!userOrOrg) return null;
-      return {
-        ...userOrOrg,
-        isSelf: true,
-      }
-    })
+        if (!userOrOrg) return null;
+        return {
+          ...userOrOrg,
+          isSelf: true,
+        };
+      })
   );
+  export type WithMembership = Awaited<ReturnType<typeof withMembership>>;
+  export type WorkspaceWithMembership = NonNullable<
+    Awaited<ReturnType<typeof withMembership>>
+  >;
 }
