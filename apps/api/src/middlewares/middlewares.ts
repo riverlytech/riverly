@@ -32,27 +32,3 @@ export async function verifyBetterAuthToken(token: string, c: Context) {
   }
 }
 
-// export async function verifyInternalServiceToken(
-//   token: string,
-//   c: Context
-// ): Promise<boolean> {
-//   try {
-//     const sharedSecret = new TextEncoder().encode(A0_SHARED_SECRET_KEY!);
-//     const { payload } = await jwtVerify(token, sharedSecret, {
-//       audience: "service",
-//       issuer: "internal.auth",
-//     });
-
-//     const userId = payload.sub;
-//     if (!userId) return false;
-
-//     const user = await User.fromID(userId);
-//     if (!user) return false;
-//     const sessionUser = User.toSession(user);
-//     c.set("user", sessionUser);
-//     return true;
-//   } catch (error) {
-//     console.error(error, "failed to verify internal service token");
-//     return false;
-//   }
-// }

@@ -4,4 +4,7 @@ export * from "./services/deployment";
 export * from "./services/github";
 
 export * from "./services/marketplace";
+export * from "./services/workspace";
+
 export * from "./services/helpers";
+

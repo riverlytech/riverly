@@ -1,6 +1,6 @@
 import { Database } from "@riverly/app/db";
 import { eq } from "drizzle-orm";
-import { users, SelectUser, UpdateUser } from "../db/schema";
+import { users, UpdateUser } from "../db/schema";
 import { fn } from "@riverly/utils";
 import z from "zod/v4";
 
@@ -22,23 +22,6 @@ export namespace User {
         .then((rows) => rows.at(0));
     })
   );
-
-  export const toSession = fn(SelectUser, (user) => {
-    const avatarUrl = user.image || `https://avatar.vercel.sh/${user.username}`;
-    return {
-      userId: user.id,
-      name: user.name,
-      username: user.username,
-      githubId: user.githubId,
-      email: user.email,
-      emailVerified: user.emailVerified,
-      isStaff: user.isStaff,
-      isBlocked: user.isBlocked,
-      image: avatarUrl,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    };
-  });
 
   export const fromID = fn(z.string(), async (id) =>
     Database.transaction(async (tx) => {

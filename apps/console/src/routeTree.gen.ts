@@ -15,6 +15,7 @@ import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as AuthIndexRouteImport } from './routes/_auth/index'
 import { Route as LoginSplatRouteImport } from './routes/login.$'
 import { Route as GithubInstalledRouteImport } from './routes/github/installed'
+import { Route as AuthUsernameRouteRouteImport } from './routes/_auth/$username/route'
 import { Route as ApiSyncV1RouteImport } from './routes/api/sync/v1'
 import { Route as ApiGithubReposRouteImport } from './routes/api/github.repos'
 import { Route as ApiGithubInstallsRouteImport } from './routes/api/github.installs'
@@ -53,7 +54,6 @@ import { Route as AuthUsernameServersOwnerNameServerDeploymentsIndexRouteImport 
 import { Route as AuthUsernameServersOwnerNameServerDeploymentsProductionRouteImport } from './routes/_auth/$username/servers/$owner/$name/_server/deployments.production'
 import { Route as AuthUsernameServersOwnerNameServerDeploymentsPreviewRouteImport } from './routes/_auth/$username/servers/$owner/$name/_server/deployments.preview'
 
-const AuthUsernameRouteImport = createFileRoute('/_auth/$username')()
 const AuthUsernameDashServersRouteImport = createFileRoute(
   '/_auth/$username/_dash/servers',
 )()
@@ -64,11 +64,6 @@ const AuthUsernameServersOwnerNameRouteImport = createFileRoute(
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/_auth',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AuthUsernameRoute = AuthUsernameRouteImport.update({
-  id: '/$username',
-  path: '/$username',
-  getParentRoute: () => AuthRouteRoute,
 } as any)
 const AuthIndexRoute = AuthIndexRouteImport.update({
   id: '/',
@@ -84,6 +79,11 @@ const GithubInstalledRoute = GithubInstalledRouteImport.update({
   id: '/github/installed',
   path: '/github/installed',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthUsernameRouteRoute = AuthUsernameRouteRouteImport.update({
+  id: '/$username',
+  path: '/$username',
+  getParentRoute: () => AuthRouteRoute,
 } as any)
 const ApiSyncV1Route = ApiSyncV1RouteImport.update({
   id: '/api/sync/v1',
@@ -117,7 +117,7 @@ const AuthUsersUsernameRoute = AuthUsersUsernameRouteImport.update({
 } as any)
 const AuthUsernameDashRouteRoute = AuthUsernameDashRouteRouteImport.update({
   id: '/_dash',
-  getParentRoute: () => AuthUsernameRoute,
+  getParentRoute: () => AuthUsernameRouteRoute,
 } as any)
 const AuthUsernameDashServersRoute = AuthUsernameDashServersRouteImport.update({
   id: '/servers',
@@ -139,7 +139,7 @@ const AuthUsernameDeploymentsDeploymentIdRouteRoute =
   AuthUsernameDeploymentsDeploymentIdRouteRouteImport.update({
     id: '/deployments/$deploymentId',
     path: '/deployments/$deploymentId',
-    getParentRoute: () => AuthUsernameRoute,
+    getParentRoute: () => AuthUsernameRouteRoute,
   } as any)
 const AuthUsernameDashSettingsRouteRoute =
   AuthUsernameDashSettingsRouteRouteImport.update({
@@ -151,7 +151,7 @@ const AuthUsernameServersOwnerNameRoute =
   AuthUsernameServersOwnerNameRouteImport.update({
     id: '/servers/$owner/$name',
     path: '/servers/$owner/$name',
-    getParentRoute: () => AuthUsernameRoute,
+    getParentRoute: () => AuthUsernameRouteRoute,
   } as any)
 const AuthUsernameDeploymentsDeploymentIdIndexRoute =
   AuthUsernameDeploymentsDeploymentIdIndexRouteImport.update({
@@ -309,10 +309,10 @@ const AuthUsernameServersOwnerNameServerDeploymentsPreviewRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
+  '/$username': typeof AuthUsernameDashRouteRouteWithChildren
   '/github/installed': typeof GithubInstalledRoute
   '/login/$': typeof LoginSplatRoute
   '/': typeof AuthIndexRoute
-  '/$username': typeof AuthUsernameDashRouteRouteWithChildren
   '/users/$username': typeof AuthUsersUsernameRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/github/callback': typeof ApiGithubCallbackRoute
@@ -351,10 +351,10 @@ export interface FileRoutesByFullPath {
   '/$username/servers/$owner/$name/deployments/': typeof AuthUsernameServersOwnerNameServerDeploymentsIndexRoute
 }
 export interface FileRoutesByTo {
+  '/$username': typeof AuthUsernameDashIndexRoute
   '/github/installed': typeof GithubInstalledRoute
   '/login/$': typeof LoginSplatRoute
   '/': typeof AuthIndexRoute
-  '/$username': typeof AuthUsernameDashIndexRoute
   '/users/$username': typeof AuthUsersUsernameRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/github/callback': typeof ApiGithubCallbackRoute
@@ -387,10 +387,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_auth': typeof AuthRouteRouteWithChildren
+  '/_auth/$username': typeof AuthUsernameRouteRouteWithChildren
   '/github/installed': typeof GithubInstalledRoute
   '/login/$': typeof LoginSplatRoute
   '/_auth/': typeof AuthIndexRoute
-  '/_auth/$username': typeof AuthUsernameRouteWithChildren
   '/_auth/$username/_dash': typeof AuthUsernameDashRouteRouteWithChildren
   '/_auth/users/$username': typeof AuthUsersUsernameRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -434,10 +434,10 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/$username'
     | '/github/installed'
     | '/login/$'
     | '/'
-    | '/$username'
     | '/users/$username'
     | '/api/auth/$'
     | '/api/github/callback'
@@ -476,10 +476,10 @@ export interface FileRouteTypes {
     | '/$username/servers/$owner/$name/deployments/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/$username'
     | '/github/installed'
     | '/login/$'
     | '/'
-    | '/$username'
     | '/users/$username'
     | '/api/auth/$'
     | '/api/github/callback'
@@ -511,10 +511,10 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_auth'
+    | '/_auth/$username'
     | '/github/installed'
     | '/login/$'
     | '/_auth/'
-    | '/_auth/$username'
     | '/_auth/$username/_dash'
     | '/_auth/users/$username'
     | '/api/auth/$'
@@ -577,13 +577,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_auth/$username': {
-      id: '/_auth/$username'
-      path: '/$username'
-      fullPath: '/$username'
-      preLoaderRoute: typeof AuthUsernameRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
     '/_auth/': {
       id: '/_auth/'
       path: '/'
@@ -604,6 +597,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/github/installed'
       preLoaderRoute: typeof GithubInstalledRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_auth/$username': {
+      id: '/_auth/$username'
+      path: '/$username'
+      fullPath: '/$username'
+      preLoaderRoute: typeof AuthUsernameRouteRouteImport
+      parentRoute: typeof AuthRouteRoute
     }
     '/api/sync/v1': {
       id: '/api/sync/v1'
@@ -649,10 +649,10 @@ declare module '@tanstack/react-router' {
     }
     '/_auth/$username/_dash': {
       id: '/_auth/$username/_dash'
-      path: '/$username'
+      path: ''
       fullPath: '/$username'
       preLoaderRoute: typeof AuthUsernameDashRouteRouteImport
-      parentRoute: typeof AuthUsernameRoute
+      parentRoute: typeof AuthUsernameRouteRoute
     }
     '/_auth/$username/_dash/servers': {
       id: '/_auth/$username/_dash/servers'
@@ -680,7 +680,7 @@ declare module '@tanstack/react-router' {
       path: '/deployments/$deploymentId'
       fullPath: '/$username/deployments/$deploymentId'
       preLoaderRoute: typeof AuthUsernameDeploymentsDeploymentIdRouteRouteImport
-      parentRoute: typeof AuthUsernameRoute
+      parentRoute: typeof AuthUsernameRouteRoute
     }
     '/_auth/$username/_dash/settings': {
       id: '/_auth/$username/_dash/settings'
@@ -694,7 +694,7 @@ declare module '@tanstack/react-router' {
       path: '/servers/$owner/$name'
       fullPath: '/$username/servers/$owner/$name'
       preLoaderRoute: typeof AuthUsernameServersOwnerNameRouteImport
-      parentRoute: typeof AuthUsernameRoute
+      parentRoute: typeof AuthUsernameRouteRoute
     }
     '/_auth/$username/deployments/$deploymentId/': {
       id: '/_auth/$username/deployments/$deploymentId/'
@@ -1081,13 +1081,13 @@ const AuthUsernameServersOwnerNameRouteWithChildren =
     AuthUsernameServersOwnerNameRouteChildren,
   )
 
-interface AuthUsernameRouteChildren {
+interface AuthUsernameRouteRouteChildren {
   AuthUsernameDashRouteRoute: typeof AuthUsernameDashRouteRouteWithChildren
   AuthUsernameDeploymentsDeploymentIdRouteRoute: typeof AuthUsernameDeploymentsDeploymentIdRouteRouteWithChildren
   AuthUsernameServersOwnerNameRoute: typeof AuthUsernameServersOwnerNameRouteWithChildren
 }
 
-const AuthUsernameRouteChildren: AuthUsernameRouteChildren = {
+const AuthUsernameRouteRouteChildren: AuthUsernameRouteRouteChildren = {
   AuthUsernameDashRouteRoute: AuthUsernameDashRouteRouteWithChildren,
   AuthUsernameDeploymentsDeploymentIdRouteRoute:
     AuthUsernameDeploymentsDeploymentIdRouteRouteWithChildren,
@@ -1095,19 +1095,18 @@ const AuthUsernameRouteChildren: AuthUsernameRouteChildren = {
     AuthUsernameServersOwnerNameRouteWithChildren,
 }
 
-const AuthUsernameRouteWithChildren = AuthUsernameRoute._addFileChildren(
-  AuthUsernameRouteChildren,
-)
+const AuthUsernameRouteRouteWithChildren =
+  AuthUsernameRouteRoute._addFileChildren(AuthUsernameRouteRouteChildren)
 
 interface AuthRouteRouteChildren {
+  AuthUsernameRouteRoute: typeof AuthUsernameRouteRouteWithChildren
   AuthIndexRoute: typeof AuthIndexRoute
-  AuthUsernameRoute: typeof AuthUsernameRouteWithChildren
   AuthUsersUsernameRoute: typeof AuthUsersUsernameRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthUsernameRouteRoute: AuthUsernameRouteRouteWithChildren,
   AuthIndexRoute: AuthIndexRoute,
-  AuthUsernameRoute: AuthUsernameRouteWithChildren,
   AuthUsersUsernameRoute: AuthUsersUsernameRoute,
 }
 

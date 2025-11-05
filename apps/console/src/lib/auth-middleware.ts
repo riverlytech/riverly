@@ -1,29 +1,10 @@
 import { createMiddleware } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
-import { User } from '@riverly/app'
 import type { BetterAuthSession } from './auth-types'
 import { auth } from './auth'
 import { env } from '@riverly/app/env'
 import { Database } from '@riverly/app/db'
-
-// export const authMiddleware = createMiddleware().server(async ({ next }) => {
-//   const result = await authClient.getSession({
-//     fetchOptions: {
-//       headers: getRequestHeaders(),
-//     },
-//   })
-//   const session = result.data as BetterAuthSession | null
-//   return await next({
-//     context: {
-//       user: session?.user
-//         ? User.toSession({
-//             ...session.user,
-//             image: session.user.image as string,
-//           })
-//         : null,
-//     },
-//   })
-// })
+import { toSession } from '@riverly/app'
 
 export const authMiddleware = createMiddleware().server(async ({ next }) => {
   const session = (await Database.use((db) =>
@@ -40,11 +21,12 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
   return await next({
     context: {
       user: session
-        ? User.toSession({
-            ...session.user,
-            image: session.user.image as string,
-          })
+        ? toSession({
+          ...session.user,
+          image: session.user.image as string,
+        })
         : null,
     },
   })
 })
+
