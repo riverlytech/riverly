@@ -1,5 +1,6 @@
 {
   "files.associations": {
     "**/styles/app.css": "tailwindcss"
-  }
+  },
+  "makefile.configureOnOpen": false
 }

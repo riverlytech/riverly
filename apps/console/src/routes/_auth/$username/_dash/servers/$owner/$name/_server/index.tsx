@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { GitHubIcon } from '@/components/icons/icons'
 
 export const Route = createFileRoute(
-  '/_auth/$username/servers/$owner/$name/_server/',
+  '/_auth/$username/_dash/servers/$owner/$name/_server/',
 )({
   loader: async ({ params }) => {
     const { owner, name } = params
@@ -83,7 +83,7 @@ function RouteComponent() {
   // const isReady = false
 
   return (
-    <div className="py-12 px-4">
+    <div className="py-8 px-4">
       <div className="flex flex-col max-w-7xl mx-auto space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
           {/* column 1, and 2 - full width on mobile, 2/3 on larger screens */}

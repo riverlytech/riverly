@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { processMarkdown } from '@/components/utils/markdown'
 
 export const Route = createFileRoute(
-  '/_auth/$username/servers/$owner/$name/_server/readme',
+  '/_auth/$username/_dash/servers/$owner/$name/_server/readme',
 )({
   loader: async ({ params }) => {
     const res = await fetch(
@@ -34,9 +34,9 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { html } = Route.useLoaderData()
   return (
-    <div className="py-12 px-4">
+    <div className="py-8 px-4">
       <div className="max-w-7xl mx-auto">
-        <article className="prose p-4 max-w-4xl">
+        <article className="prose p-4 max-w-4xl border rounded-sm">
           <div dangerouslySetInnerHTML={{ __html: html }} />
         </article>
       </div>

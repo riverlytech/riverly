@@ -1,7 +1,7 @@
 import { Link, Outlet, createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute(
-  '/_auth/$username/servers/$owner/$name/_server/deployments',
+  '/_auth/$username/_dash/servers/$owner/$name/_server/deployments',
 )({
   component: RouteComponent,
 })
@@ -9,9 +9,9 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { username, owner, name } = Route.useParams()
   return (
-    <div className="py-12 px-4">
+    <div className="py-8 px-4">
       <div className="max-w-7xl mx-auto">
-        <div className="h-18">
+        <div className="mb-4">
           <h1 className="text-2xl mb-2 font-mono font-semibold">Deployments</h1>
           <p className="text-muted-foreground text-sm">
             Deployments for{' '}
@@ -20,7 +20,6 @@ function RouteComponent() {
             </span>
           </p>
         </div>
-        <hr className="py-4" />
         <div className="flex flex-col md:flex-row gap-6">
           <div className="w-full md:w-1/4 shrink-0">
             <div className="flex flex-col space-y-1">
