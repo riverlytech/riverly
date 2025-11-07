@@ -202,6 +202,22 @@ export const getServerFromNameFn = createServerFn({ method: 'GET' })
     return response
   })
 
+export const getServerDetailFromNameFn = createServerFn({ method: 'GET' })
+  .inputValidator((data: { username: string; name: string }) => data)
+  .middleware([authMiddleware])
+  .handler(async ({ data, context: { user: sessionUser } }) => {
+    if (!sessionUser) {
+      setResponseStatus(401)
+      throw new BetterAuthError('Unauthorized')
+    }
+    const response = await Server.detailFromName({
+      callerUserId: sessionUser.userId,
+      username: data.username,
+      name: data.name,
+    })
+    return response
+  })
+
 export const getServerConfigFn = createServerFn({ method: 'GET' })
   .inputValidator((data: { serverId: string }) => data)
   .middleware([authMiddleware])

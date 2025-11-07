@@ -5,10 +5,29 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from '@/components/ui/navigation-menu'
+import { ServerNotFound } from '@/components/commons/notfound'
+import { getServerDetailFromNameFn } from '@/funcs'
 
 export const Route = createFileRoute(
   '/_auth/$username/_dash/servers/$owner/$name/_server',
 )({
+  beforeLoad: async ({ params }) => {
+    const { owner, name } = params
+    const server = await getServerDetailFromNameFn({
+      data: {
+        username: owner,
+        name,
+      },
+    })
+    if (!server) throw new Error('Not Found')
+    return { server }
+  },
+  errorComponent: ({ error }) => {
+    if (error.message === 'Not Found') {
+      return <ServerNotFound />
+    }
+    throw error
+  },
   component: RouteComponent,
 })
 

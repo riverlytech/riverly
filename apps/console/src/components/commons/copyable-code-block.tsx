@@ -66,11 +66,11 @@ export function CopyableCodeBlock({
       </div>
       {highlightedCode ? (
         <div
-          className="w-full max-h-[28rem] overflow-y-auto overflow-x-auto [&_pre]:m-0 [&_pre]:max-w-full [&_pre]:bg-transparent [&_pre]:px-4 [&_pre]:py-5 [&_pre]:text-sm [&_pre]:leading-relaxed [&_code]:block [&_code]:w-full [&_code]:max-w-full [&_code]:break-all [&_code]:whitespace-pre-wrap"
+          className="w-full max-h-112 overflow-y-auto overflow-x-auto [&_pre]:m-0 [&_pre]:max-w-full [&_pre]:bg-transparent [&_pre]:px-4 [&_pre]:py-5 [&_pre]:text-sm [&_pre]:leading-relaxed [&_code]:block [&_code]:w-full [&_code]:max-w-full [&_code]:break-all [&_code]:whitespace-pre-wrap"
           dangerouslySetInnerHTML={{ __html: highlightedCode }}
         />
       ) : (
-        <pre className="w-full max-w-full max-h-[28rem] overflow-y-auto overflow-x-auto bg-transparent px-4 py-5 text-sm leading-relaxed">
+        <pre className="w-full max-w-full max-h-112 overflow-y-auto overflow-x-auto bg-transparent px-4 py-5 text-sm leading-relaxed">
           <code className="block w-full max-w-full break-all whitespace-pre-wrap font-mono text-xs sm:text-sm">
             {code}
           </code>

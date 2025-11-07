@@ -101,7 +101,6 @@ export namespace Server {
             title: serverTable.title,
             description: serverTable.description,
             isClaimed: serverTable.isClaimed,
-            repository: serverTable.githubRepo,
             avatarUrl: serverTable.avatarUrl,
             usageCount: serverTable.usageCount,
             visibility: serverTable.visibility,
@@ -135,6 +134,65 @@ export namespace Server {
       if (result.visibility === ServerVisibilityEnum.PRIVATE) {
         if (filter.callerUserId === result.owner.userId) return result;
         else return undefined;
+      }
+      return result;
+    }
+  );
+
+  export const detailFromName = fn(
+    z.object({
+      callerUserId: z.string(),
+      username: z.string(),
+      name: z.string(),
+    }),
+    async (filter) => {
+      const result = await Database.use((db) =>
+        db
+          .select({
+            serverId: serverTable.serverId,
+            name: serverTable.name,
+            username: serverTable.username,
+            title: serverTable.title,
+            description: serverTable.description,
+            isClaimed: serverTable.isClaimed,
+            avatarUrl: serverTable.avatarUrl,
+            usageCount: serverTable.usageCount,
+            visibility: serverTable.visibility,
+            mode: serverTable.mode,
+            //
+            githubRepo: serverTable.githubRepo,
+            githubOwner: serverTable.githubOwner,
+            branch: serverTable.branch,
+            //
+            owner: {
+              username: users.username,
+              userId: users.id,
+              name: users.name,
+              image: users.image,
+              isStaff: users.isStaff,
+              isBlocked: users.isBlocked,
+            },
+            homepage: serverTable.homepage,
+            license: serverTable.license,
+            readme: serverTable.readme,
+          })
+          .from(serverTable)
+          .innerJoin(users, eq(users.id, serverTable.userId))
+          .where(
+            and(
+              eq(serverTable.username, filter.username),
+              eq(serverTable.name, filter.name)
+            )
+          )
+          .execute()
+          .then((row) => row.at(0))
+      );
+      if (!result) return null;
+      // check for visibility, if private then check ownership,
+      // if public return server
+      if (result.visibility === ServerVisibilityEnum.PRIVATE) {
+        if (filter.callerUserId === result.owner.userId) return result;
+        else return null;
       }
       return result;
     }
@@ -467,8 +525,6 @@ export namespace Server {
     });
   });
 }
-
-// const ServerView = SelectServer;
 
 export const ServerView = SelectServer.pick({
   serverId: true,
