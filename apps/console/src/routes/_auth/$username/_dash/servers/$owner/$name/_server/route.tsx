@@ -34,7 +34,7 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { username, owner, name } = Route.useParams()
   return (
-    <div className="p-4">
+    <div className="p-2 sm:px-4">
       <div className="w-full border-b sticky top-0 z-30 backdrop-blur bg-background/80 overflow-x-auto py-2">
         <NavigationMenu>
           <NavigationMenuList className="flex gap-2 min-w-max">

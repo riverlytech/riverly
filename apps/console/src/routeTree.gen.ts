@@ -42,6 +42,7 @@ import { Route as AuthUsernameDashServersListRouteRouteImport } from './routes/_
 import { Route as AuthUsernameDashServersListIndexRouteImport } from './routes/_auth/$username/_dash/servers/_list/index'
 import { Route as AuthUsernameDashServersListPublicRouteImport } from './routes/_auth/$username/_dash/servers/_list/public'
 import { Route as AuthUsernameDashServersListPrivateRouteImport } from './routes/_auth/$username/_dash/servers/_list/private'
+import { Route as AuthUsernameDashServersOwnerNameDeployRouteImport } from './routes/_auth/$username/_dash/servers/$owner/$name/deploy'
 import { Route as AuthUsernameDashServersOwnerNameServerRouteRouteImport } from './routes/_auth/$username/_dash/servers/$owner/$name/_server/route'
 import { Route as AuthUsernameDashServersOwnerNameServerIndexRouteImport } from './routes/_auth/$username/_dash/servers/$owner/$name/_server/index'
 import { Route as AuthUsernameDashServersOwnerNameServerSettingsRouteImport } from './routes/_auth/$username/_dash/servers/$owner/$name/_server/settings'
@@ -240,6 +241,12 @@ const AuthUsernameDashServersListPrivateRoute =
     path: '/private',
     getParentRoute: () => AuthUsernameDashServersListRouteRoute,
   } as any)
+const AuthUsernameDashServersOwnerNameDeployRoute =
+  AuthUsernameDashServersOwnerNameDeployRouteImport.update({
+    id: '/deploy',
+    path: '/deploy',
+    getParentRoute: () => AuthUsernameDashServersOwnerNameRoute,
+  } as any)
 const AuthUsernameDashServersOwnerNameServerRouteRoute =
   AuthUsernameDashServersOwnerNameServerRouteRouteImport.update({
     id: '/_server',
@@ -330,6 +337,7 @@ export interface FileRoutesByFullPath {
   '/$username/servers/public': typeof AuthUsernameDashServersListPublicRoute
   '/$username/servers/': typeof AuthUsernameDashServersListIndexRoute
   '/$username/servers/$owner/$name': typeof AuthUsernameDashServersOwnerNameServerRouteRouteWithChildren
+  '/$username/servers/$owner/$name/deploy': typeof AuthUsernameDashServersOwnerNameDeployRoute
   '/$username/servers/$owner/$name/analytics': typeof AuthUsernameDashServersOwnerNameServerAnalyticsRoute
   '/$username/servers/$owner/$name/deployments': typeof AuthUsernameDashServersOwnerNameServerDeploymentsRouteWithChildren
   '/$username/servers/$owner/$name/readme': typeof AuthUsernameDashServersOwnerNameServerReadmeRoute
@@ -365,6 +373,7 @@ export interface FileRoutesByTo {
   '/$username/servers/private': typeof AuthUsernameDashServersListPrivateRoute
   '/$username/servers/public': typeof AuthUsernameDashServersListPublicRoute
   '/$username/servers/$owner/$name': typeof AuthUsernameDashServersOwnerNameServerIndexRoute
+  '/$username/servers/$owner/$name/deploy': typeof AuthUsernameDashServersOwnerNameDeployRoute
   '/$username/servers/$owner/$name/analytics': typeof AuthUsernameDashServersOwnerNameServerAnalyticsRoute
   '/$username/servers/$owner/$name/readme': typeof AuthUsernameDashServersOwnerNameServerReadmeRoute
   '/$username/servers/$owner/$name/settings': typeof AuthUsernameDashServersOwnerNameServerSettingsRoute
@@ -408,6 +417,7 @@ export interface FileRoutesById {
   '/_auth/$username/_dash/servers/_list/': typeof AuthUsernameDashServersListIndexRoute
   '/_auth/$username/_dash/servers/$owner/$name': typeof AuthUsernameDashServersOwnerNameRouteWithChildren
   '/_auth/$username/_dash/servers/$owner/$name/_server': typeof AuthUsernameDashServersOwnerNameServerRouteRouteWithChildren
+  '/_auth/$username/_dash/servers/$owner/$name/deploy': typeof AuthUsernameDashServersOwnerNameDeployRoute
   '/_auth/$username/_dash/servers/$owner/$name/_server/analytics': typeof AuthUsernameDashServersOwnerNameServerAnalyticsRoute
   '/_auth/$username/_dash/servers/$owner/$name/_server/deployments': typeof AuthUsernameDashServersOwnerNameServerDeploymentsRouteWithChildren
   '/_auth/$username/_dash/servers/$owner/$name/_server/readme': typeof AuthUsernameDashServersOwnerNameServerReadmeRoute
@@ -450,6 +460,7 @@ export interface FileRouteTypes {
     | '/$username/servers/public'
     | '/$username/servers/'
     | '/$username/servers/$owner/$name'
+    | '/$username/servers/$owner/$name/deploy'
     | '/$username/servers/$owner/$name/analytics'
     | '/$username/servers/$owner/$name/deployments'
     | '/$username/servers/$owner/$name/readme'
@@ -485,6 +496,7 @@ export interface FileRouteTypes {
     | '/$username/servers/private'
     | '/$username/servers/public'
     | '/$username/servers/$owner/$name'
+    | '/$username/servers/$owner/$name/deploy'
     | '/$username/servers/$owner/$name/analytics'
     | '/$username/servers/$owner/$name/readme'
     | '/$username/servers/$owner/$name/settings'
@@ -527,6 +539,7 @@ export interface FileRouteTypes {
     | '/_auth/$username/_dash/servers/_list/'
     | '/_auth/$username/_dash/servers/$owner/$name'
     | '/_auth/$username/_dash/servers/$owner/$name/_server'
+    | '/_auth/$username/_dash/servers/$owner/$name/deploy'
     | '/_auth/$username/_dash/servers/$owner/$name/_server/analytics'
     | '/_auth/$username/_dash/servers/$owner/$name/_server/deployments'
     | '/_auth/$username/_dash/servers/$owner/$name/_server/readme'
@@ -782,6 +795,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthUsernameDashServersListPrivateRouteImport
       parentRoute: typeof AuthUsernameDashServersListRouteRoute
     }
+    '/_auth/$username/_dash/servers/$owner/$name/deploy': {
+      id: '/_auth/$username/_dash/servers/$owner/$name/deploy'
+      path: '/deploy'
+      fullPath: '/$username/servers/$owner/$name/deploy'
+      preLoaderRoute: typeof AuthUsernameDashServersOwnerNameDeployRouteImport
+      parentRoute: typeof AuthUsernameDashServersOwnerNameRoute
+    }
     '/_auth/$username/_dash/servers/$owner/$name/_server': {
       id: '/_auth/$username/_dash/servers/$owner/$name/_server'
       path: '/$owner/$name'
@@ -959,12 +979,15 @@ const AuthUsernameDashServersOwnerNameServerRouteRouteWithChildren =
 
 interface AuthUsernameDashServersOwnerNameRouteChildren {
   AuthUsernameDashServersOwnerNameServerRouteRoute: typeof AuthUsernameDashServersOwnerNameServerRouteRouteWithChildren
+  AuthUsernameDashServersOwnerNameDeployRoute: typeof AuthUsernameDashServersOwnerNameDeployRoute
 }
 
 const AuthUsernameDashServersOwnerNameRouteChildren: AuthUsernameDashServersOwnerNameRouteChildren =
   {
     AuthUsernameDashServersOwnerNameServerRouteRoute:
       AuthUsernameDashServersOwnerNameServerRouteRouteWithChildren,
+    AuthUsernameDashServersOwnerNameDeployRoute:
+      AuthUsernameDashServersOwnerNameDeployRoute,
   }
 
 const AuthUsernameDashServersOwnerNameRouteWithChildren =

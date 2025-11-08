@@ -1,11 +1,12 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
-import { Globe, Rocket, Scale, Lock } from 'lucide-react'
+import { Globe, Rocket, Scale } from 'lucide-react'
 import { ServerVisibilityEnum } from '@riverly/app/ty'
 import { CopyableCodeBlock } from '@/components/commons/copyable-code-block'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 // import { ExplorePlatform } from '@/components/dash/explore-platform'
 // import { getServerConfigFn } from '@/funcs'
+import { ConnectOrDeployNew } from '@/components/server/connect-or-deploy'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   GitHubIcon,
@@ -123,7 +124,7 @@ function RouteComponent() {
   `
 
   return (
-    <div className="py-8 sm:px-4">
+    <div className="py-8 px-2 sm:px-4">
       <div className="flex flex-col max-w-7xl mx-auto space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
           {/* column 1, and 2 - full width on mobile, 2/3 on larger screens */}
@@ -148,7 +149,7 @@ function RouteComponent() {
               </div>
             </div>
 
-            <p className="py-4 text-wrap max-w-2xl line-clamp-3">
+            <p className="py-2 text-wrap max-w-2xl line-clamp-3">
               {server.description}
             </p>
 
@@ -166,14 +167,12 @@ function RouteComponent() {
 
           {/* column 3 - full width on mobile, 1/3 on larger screens */}
           <div className="col-span-1">
-            <div className="flex flex-col space-y-2 sm:py-3">
-              {/* {session ? (
-                  <ConnectCurrentOrDeploy />
-                ) : (
-                  <Button asChild size="default" className="w-full">
-                    <Link href="/login">Login to Generate URL</Link>
-                  </Button>
-                )} */}
+            <div className="flex flex-col space-y-2 sm:pt-4">
+              <ConnectOrDeployNew
+                username={username}
+                owner={owner}
+                name={name}
+              />
               <div className="flex flex-wrap gap-2">
                 {server.visibility === ServerVisibilityEnum.PUBLIC &&
                   server.license && (
