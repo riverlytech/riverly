@@ -59,16 +59,13 @@ function RouteComponent() {
   const { workspace } = Route.useRouteContext()
   const { repo, owner, name } = Route.useLoaderData()
   return (
-    <div className="py-12 px-4">
+    <div className="p-4 sm:px-8">
       <div className="max-w-7xl mx-auto">
-        <div className="h-18">
-          <div>
-            <h1 className="text-2xl font-mono font-semibold">
-              Import from GitHub
-            </h1>
-          </div>
+        <div className="mb-4">
+          <h1 className="text-2xl font-mono font-semibold">
+            Import from GitHub
+          </h1>
         </div>
-        <hr className="py-4" />
         <div className="flex flex-col max-w-3xl space-y-6">
           <Card className="shadow-none">
             <CardHeader>

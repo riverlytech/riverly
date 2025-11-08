@@ -9,7 +9,7 @@ export const Route = createFileRoute('/_auth/$username/_dash/servers/new')({
 function RouteComponent() {
   const { workspace } = Route.useRouteContext()
   return (
-    <div className="p-4">
+    <div className="p-4 sm:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-4">
           <h1 className="text-2xl font-mono font-semibold">Add new Server</h1>

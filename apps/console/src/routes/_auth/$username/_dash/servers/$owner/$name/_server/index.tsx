@@ -2,9 +2,8 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import { Globe, Rocket, Scale, Lock } from 'lucide-react'
 import { ServerVisibilityEnum } from '@riverly/app/ty'
 import { CopyableCodeBlock } from '@/components/commons/copyable-code-block'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { cn } from '@/lib/utils'
 // import { ExplorePlatform } from '@/components/dash/explore-platform'
 // import { getServerConfigFn } from '@/funcs'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -37,11 +36,6 @@ function RouteComponent() {
   console.log(username, owner, name)
   const serverAvatarUrl =
     server.avatarUrl || `https://avatar.vercel.sh/${server.name}`
-
-  // const githubUrl =
-  //   server.visibility === ServerVisibilityEnum.PUBLIC
-  //     ? `https://github.com/${server.githubOwner}/${server.githubRepo}`
-  //     : null
 
   const githubUrl = () => {
     if (server.githubOwner && server.githubRepo) {
@@ -128,10 +122,8 @@ function RouteComponent() {
   }
   `
 
-  // const isReady = false
-
   return (
-    <div className="py-8 px-4">
+    <div className="py-8 sm:px-4">
       <div className="flex flex-col max-w-7xl mx-auto space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
           {/* column 1, and 2 - full width on mobile, 2/3 on larger screens */}
@@ -190,23 +182,13 @@ function RouteComponent() {
                       <span>{server.license.name || 'Unlicense'}</span>
                     </div>
                   )}
-                {gitUrl ? (
+                {gitUrl && (
                   <Button asChild variant="outline" className="flex-1 min-w-0">
                     <a href={gitUrl} target="_blank">
                       <GitHubIcon className="w-4 h-4 mr-2" />
                       <span>GitHub</span>
                     </a>
                   </Button>
-                ) : (
-                  <div
-                    className={cn(
-                      buttonVariants({ variant: 'outline' }),
-                      'flex-1 min-w-0',
-                    )}
-                  >
-                    <Lock className="w-4 h-4 mr-2" />
-                    <span>Proprietary</span>
-                  </div>
                 )}
               </div>
             </div>
