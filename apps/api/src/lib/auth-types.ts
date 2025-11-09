@@ -42,8 +42,8 @@ type FieldConfig = {
 type FieldType<T extends FieldConfig> = T["type"] extends "string"
   ? string
   : T["type"] extends "boolean"
-  ? boolean
-  : unknown;
+    ? boolean
+    : unknown;
 
 /**
  * Maps all `additionalFields` into a typed user object.
@@ -57,10 +57,10 @@ type MapFields<T extends Record<string, FieldConfig>> = {
   [K in keyof T]: T[K]["input"] extends true
     ? FieldType<T[K]> // input: true → required
     : T[K]["defaultValue"] extends undefined
-    ? T[K]["required"] extends true
-      ? FieldType<T[K]> // required: true → required
-      : FieldType<T[K]> | undefined // optional
-    : FieldType<T[K]>; // defaultValue present → required
+      ? T[K]["required"] extends true
+        ? FieldType<T[K]> // required: true → required
+        : FieldType<T[K]> | undefined // optional
+      : FieldType<T[K]>; // defaultValue present → required
 };
 
 /**

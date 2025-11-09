@@ -11,6 +11,7 @@
     "lint": "eslint .",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
+    "typecheck": "tsc --noEmit --pretty false",
     "check": "prettier --write . && eslint --fix ."
   },
   "dependencies": {

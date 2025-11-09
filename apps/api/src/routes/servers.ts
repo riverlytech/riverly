@@ -53,7 +53,7 @@ app.post(
             code: ErrorCode.bad_request,
           },
         },
-        400
+        400,
       );
     }
   }),
@@ -94,7 +94,7 @@ app.post(
         updatedAt: result.updatedAt,
       });
     }
-  }
+  },
 );
 
 export default app;

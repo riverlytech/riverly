@@ -36,7 +36,7 @@ app.get(
     // modify this route for fetching authenticated user,
     // perhaps to a DB call to fetch more details.
     return c.json(sessionUser);
-  }
+  },
 );
 
 app.route("/v1/auth", authRoutes);

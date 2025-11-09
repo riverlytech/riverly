@@ -14,9 +14,9 @@ app.get(
       {
         ok: true,
       },
-      200
+      200,
     );
-  }
+  },
 );
 
 export default app;

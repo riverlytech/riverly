@@ -3,12 +3,16 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun run --watch src/main.ts",
-    "build": "bunx vite build",
-    "start": "bun run src/main.ts",
-    "start:prod": "bun run dist/main.js",
+    "dev": "bun --watch src/main.ts",
+    "start": "bun run dist/main.js",
+    "build": "bun run typecheck && bun build ./src/main.ts --target bun --outdir dist --sourcemap=linked --minify",
+    "preview": "bun run src/main.ts",
     "test": "bunx jest --detectOpenHandles",
-    "typecheck": "tsc --noEmit"
+    "lint": "eslint .",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "typecheck": "tsc --noEmit --pretty false",
+    "check": "prettier --write . && eslint --fix ."
   },
   "dependencies": {
     "hono": "^4.9.6",
@@ -36,6 +40,6 @@
     "typescript": "5.9.2",
     "typescript-eslint": "^8.43.0",
     "@types/bun": "catalog:",
-    "vite": "^7.1.7"
+    "prettier": "^3.6.2"
   }
 }
