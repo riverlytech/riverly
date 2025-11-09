@@ -6,7 +6,7 @@ import type {
 } from "@riverly/app/infra";
 import {
   CloudBuildBuild,
-  CloudBuildBuildNDeploy,
+  CloudBuildBuildDeploy,
   type CloudBuildLogEvent,
   type CloudBuildLogStreamOptions,
 } from "@riverly/app/infra/providers/gcp";
@@ -32,8 +32,8 @@ export async function gcpBuildNDeploy(
   args: GitHubSourceDeployer
 ) {
   const deploymentId = args.deployment.deploymentId;
-  const deployer = (await CloudBuildBuildNDeploy.init()) as Awaited<
-    ReturnType<typeof CloudBuildBuildNDeploy.init>
+  const deployer = (await CloudBuildBuildDeploy.init()) as Awaited<
+    ReturnType<typeof CloudBuildBuildDeploy.init>
   > & {
     streamLogs?: (
       options: CloudBuildLogStreamOptions
@@ -67,5 +67,5 @@ export async function gcpBuildNDeploy(
   return result;
 }
 
-resonate.register(CloudBuildBuildNDeploy.id, gcpBuildNDeploy);
+resonate.register(CloudBuildBuildDeploy.id, gcpBuildNDeploy);
 console.log("worker is running...");

@@ -17,9 +17,9 @@ import { DeploymentStatusEnum } from "@riverly/app/ty";
 const app = new Hono();
 
 const internalWebhookUsername =
-  process.env.A0_INTERNAL_WEBHOOK_USERNAME || "a0runner";
+  process.env.INTERNAL_WEBHOOK_USERNAME || "riverlybot";
 const internalWebhookPassword =
-  process.env.A0_INTERNAL_WEBHOOK_PASSWORD || "VeryS3Cure";
+  process.env.INTERNAL_WEBHOOK_PASSWORD || "VeryS3Cure";
 
 app.get("/", (c) => {
   return c.text("Ok");
@@ -42,7 +42,7 @@ app.post(
     const tags: string[] = body?.build?.tags || [];
 
     console.info(
-      `Received Event ID: ${eventId ?? "unknown"} for build ID: ${cbBuildID ?? "unknown"}`,
+      `Received Event ID: ${eventId ?? "unknown"} for build ID: ${cbBuildID ?? "unknown"}`
     );
 
     if (!eventId && !cbBuildID) {
@@ -54,13 +54,11 @@ app.post(
     const buildTag = tags.find((tag) => tag.startsWith("build-id-"));
     const cbType = tags.find(
       (tag) =>
-        tag === "ty-build-n-deploy" ||
-        tag === "ty-deploy" ||
-        tag === "ty-build",
+        tag === "ty-build-deploy" || tag === "ty-deploy" || tag === "ty-build"
     );
     if (!deploymentTag || !buildTag || !cbType) {
       console.warn(
-        `Ignoring event has missing tag(s) 'deployment-id-*', 'build-id-*' or 'ty-*' is not set or not available`,
+        `Ignoring event has missing tag(s) 'deployment-id-*', 'build-id-*' or 'ty-*' is not set or not available`
       );
       return c.json({ ok: false }, 200);
     }
@@ -68,10 +66,10 @@ app.post(
     const deploymentId = deploymentTag.replace("deployment-id-", "");
     const buildId = buildTag.replace("build-id-", "");
     const status = toDeploymentStatusEnum(cbStatus);
-    if (cbType === "ty-build-n-deploy") {
+    if (cbType === "ty-build-deploy") {
       const isTerminal = isTerminalStatus(cbStatus);
       console.info(
-        `Updating DeploymentID: ${deploymentId} BuildID: ${buildId} Status: ${status}`,
+        `Updating DeploymentID: ${deploymentId} BuildID: ${buildId} Status: ${status}`
       );
 
       let finalImageRef: string | null = null;
@@ -108,9 +106,9 @@ app.post(
       {
         ok: true,
       },
-      200,
+      200
     );
-  },
+  }
 );
 
 // const DeploymentLogDrain = z.object({

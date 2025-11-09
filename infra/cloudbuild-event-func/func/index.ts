@@ -16,10 +16,10 @@ export const handleCloudBuildEvent = async (
 ) => {
   const targetUrl =
     process.env.TARGET_DEPLOYMENT_WEBHOOK ??
-    "https://localapi.riverly.tech/__/v1/deployments/gcp/events";
+    "https://apilocal.riverly.tech/__/v1/deployments/gcp/events";
 
   const targetUsername =
-    process.env.TARGET_DEPLOYMENT_WEBHOOK_USERNAME ?? "a0runner";
+    process.env.TARGET_DEPLOYMENT_WEBHOOK_USERNAME ?? "riverlybot";
   const targetPassword =
     process.env.TARGET_DEPLOYMENT_WEBHOOK_PASSWORD ?? "VeryS3Cure";
 

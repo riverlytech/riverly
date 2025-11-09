@@ -7,4 +7,7 @@ runtime:
 config:
   pulumi:tags:
     value:
-      pulumi:template: gcp-typescript
+      team: infra
+
+gcp:region:
+  value: us-central1

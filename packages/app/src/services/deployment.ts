@@ -29,9 +29,15 @@ import { GitHubSourceDeployer } from "../infra/ty";
 import { fn, NamedError } from "@riverly/utils";
 
 // import { getResonateClient } from "../lib/rsc";
-// import { CloudBuildBuildNDeploy } from "../infra/providers/gcp";
-
 // const rsc = getResonateClient();
+
+// Local invocation, later can be moved to workers
+import {
+  CloudBuildBuildDeploy,
+  type CloudBuildLogEvent,
+  type CloudBuildLogStreamOptions,
+} from "../infra/providers/gcp";
+//
 
 export const ServerInstallError = NamedError.create(
   "ServerInstallError",
@@ -369,20 +375,39 @@ export namespace ServerDeployment {
           });
 
         //
-        // Pass the parsed data to the RPC invoke worker
-        // The worker should share the same data type payload.
-        // const workflowClient = rsc.workflowClient<GCPCBBuildDeployWrkFlow>(
-        //   { name: CloudBuildBuildNDeploy.id },
-        //   deployment.deploymentId
-        // );
-        // const response = await workflowClient.workflowSubmit({
-        //   ...requestParsed.data,
-        // });
-        // if (response.status != "Accepted") {
-        //   throw new DeployJobRequestError({
-        //     message: "Failed to submit job, deployment already exists.",
-        //   });
-        // }
+        // GCP infra invoker, can be later moved to workers
+        //
+        const { data: args } = requestParsed;
+        const deploymentId = args.deployment.deploymentId;
+        const deployer = (await CloudBuildBuildDeploy.init()) as Awaited<
+          ReturnType<typeof CloudBuildBuildDeploy.init>
+        > & {
+          streamLogs?: (
+            options: CloudBuildLogStreamOptions
+          ) => AsyncGenerator<CloudBuildLogEvent>;
+        };
+        console.info(`[Deployment: ${deploymentId}] Starting build...`);
+        const result = await deployer.deploy(args, {});
+        const cbBuildID =
+          (typeof result.resourceIds?.cbBuildID === "string"
+            ? result.resourceIds.cbBuildID
+            : undefined) ??
+          (typeof result.metadata?.cbBuildID === "string"
+            ? result.metadata.cbBuildID
+            : undefined);
+
+        if (!cbBuildID) {
+          console.warn(
+            `[Deployment: ${deploymentId}] Failed to fetch Cloud Build ID`
+          );
+        }
+        console.info(`[Deployment: ${deploymentId}] Status: ${result.status}`);
+        console.info(
+          `[Deployment: ${deploymentId}] Triggered Cloud Build with Cloud Build ID: ${cbBuildID}`
+        );
+        console.info(
+          `[Deployment: ${deploymentId}] Scheduled build N Deploy...`
+        );
         //
 
         // await rsc.beginRpc(

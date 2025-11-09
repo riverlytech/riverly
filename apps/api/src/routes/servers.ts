@@ -3,7 +3,7 @@ import { AddServer } from "@riverly/app/db/schema";
 import { Hono } from "hono";
 import { bearerAuth } from "hono/bearer-auth";
 import { verifyBetterAuthToken } from "../middlewares/middlewares";
-import { ErrorCode } from "./errors";
+import { ErrorCodeEnum } from "./errors";
 import { Server } from "@riverly/app";
 import { z } from "zod";
 import { env } from "@riverly/app/env";
@@ -22,25 +22,6 @@ const AddServerRequest = AddServer.omit({
     repoUrl: z.string().optional(),
   });
 
-// .superRefine((data, ctx) => {
-//   const hasName = !!data.name;
-//   const hasRepoUrl = !!data.repoUrl;
-//   const count = [hasName, hasRepoUrl].filter(Boolean).length;
-//   if (count === 0) {
-//     ctx.addIssue({
-//       code: "custom",
-//       message: "You must provide exactly one of: `name`, `repoUrl`.",
-//       path: [], // global error
-//     });
-//   } else if (count > 1) {
-//     ctx.addIssue({
-//       code: "custom",
-//       message: "Only one of `name`, `repoUrl` can be provided at a time.",
-//       path: [], // global error
-//     });
-//   }
-// });
-
 app.post(
   "/",
   bearerAuth({ verifyToken: verifyBetterAuthToken }),
@@ -50,10 +31,10 @@ app.post(
         {
           error: {
             message: result.error,
-            code: ErrorCode.bad_request,
+            code: ErrorCodeEnum.BAD_REQUEST,
           },
         },
-        400,
+        400
       );
     }
   }),
@@ -94,7 +75,7 @@ app.post(
         updatedAt: result.updatedAt,
       });
     }
-  },
+  }
 );
 
 export default app;

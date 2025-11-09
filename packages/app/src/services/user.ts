@@ -1,6 +1,6 @@
 import { Database } from "@riverly/app/db";
-import { eq } from "drizzle-orm";
-import { users, UpdateUser } from "../db/schema";
+import { eq, and } from "drizzle-orm";
+import { users, UpdateUser, UserType } from "../db/schema";
 import { fn } from "@riverly/utils";
 import z from "zod/v4";
 
@@ -17,7 +17,7 @@ export namespace User {
           updatedAt: users.updatedAt,
         })
         .from(users)
-        .where(eq(users.username, username))
+        .where(and(eq(users.username, username), eq(users.type, UserType.USER)))
         .execute()
         .then((rows) => rows.at(0));
     })

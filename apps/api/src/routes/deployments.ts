@@ -20,7 +20,7 @@ const DeploymentRequest = z
     name: z
       .string()
       .describe(
-        "Absolute or name of the server as `username/name` or `name` format",
+        "Absolute or name of the server as `username/name` or `name` format"
       ),
     repo: z.string().optional(),
     artifact: z.string().optional(),
@@ -70,7 +70,7 @@ app.post(
             code: ErrorCodeEnum.BAD_REQUEST,
           },
         },
-        400,
+        400
       );
     }
   }),
@@ -97,7 +97,7 @@ app.post(
                 code: ErrorCodeEnum.NOT_FOUND,
               },
             },
-            404,
+            404
           );
         }
 
@@ -108,6 +108,9 @@ app.post(
         // The assumption is that user is providing it and intends to updated the current config
         // User should be able to update it via server settings if required
         // and omit from the api if doesn't want this mutation.
+        //
+        // Note: Updating the server config from settings should also trigger re-deployment if existing
+        // deployment exists. Here we just do upsert and create new deployment.
         if (body.config) {
           const upsert = {
             serverId: server.serverId,
@@ -120,7 +123,7 @@ app.post(
         }
 
         // Fetch current server config if not available
-        // server config must exist for deployment required by deployment spec
+        // server config must exist for deployment required by the deployment spec
         if (!serverConfig) {
           serverConfig = await Server.config(server.serverId);
           if (!serverConfig) {
@@ -131,7 +134,7 @@ app.post(
                   code: ErrorCodeEnum.INTERNAL_SERVER_ERROR,
                 },
               },
-              400,
+              400
             );
           }
         }
@@ -142,7 +145,7 @@ app.post(
         // Treat `repo` with highest priority,
         // next `artifact`, artifact involves uploading sources to storage,
         // least `revisionId`
-        // revisionId is when you want to do a full re-deployment part without build
+        // revisionId is when you want to do a re-deployment without build
         //
 
         // Do deployment for the connected GitHub repository
@@ -156,7 +159,7 @@ app.post(
                   code: ErrorCodeEnum.NOT_FOUND,
                 },
               },
-              404,
+              404
             );
           }
 
@@ -173,7 +176,7 @@ app.post(
                   code: ErrorCodeEnum.FORBIDDEN,
                 },
               },
-              403,
+              403
             );
           }
 
@@ -184,7 +187,7 @@ app.post(
               githubInstallationId: ghInstallation.githubInstallationId,
               owner: repo.owner,
               repo: repo.repo,
-            }),
+            })
           );
           if (repoErr || !repoDetails) {
             return c.json(
@@ -194,7 +197,7 @@ app.post(
                   code: ErrorCodeEnum.NOT_FOUND,
                 },
               },
-              404,
+              404
             );
           }
           const [commitErr, commitHash] = await toAsyncErrorValue(() =>
@@ -203,7 +206,7 @@ app.post(
               owner: repo.owner,
               repo: repo.repo,
               branch: repoDetails.defaultBranch,
-            }),
+            })
           );
           const hash = commitErr || !commitHash ? "unknown" : commitHash;
 
@@ -245,9 +248,11 @@ app.post(
               buildId,
               revisionId,
             },
-            200,
+            200
           );
-        } else if (body.artifact) {
+        }
+        // TODO: Requires implementation
+        else if (body.artifact) {
           return c.json(
             {
               error: {
@@ -255,7 +260,7 @@ app.post(
                 code: ErrorCodeEnum.BAD_REQUEST,
               },
             },
-            400,
+            400
           );
         } else if (body.revisionId) {
           return c.json(
@@ -265,7 +270,7 @@ app.post(
                 code: ErrorCodeEnum.BAD_REQUEST,
               },
             },
-            400,
+            400
           );
         } else {
           return c.json(
@@ -275,10 +280,11 @@ app.post(
                 code: ErrorCodeEnum.BAD_REQUEST,
               },
             },
-            400,
+            400
           );
         }
       } else {
+        // TODO: requires implementation
         if (!body.revisionId) {
           return c.json(
             {
@@ -287,7 +293,7 @@ app.post(
                 code: ErrorCodeEnum.BAD_REQUEST,
               },
             },
-            404,
+            404
           );
         }
       }
@@ -300,10 +306,10 @@ app.post(
             message: "Internal server error occurred",
           },
         },
-        500,
+        500
       );
     }
-  },
+  }
 );
 
 export default app;

@@ -15,7 +15,7 @@ app.get("/:username", async (c) => {
           message: "User not found or does not exist",
         },
       },
-      404,
+      404
     );
   }
   const { userId, name, createdAt, updatedAt, image } = publicUser;

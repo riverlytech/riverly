@@ -40,7 +40,8 @@ export type CloudBuildLogEvent =
       type: "timeout";
     };
 
-export const CloudBuildBuild = Builder.define("gcp_cb_build", {
+// TODO: requires implementation
+export const CloudBuildBuild = Builder.define("gcp_cloudbuild_build", {
   parameters: GitHubSourceBuilder,
   async build(params, ctx) {
     console.info("Starting GCP Cloud Build...");
@@ -55,8 +56,8 @@ export const CloudBuildBuild = Builder.define("gcp_cb_build", {
   },
 });
 
-export const CloudBuildBuildNDeploy = Deployer.define(
-  "gcp_cb_build_n_deploy",
+export const CloudBuildBuildDeploy = Deployer.define(
+  "gcp_cloudbuild_build_deploy",
   async () => ({
     parameters: GitHubSourceDeployer,
     async deploy(params, ctx): Promise<Deployer.Result> {
@@ -90,7 +91,7 @@ export const CloudBuildBuildNDeploy = Deployer.define(
           `build-id-${params.build.buildId.toLowerCase()}` as const,
           `user-id-${params.user.userId.toLowerCase()}` as const,
           `deployment-target-${params.deployment.target.toLowerCase()}` as const,
-          `ty-build-n-deploy` as const,
+          `ty-build-deploy` as const,
         ],
         timeout: { seconds: gcpBuildConfig.maxTimeoutSeconds },
         images: [imageName],
@@ -134,7 +135,7 @@ export const CloudBuildBuildNDeploy = Deployer.define(
               "--install",
               "$_GITHUB_INSTALLATION_ID",
               "--pem",
-              "/workspace/github-private-key.pem",
+              "/workspace/gh.pem",
               "--o",
               "/workspace/github-auth-token.txt",
             ],
@@ -205,7 +206,7 @@ export const CloudBuildBuildNDeploy = Deployer.define(
             repoUrl,
             substitutions: buildDefinition.substitutions,
           },
-          "Dry run: skipping Cloud Build submission"
+          "[DRY RUN]: skipping Cloud Build submission"
         );
         return {
           status: "dry_run" as const,
@@ -278,8 +279,8 @@ function fetchSecretScript(gcpConfig: z.infer<typeof gcpConfigSchema>): string {
   return [
     "set -euo pipefail",
     'echo "🔐 Fetching GitHub secret key..."',
-    `gcloud secrets versions access latest --secret="${gcpConfig.GH_SECRET_KEY}" > /workspace/github-private-key.pem`,
-    "chmod 600 /workspace/github-private-key.pem",
+    `gcloud secrets versions access latest --secret="${gcpConfig.GH_SECRET_KEY}" > /workspace/gh.pem`,
+    "chmod 600 /workspace/gh.pem",
     'echo "✅ Secret key fetched."',
   ].join("\n");
 }

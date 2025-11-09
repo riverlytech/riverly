@@ -1,9 +1,9 @@
 import z from "zod/v4";
 
-const defaultRegion = () => process.env.A0RUN_GCP_REGION || "us-central1";
+const defaultRegion = () => process.env.RIVERLY_GCP_REGION || "us-central1";
 const ghSecretKeyName = () =>
-  process.env.A0RUN_GH_SECRET_KEY || "a0-github-private-key-raw";
-const gcpProjectId = () => process.env.A0RUN_GCP_PROJECT_ID || "a0run-001";
+  process.env.RIVERLY_GH_SECRET_KEY_NAME || "riverly-localhost-gh-pem-raw";
+const gcpProjectId = () => process.env.RIVERLY_GCP_PROJECT_ID || "a0run-001";
 
 export const gcpConfigSchema = z.object({
   GCP_REGION: z.string().default(defaultRegion()),

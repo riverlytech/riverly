@@ -25,21 +25,29 @@ const region =
 const functionName = config.get("functionName") ?? "cloudbuild-event-forwarder";
 const targetWebhook =
   config.get("targetWebhook") ??
-  "https://localapi.riverly.tech/__/v1/deployments/gcp/events";
-const targetWebhookUsername = config.get("targetWebhookUsername") ?? "a0runner";
-const targetWebhookPasswordFromConfig = config.getSecret(
-  "targetWebhookPassword"
-);
-const targetWebhookPasswordEnv = process.env.TARGET_DEPLOYMENT_WEBHOOK_PASSWORD;
+  "https://apilocal.riverly.tech/__/v1/deployments/gcp/events";
 
-if (!targetWebhookPasswordFromConfig && !targetWebhookPasswordEnv) {
+const targetWebhookUsernameFromConfig = config.getSecret(
+  "INTERNAL_WEBHOOK_USERNAME"
+);
+if (!targetWebhookUsernameFromConfig) {
   throw new Error(
-    "Missing deployment webhook credentials. Set Pulumi config 'cloudbuild:targetWebhookPassword' (preferably with --secret) or export TARGET_DEPLOYMENT_WEBHOOK_PASSWORD."
+    "Missing internal webhook username. Set Pulumi config 'cloudbuild:INTERNAL_WEBHOOK_USERNAME' with --secret."
+  );
+}
+const targetWebhookUsername = targetWebhookUsernameFromConfig;
+
+const targetWebhookPasswordFromConfig = config.getSecret(
+  "INTERNAL_WEBHOOK_PASSWORD"
+);
+
+if (!targetWebhookPasswordFromConfig) {
+  throw new Error(
+    "Missing internal webhook password. Set Pulumi config 'cloudbuild:INTERNAL_WEBHOOK_PASSWORD' with --secret."
   );
 }
 
-const targetWebhookPassword =
-  targetWebhookPasswordFromConfig ?? pulumi.secret(targetWebhookPasswordEnv!);
+const targetWebhookPassword = targetWebhookPasswordFromConfig;
 const cloudBuildTopicName = config.get("cloudBuildTopic") ?? "cloud-builds";
 
 const requiredServices = [
