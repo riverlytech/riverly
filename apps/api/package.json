@@ -1,11 +1,10 @@
 {
-  "name": "@riverly/api",
-  "version": "0.1.0",
+  "name": "api",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "bunx vite build",
     "dev": "bun run --watch src/main.ts",
+    "build": "bunx vite build",
     "start": "bun run src/main.ts",
     "start:prod": "bun run dist/main.js",
     "test": "bunx jest --detectOpenHandles",
