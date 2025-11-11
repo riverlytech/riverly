@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it, jest } from "@jest/globals";
 import request from "supertest";
 
-const API_BASE_URL = process.env.API_BASE_URL ?? "http://localhost:5000";
+const API_BASE_URL = process.env.API_BASE_URL ?? "https://api.riverly.tech";
 const AUTH_TOKEN = process.env.TEST_JWT_TOKEN;
 
 // Allow extra time because deployments can take longer to settle.
@@ -68,7 +68,7 @@ describe("Deployment API validation", () => {
   it("logs the response when attempting a GitHub repo deployment", async () => {
     const payload = {
       ...basePayload,
-      name: "manmohini/google-workspace",
+      name: "sanchitrk/google-workspace",
       repo: "https://github.com/sanchitrk/google-workspace",
     };
 

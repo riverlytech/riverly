@@ -221,10 +221,14 @@ export const CloudBuildBuildDeploy = Deployer.define(
       const cloudBuildClient = new CloudBuildClient();
 
       try {
+        console.log("************ CREATE BUILD BY BUILD DEFN ************")
+
         const [operation] = await cloudBuildClient.createBuild({
           projectId: gcpConfig.GCP_PROJECT_ID,
           build: buildDefinition,
         });
+
+        console.log("************ CREATED BUILD BY BUILD DEFN ************")
 
         const operationName = operation.name ?? operation.latestResponse?.name;
         const metadata = operation.latestResponse?.metadata as
@@ -265,8 +269,11 @@ export const CloudBuildBuildDeploy = Deployer.define(
           },
         };
       } catch (error: unknown) {
+        console.log("************ DEPLOYMENT ERROR **************")
+        console.log(error)
+        console.log("************ DEPLOYMENT ERROR **************")
         const err = toError(error);
-        console.error({ err }, "Failed to submit GCP Cloud Build deployment");
+        console.error(err, "Failed to submit GCP Cloud Build deployment");
         throw new CloudBuildTriggerError({ message: err.message });
       } finally {
         await cloudBuildClient.close().catch(() => undefined);
