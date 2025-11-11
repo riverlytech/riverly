@@ -1,0 +1,13 @@
+name: api
+description: Riverly API server
+runtime:
+  name: nodejs
+  options:
+    packagemanager: bun
+config:
+  pulumi:tags:
+    value:
+      team: api
+
+gcp:region:
+  value: us-central1
