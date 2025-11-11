@@ -23,8 +23,8 @@ const region =
   "us-central1";
 
 const functionName = config.get("functionName") ?? "cloudbuild-event-forwarder";
-const targetWebhook =
-  config.get("targetWebhook") ??
+const targetWebhookUrl =
+  config.get("TARGET_DEPLOYMENT_WEBHOOK") ??
   "https://apilocal.riverly.tech/__/v1/deployments/gcp/events";
 
 const targetWebhookUsernameFromConfig = config.getSecret(
@@ -257,7 +257,7 @@ const cloudFunction = new gcfv2.Function(
       availableMemory: "256M",
       timeoutSeconds: 60,
       environmentVariables: {
-        TARGET_DEPLOYMENT_WEBHOOK: targetWebhook,
+        TARGET_DEPLOYMENT_WEBHOOK: targetWebhookUrl,
         TARGET_DEPLOYMENT_WEBHOOK_USERNAME: targetWebhookUsername,
         TARGET_DEPLOYMENT_WEBHOOK_PASSWORD: targetWebhookPassword,
       },
@@ -307,4 +307,4 @@ new gcp.pubsub.TopicIAMMember(
 
 export const cloudBuildForwarderName = cloudFunction.name;
 export const cloudBuildForwarderRegion = cloudFunction.location;
-export const deploymentWebhookUrl = targetWebhook;
+export const deploymentWebhookUrl = targetWebhookUrl;
