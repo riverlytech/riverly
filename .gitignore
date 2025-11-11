@@ -137,3 +137,5 @@ vendor/
 .cache/
 .parcel-cache/
 .vite-cache/
+
+.secrets
