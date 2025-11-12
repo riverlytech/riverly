@@ -1,6 +1,6 @@
 import { GitBranch, AlertCircle } from 'lucide-react'
 import { GitHubIcon } from '@/components/icons/icons'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -101,6 +101,8 @@ export function WebRequireGitConnection() {
 function RouteComponent() {
   const { workspace, server } = Route.useRouteContext()
   const { repo } = Route.useLoaderData()
+  const avatarUrl =
+    workspace.image ?? `https://avatar.vercel.sh/${workspace.username}`
   return (
     <div className="p-4 sm:px-4">
       <div className="max-w-2xl mx-auto">
@@ -135,9 +137,8 @@ function RouteComponent() {
                 </Label>
                 <div className="flex items-center gap-3 rounded-lg border px-3 py-3">
                   <Avatar className="size-10">
-                    <AvatarFallback className="bg-linear-to-br from-purple-500 to-blue-500 text-white">
-                      SR
-                    </AvatarFallback>
+                    <AvatarImage src={avatarUrl} alt={server.name} />
+                    <AvatarFallback>{workspace.name[0]}</AvatarFallback>
                   </Avatar>
                   <div className="flex items-center gap-2 font-mono">
                     <span className="font-medium">{workspace.username}</span>

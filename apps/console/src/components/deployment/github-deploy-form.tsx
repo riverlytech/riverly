@@ -5,6 +5,7 @@ import { DeploymentTarget } from '@riverly/app/ty'
 import { Plus, Trash2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Switch } from '@/components/ui/switch'
 import {
   Form,
   FormControl,
@@ -21,12 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
 import { GitHubDeployForm } from '@/validations'
 
 type GitHubDeployFormValues = z.infer<typeof GitHubDeployForm>
@@ -55,14 +50,13 @@ export function GitHubDeployFormComponent({
     name: 'envs',
   })
 
-  function onSubmit(values: GitHubDeployFormValues) {
+  async function onSubmit(values: GitHubDeployFormValues) {
     console.log('Form submitted:', values)
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        {/* Hidden fields for name and repo */}
         <FormField
           control={form.control}
           name="name"
@@ -86,7 +80,6 @@ export function GitHubDeployFormComponent({
           )}
         />
 
-        {/* Root Directory */}
         <FormField
           control={form.control}
           name="rootDir"
@@ -112,7 +105,6 @@ export function GitHubDeployFormComponent({
           )}
         />
 
-        {/* Deployment Target */}
         <FormField
           control={form.control}
           name="target"
@@ -149,98 +141,94 @@ export function GitHubDeployFormComponent({
           )}
         />
 
-        {/* Environment Variables */}
-        <div className="space-y-2">
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="env-vars" className="border rounded-lg">
-              <AccordionTrigger className="px-4 hover:no-underline">
-                <div className="flex items-center justify-between w-full pr-2">
-                  <span className="text-sm font-medium">
-                    Environment Variables
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {fields.length} variable{fields.length !== 1 ? 's' : ''}
-                  </span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4">
-                <div className="space-y-4">
-                  {fields.length === 0 ? (
-                    <p className="text-sm text-muted-foreground text-center py-4">
-                      No environment variables added yet.
-                    </p>
-                  ) : (
-                    fields.map((field, index) => (
-                      <div
-                        key={field.id}
-                        className="flex gap-2 items-start p-3 border rounded-lg bg-muted/30"
-                      >
-                        <div className="flex-1 space-y-3">
-                          <FormField
-                            control={form.control}
-                            name={`envs.${index}.name`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormControl>
-                                  <Input
-                                    placeholder="VARIABLE_NAME"
-                                    disabled={form.formState.isSubmitting}
-                                    className="font-mono"
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
+        <div className="space-y-3">
+          <FormLabel className="text-xs font-semibold uppercase text-muted-foreground">
+            Environment Variables
+          </FormLabel>
+          <div className="space-y-3">
+            {fields.map((field, index) => (
+              <div
+                key={field.id}
+                className="flex gap-2 items-start p-3 border rounded-lg bg-muted/30"
+              >
+                <div className="flex-1 space-y-3">
+                  <FormField
+                    control={form.control}
+                    name={`envs.${index}.name`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="VARIABLE_NAME"
+                            disabled={form.formState.isSubmitting}
+                            className="font-mono"
+                            {...field}
                           />
-                          <FormField
-                            control={form.control}
-                            name={`envs.${index}.value`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormControl>
-                                  <Input
-                                    placeholder="value"
-                                    disabled={form.formState.isSubmitting}
-                                    className="font-mono"
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name={`envs.${index}.value`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="value"
+                            disabled={form.formState.isSubmitting}
+                            className="font-mono"
+                            {...field}
                           />
-                        </div>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10"
-                          onClick={() => remove(index)}
-                          disabled={form.formState.isSubmitting}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))
-                  )}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                    onClick={() =>
-                      append({ name: '', value: '', secret: false })
-                    }
-                    disabled={form.formState.isSubmitting}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Environment Variable
-                  </Button>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name={`envs.${index}.secret`}
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center gap-2 space-y-0">
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            disabled={form.formState.isSubmitting}
+                          />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal cursor-pointer">
+                          Mark as secret
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  />
                 </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                  onClick={() => remove(index)}
+                  disabled={form.formState.isSubmitting}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="w-full"
+              onClick={() => append({ name: '', value: '', secret: false })}
+              disabled={form.formState.isSubmitting}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Environment Variable
+            </Button>
+          </div>
         </div>
 
         <Button

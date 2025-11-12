@@ -29,3 +29,22 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
     },
   })
 })
+
+export const authSession = createMiddleware().server(async ({ next }) => {
+  const session = (await Database.use((db) =>
+    auth(db, env).api.getSession({
+      headers: getRequest().headers,
+      query: {
+        //
+        // https://www.better-auth.com/docs/concepts/session-management#session-caching
+        disableCookieCache: false,
+      },
+    }),
+  )) as BetterAuthSession | null
+
+  return await next({
+    context: {
+      session: session ? session : null,
+    },
+  })
+})
