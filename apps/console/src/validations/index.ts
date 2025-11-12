@@ -1,5 +1,9 @@
 import z from 'zod/v4'
-import { ServerVisibilityEnum } from '@riverly/app/ty'
+import {
+  ServerVisibilityEnum,
+  DeploymentTarget,
+  EnvsSchema,
+} from '@riverly/app/ty'
 
 export const NewServerForm = z.object({
   name: z
@@ -52,4 +56,12 @@ export const ProfileEditForm = z.object({
     .string()
     .min(2, { message: 'Name must be at least 2 characters.' })
     .max(32, { message: 'Name must not be longer than 32 characters.' }),
+})
+
+export const GitHubDeployForm = z.object({
+  name: z.string(),
+  repo: z.string(),
+  rootDir: z.string().min(1, 'Root directory is required'),
+  envs: EnvsSchema,
+  target: z.enum([DeploymentTarget.PREVIEW, DeploymentTarget.PRODUCTION]),
 })
