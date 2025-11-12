@@ -4,7 +4,15 @@ import * as docker from "@pulumi/docker";
 
 const apiConfig = new pulumi.Config("api");
 
-const plainEnvVarNames = ["BETTER_AUTH_URL", "BASEURL", "API_BASEURL"] as const;
+const plainEnvVarNames = [
+  "BETTER_AUTH_URL",
+  "BASEURL",
+  "API_BASEURL",
+  "RIVERLY_GCP_PROJECT_ID",
+  "RIVERLY_GCP_REGION",
+  "RIVERLY_GH_SECRET_KEY_NAME",
+  "RIVERLY_GCP_USE_REST_CLOUDBUILD",
+] as const;
 
 const secretEnvVarNames = [
   "DATABASE_URL",
@@ -112,29 +120,11 @@ const cloudBuildEditorBinding = new gcp.projects.IAMMember(
   },
 );
 
-const cloudBuildViewerBinding = new gcp.projects.IAMMember(
-  "api-sa-cloudbuild-viewer",
-  {
-    project: gcp.config.project!,
-    role: "roles/cloudbuild.builds.viewer",
-    member: pulumi.interpolate`serviceAccount:${serviceAccount.email}`,
-  },
-);
-
 const serviceAccountUserBinding = new gcp.projects.IAMMember(
   "api-sa-service-account-user",
   {
     project: gcp.config.project!,
     role: "roles/iam.serviceAccountUser",
-    member: pulumi.interpolate`serviceAccount:${serviceAccount.email}`,
-  },
-);
-
-const projectIamAdminBinding = new gcp.projects.IAMMember(
-  "api-sa-project-iam-admin",
-  {
-    project: gcp.config.project!,
-    role: "roles/resourcemanager.projectIamAdmin",
     member: pulumi.interpolate`serviceAccount:${serviceAccount.email}`,
   },
 );

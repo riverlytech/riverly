@@ -219,16 +219,34 @@ export const CloudBuildBuildDeploy = Deployer.define(
         };
       }
 
-      console.log(`Using projectId: ${gcpConfig.GCP_PROJECT_ID}`);
-      const cloudBuildClient = new CloudBuildClient({
+      // Fixes issue with Bun container image running in Cloud Run
+      // grpc requires some additional libs at runtime,
+      // which caused runtime error being thrown when invoking.
+      // Requires testing with different images which can work with grpc.
+      //
+      // For now, we can just use REST. to be fixed some other day.
+      const isBunRuntime =
+        typeof globalThis !== "undefined" &&
+        typeof (globalThis as { Bun?: unknown }).Bun !== "undefined";
+      const shouldUseRestTransport =
+        isBunRuntime ||
+        gcpConfig.GCP_USE_REST_CLOUDBUILD === "1";
+      const cloudBuildClientOptions: ConstructorParameters<
+        typeof CloudBuildClient
+      >[0] = {
         projectId: gcpConfig.GCP_PROJECT_ID,
-      });
+        ...(shouldUseRestTransport ? { fallback: true } : {}),
+      };
+
+      if (shouldUseRestTransport) {
+        console.info(
+          "Cloud Build client configured to use REST transport (fallback) for Bun/Cloud Run runtime."
+        );
+      }
+
+      const cloudBuildClient = new CloudBuildClient(cloudBuildClientOptions);
 
       try {
-        console.log('-----------------------------------');
-        console.log(JSON.stringify(buildDefinition, null, 2));
-        console.log('-----------------------------------');
-
         const [operation] = await cloudBuildClient.createBuild({
           projectId: gcpConfig.GCP_PROJECT_ID,
           build: buildDefinition,
@@ -273,12 +291,9 @@ export const CloudBuildBuildDeploy = Deployer.define(
           },
         };
       } catch (error: any) {
-        console.log("************ DEPLOYMENT ERROR **************")
-        console.dir(error, { depth: null });
-        console.log("************ DEPLOYMENT ERROR **************")
-        // const err = toError(error);
-        // console.error(err, "Failed to submit GCP Cloud Build deployment");
-        throw new CloudBuildTriggerError({ message: "HORRIBLE !!" });
+        const err = toError(error);
+        console.error(err, "Failed to submit GCP Cloud Build deployment");
+        throw new CloudBuildTriggerError({ message: err.message });
       } finally {
         await cloudBuildClient.close().catch(() => undefined);
       }
