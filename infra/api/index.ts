@@ -37,10 +37,10 @@ const envs = [
 
 const buildArgs: Record<string, pulumi.Input<string>> = {
   ...Object.fromEntries(
-    plainBuildArgNames.map((name) => [name, apiConfig.require(name)])
+    plainBuildArgNames.map((name) => [name, apiConfig.require(name)]),
   ),
   ...Object.fromEntries(
-    secretBuildArgNames.map((name) => [name, apiConfig.requireSecret(name)])
+    secretBuildArgNames.map((name) => [name, apiConfig.requireSecret(name)]),
   ),
   ...(() => {
     const optionalArgs: Record<string, pulumi.Input<string>> = {};
@@ -75,7 +75,7 @@ const repository = new gcp.artifactregistry.Repository(
     repositoryId: "apirepo",
     format: "DOCKER",
   },
-  { dependsOn: [artifactRegistry] }
+  { dependsOn: [artifactRegistry] },
 );
 
 // Get the repository URL
@@ -93,7 +93,50 @@ const image = new docker.Image(
       args: buildArgs,
     },
   },
-  { dependsOn: [cloudBuild] }
+  { dependsOn: [cloudBuild] },
+);
+
+// Create a dedicated service account for the Cloud Run service
+const serviceAccount = new gcp.serviceaccount.Account("api-sa", {
+  accountId: "api-sa",
+  displayName: "API Service Account",
+});
+
+// Give the service account the Cloud Build Editor role
+const cloudBuildEditorBinding = new gcp.projects.IAMMember(
+  "api-sa-cloudbuild-editor",
+  {
+    project: gcp.config.project!,
+    role: "roles/cloudbuild.builds.editor",
+    member: pulumi.interpolate`serviceAccount:${serviceAccount.email}`,
+  },
+);
+
+const cloudBuildViewerBinding = new gcp.projects.IAMMember(
+  "api-sa-cloudbuild-viewer",
+  {
+    project: gcp.config.project!,
+    role: "roles/cloudbuild.builds.viewer",
+    member: pulumi.interpolate`serviceAccount:${serviceAccount.email}`,
+  },
+);
+
+const serviceAccountUserBinding = new gcp.projects.IAMMember(
+  "api-sa-service-account-user",
+  {
+    project: gcp.config.project!,
+    role: "roles/iam.serviceAccountUser",
+    member: pulumi.interpolate`serviceAccount:${serviceAccount.email}`,
+  },
+);
+
+const projectIamAdminBinding = new gcp.projects.IAMMember(
+  "api-sa-project-iam-admin",
+  {
+    project: gcp.config.project!,
+    role: "roles/resourcemanager.projectIamAdmin",
+    member: pulumi.interpolate`serviceAccount:${serviceAccount.email}`,
+  },
 );
 
 // Create a Cloud Run service that is only accessible from the load balancer
@@ -104,6 +147,7 @@ const service = new gcp.cloudrunv2.Service(
     name: "api", // Explicitly name the service 'api'
     ingress: "INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER", // Restrict access to the LB
     template: {
+      serviceAccount: serviceAccount.email,
       containers: [
         {
           image: image.repoDigest, // Use the unique repoDigest
@@ -116,12 +160,13 @@ const service = new gcp.cloudrunv2.Service(
         },
       ],
       scaling: {
-        maxInstanceCount: 3,
+        maxInstanceCount: 1,
         minInstanceCount: 0,
       },
+      timeout: "600s",
     },
   },
-  { dependsOn: [cloudRun] }
+  { dependsOn: [cloudRun] },
 );
 
 // Allow invocations from the load balancer (and other internal traffic)

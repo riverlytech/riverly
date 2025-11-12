@@ -85,6 +85,7 @@ export const CloudBuildBuildDeploy = Deployer.define(
 
       // const jwt = await issueM2MServiceToken(params.user.userId);
 
+      // undo till here
       const buildDefinition: protos.google.devtools.cloudbuild.v1.IBuild = {
         tags: [
           `deployment-id-${params.deployment.deploymentId.toLowerCase()}` as const,
@@ -218,17 +219,20 @@ export const CloudBuildBuildDeploy = Deployer.define(
         };
       }
 
-      const cloudBuildClient = new CloudBuildClient();
+      console.log(`Using projectId: ${gcpConfig.GCP_PROJECT_ID}`);
+      const cloudBuildClient = new CloudBuildClient({
+        projectId: gcpConfig.GCP_PROJECT_ID,
+      });
 
       try {
-        console.log("************ CREATE BUILD BY BUILD DEFN ************")
+        console.log('-----------------------------------');
+        console.log(JSON.stringify(buildDefinition, null, 2));
+        console.log('-----------------------------------');
 
         const [operation] = await cloudBuildClient.createBuild({
           projectId: gcpConfig.GCP_PROJECT_ID,
           build: buildDefinition,
         });
-
-        console.log("************ CREATED BUILD BY BUILD DEFN ************")
 
         const operationName = operation.name ?? operation.latestResponse?.name;
         const metadata = operation.latestResponse?.metadata as
@@ -268,13 +272,13 @@ export const CloudBuildBuildDeploy = Deployer.define(
             ...(cbBuildID ? { cbBuildID: cbBuildID } : {}),
           },
         };
-      } catch (error: unknown) {
+      } catch (error: any) {
         console.log("************ DEPLOYMENT ERROR **************")
-        console.log(error)
+        console.dir(error, { depth: null });
         console.log("************ DEPLOYMENT ERROR **************")
-        const err = toError(error);
-        console.error(err, "Failed to submit GCP Cloud Build deployment");
-        throw new CloudBuildTriggerError({ message: err.message });
+        // const err = toError(error);
+        // console.error(err, "Failed to submit GCP Cloud Build deployment");
+        throw new CloudBuildTriggerError({ message: "HORRIBLE !!" });
       } finally {
         await cloudBuildClient.close().catch(() => undefined);
       }
