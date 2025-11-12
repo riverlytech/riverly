@@ -3,7 +3,7 @@ import { AlertCircleIcon, GitBranch } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { GitHubIcon } from '@/components/icons/icons'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { githubRepoDetailFn, githubUserInstallationFn } from '@/funcs'
+import { githubInstalledRepoDetailFn } from '@/funcs'
 import { GitHubImportServerForm } from '@/components/server/github-import-server'
 
 type ImportRepoSearch = {
@@ -23,28 +23,14 @@ export const Route = createFileRoute('/_auth/$username/_dash/servers/import')({
     owner,
   }),
   loader: async ({ deps, context: { workspace } }) => {
-    let repo: Awaited<ReturnType<typeof githubRepoDetailFn>> | null = null
+    let repo: Awaited<ReturnType<typeof githubInstalledRepoDetailFn>> | null =
+      null
     const owner = deps.owner || workspace.username
     const name = deps.name
-    try {
-      if (name) {
-        const ghInstalled = await githubUserInstallationFn({
-          data: { account: owner, userId: workspace.userId },
-        })
-
-        if (ghInstalled) {
-          repo = await githubRepoDetailFn({
-            data: {
-              owner: owner,
-              repo: name,
-              githubInstallationId: ghInstalled.githubInstallationId,
-            },
-          })
-        }
-      }
-    } catch (err) {
-      console.error(err)
-      repo = null
+    if (name) {
+      repo = await githubInstalledRepoDetailFn({
+        data: { userId: workspace.userId, owner: owner, name: name },
+      })
     }
     return {
       repo,

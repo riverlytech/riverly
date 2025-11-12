@@ -76,30 +76,4 @@ describe("Deployment API validation", () => {
     console.log("GitHub deployment attempt:", result);
     expect(result.status).toBe(200);
   });
-
-  // const additionalRepos = [
-  //   {
-  //     name: "sanchitrk/a0ctl",
-  //     repo: "https://github.com/sanchitrk/a0ctl",
-  //   },
-  //   {
-  //     name: "sanchitrk/js-calendar",
-  //     repo: "https://github.com/sanchitrk/js-calendar",
-  //   },
-  // ];
-
-  // it.each(additionalRepos)(
-  //   "logs response for GitHub repo deployment: %s",
-  //   async ({ name, repo }) => {
-  //     const payload = {
-  //       ...basePayload,
-  //       name,
-  //       repo,
-  //     };
-
-  //     const result = await postDeployment(payload);
-  //     console.log(`GitHub deployment attempt for ${name}:`, result);
-  //     expect(result.status).not.toBe(401);
-  //   }
-  // );
 });

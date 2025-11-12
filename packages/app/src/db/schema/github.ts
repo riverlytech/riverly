@@ -25,12 +25,14 @@ export const gitHubInstallationTable = pgTable(
     userId: varchar("user_id", { length: 255 })
       .notNull()
       .references(() => users.id),
+    // TODO: remove as not needed
     setupAction: varchar("setup_action", { length: 64 })
       .$type<GitHubInstallationSetup>()
       .notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
+  // TODO: remove github_installation_app_id_user_id_account_login_key constraint
   (table) => [
     unique("github_installation_app_id_user_id_account_login_key").on(
       table.githubAppId,

@@ -1,5 +1,5 @@
 import { fn } from "@riverly/utils";
-import { and, asc, eq, sql } from "drizzle-orm";
+import { and, asc, eq, or } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { App as GhApp } from "octokit";
 import z from "zod/v4";
@@ -56,6 +56,32 @@ export namespace GitHub {
     }),
     async (gh) =>
       await Database.transaction(async (tx) => {
+        // Delete by primary key first (handles any existing installation with same ID)
+        await tx
+          .delete(gitHubInstallationTable)
+          .where(
+            eq(
+              gitHubInstallationTable.githubInstallationId,
+              gh.githubInstallationId
+            )
+          );
+
+        // Then delete any existing installation for this user+account combination
+        // This handles uninstall/reinstall scenarios where installationId changes
+        await tx
+          .delete(gitHubInstallationTable)
+          .where(
+            and(
+              eq(gitHubInstallationTable.githubAppId, gh.githubAppId),
+              eq(gitHubInstallationTable.userId, gh.userId),
+              or(
+                eq(gitHubInstallationTable.accountLogin, gh.accountLogin),
+                eq(gitHubInstallationTable.accountId, gh.accountId)
+              )
+            )
+          );
+
+        // Then insert the new/updated installation
         return tx
           .insert(gitHubInstallationTable)
           .values({
@@ -66,20 +92,6 @@ export namespace GitHub {
             accountType: gh.accountType as GitHubAccountType,
             userId: gh.userId,
             setupAction: gh.setupAction as GitHubInstallationSetup,
-          })
-          .onConflictDoUpdate({
-            target: [
-              gitHubInstallationTable.githubAppId,
-              gitHubInstallationTable.userId,
-              gitHubInstallationTable.accountLogin,
-            ],
-            set: {
-              githubInstallationId: sql`EXCLUDED.github_installation_id`,
-              accountId: sql`EXCLUDED.account_id`,
-              accountType: sql`EXCLUDED.account_type`,
-              setupAction: sql`EXCLUDED.setup_action`,
-              updatedAt: sql`NOW()`,
-            },
           })
           .returning({
             id: gitHubInstallationTable.githubInstallationId,
@@ -179,26 +191,30 @@ export namespace GitHub {
       repo: z.string(),
     }),
     async (q) => {
-      const octokit = await getGhApp().getInstallationOctokit(
-        q.githubInstallationId
-      );
-      const { data } = await octokit.rest.repos.get({
-        owner: q.owner,
-        repo: q.repo,
-      });
-      const { owner } = data;
-      return {
-        id: data.id,
-        name: data.name,
-        fullName: data.full_name,
-        private: data.private,
-        defaultBranch: data.default_branch,
-        htmlUrl: data.html_url,
-        cloneUrl: data.clone_url,
-        permissions: data.permissions,
-        license: data.license,
-        owner,
-      };
+      try {
+        const octokit = await getGhApp().getInstallationOctokit(
+          q.githubInstallationId
+        );
+        const { data } = await octokit.rest.repos.get({
+          owner: q.owner,
+          repo: q.repo,
+        });
+        const { owner } = data;
+        return {
+          id: data.id,
+          name: data.name,
+          fullName: data.full_name,
+          private: data.private,
+          defaultBranch: data.default_branch,
+          htmlUrl: data.html_url,
+          cloneUrl: data.clone_url,
+          permissions: data.permissions,
+          license: data.license,
+          owner,
+        };
+      } catch (error) {
+        return null;
+      }
     }
   );
 

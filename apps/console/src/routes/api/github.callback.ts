@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { GitHub } from '@riverly/app'
+import { GitHub, toSession } from '@riverly/app'
 import { GitHubInstallationSetupValue } from '@riverly/app/ty'
 import { z } from 'zod'
 import { env } from '@riverly/app/env'
@@ -7,7 +7,6 @@ import type { UserTable } from '@riverly/app/db/schema'
 import type { BetterAuthSession } from '@/lib/auth-types'
 import { auth } from '@/lib/auth'
 import { Database } from '@riverly/app/db'
-import { toSession } from "@riverly/app"
 
 const callbackSearchSchema = z.object({
   installationId: z.number(),

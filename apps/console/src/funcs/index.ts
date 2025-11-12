@@ -131,25 +131,11 @@ export const userInstalledServersFn = createServerFn({ method: 'GET' })
     })
   })
 
-export const githubUserInstallationFn = createServerFn({ method: 'GET' })
-  .inputValidator((data: { userId: string; account: string }) => data)
-  .middleware([authMiddleware])
-  .handler(async ({ data, context: { user } }) => {
-    if (!user) {
-      setResponseStatus(401)
-      throw new BetterAuthError('Unauthorized')
-    }
-    return GitHub.userInstallation({
-      userId: data.userId,
-      githubAppId: env.GITHUB_APP_ID,
-      account: data.account,
-    })
-  })
-
-export const githubRepoDetailFn = createServerFn({ method: 'GET' })
+export const githubInstalledRepoDetailFn = createServerFn({
+  method: 'GET',
+})
   .inputValidator(
-    (data: { owner: string; repo: string; githubInstallationId: number }) =>
-      data,
+    (data: { userId: string; owner: string; name: string }) => data,
   )
   .middleware([authMiddleware])
   .handler(async ({ data, context: { user } }) => {
@@ -157,10 +143,17 @@ export const githubRepoDetailFn = createServerFn({ method: 'GET' })
       setResponseStatus(401)
       throw new BetterAuthError('Unauthorized')
     }
-    return GitHub.repoDetail({
-      githubInstallationId: data.githubInstallationId,
+    const installation = await GitHub.userInstallation({
+      userId: data.userId,
+      githubAppId: env.GITHUB_APP_ID,
+      account: data.owner,
+    })
+    if (!installation) return null
+
+    return await GitHub.repoDetail({
+      githubInstallationId: installation.githubInstallationId,
       owner: data.owner,
-      repo: data.repo,
+      repo: data.name,
     })
   })
 

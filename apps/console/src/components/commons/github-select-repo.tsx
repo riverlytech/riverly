@@ -59,7 +59,7 @@ export function GitHubSelectRepo({ username }: { username: string }) {
   const handleInstallClick = () => {
     const popup = window.open(
       `${import.meta.env.VITE_GITHUB_APP_INSTALL_URL}`,
-      'Installing a0',
+      'Installing riverlytech',
       'width=800,height=700,scrollbars=yes,resizable=yes,centerscreen=yes',
     )
 

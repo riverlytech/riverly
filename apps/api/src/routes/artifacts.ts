@@ -14,7 +14,7 @@ const artifactBucket = process.env.ARTIFACT_BUCKET!;
 
 const artifactSchema = z.object({
   name: z.string(),
-  suffix: z.string().default("tar.gz"), // defaults to .tar.gz compression (set by `riverlytech/a0ctl`)
+  suffix: z.string().default("tar.gz"), // defaults to .tar.gz compression (set by `riverlytech/cli`)
   version: z.string().optional().default("latest"), // defaults to latest
 });
 
@@ -64,7 +64,7 @@ app.post(
     // <userId>/<serverId>:<version>.<suffix>
 
     // NOTE:
-    // compression suffix as set by client (cli): `riverlytech/a0ctl`
+    // compression suffix as set by client (cli): `riverlytech/cli`
     // must also implement said compression.
     const absolutePath = `${sessionUser.userId}/servers/${ownedServer.serverId}:${version}.${suffix}`;
     const expires = Date.now() + 60 * 60 * 1000;
