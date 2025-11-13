@@ -19,7 +19,7 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
-    const { workspace } = Route.useRouteContext()
+  const { workspace } = Route.useRouteContext()
   const { servers } = Route.useLoaderData()
   return (
     <div className="flex flex-col space-y-4 w-full md:w-3/4">

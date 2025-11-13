@@ -1,13 +1,13 @@
 import { createAuthClient } from 'better-auth/react'
-import { fn } from "@riverly/utils";
-import { SelectUser } from '@riverly/app/db/schema';
+import { fn } from '@riverly/utils'
+import { SelectUser } from '@riverly/app/db/schema'
 
 export const authClient = createAuthClient({
   baseURL: import.meta.env.VITE_BASE_URL,
 })
 
 export const toSession = fn(SelectUser, (user) => {
-  const avatarUrl = user.image || `https://avatar.vercel.sh/${user.username}`;
+  const avatarUrl = user.image || `https://avatar.vercel.sh/${user.username}`
   return {
     userId: user.id,
     name: user.name,
@@ -20,6 +20,5 @@ export const toSession = fn(SelectUser, (user) => {
     image: avatarUrl,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
-  };
-});
-
+  }
+})

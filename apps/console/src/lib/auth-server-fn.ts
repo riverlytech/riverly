@@ -1,12 +1,11 @@
 import { createServerFn, createIsomorphicFn } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
 import { authMiddleware } from '@/lib/auth-middleware'
-import { authClient } from '@/lib/auth-client'
+import { authClient, toSession as toSessionClient  } from '@/lib/auth-client'
 import { auth } from '@/lib/auth'
 import { Database } from '@riverly/app/db'
 import { env } from '@riverly/app/env'
-import { toSession } from "@riverly/app"
-import { toSession as toSessionClient } from "@/lib/auth-client"
+import { toSession } from '@riverly/app'
 import type { RouterContext } from '@/routes/__root'
 import type { BetterAuthSession } from '@/lib/auth-types'
 
@@ -25,7 +24,10 @@ export const $getSessionUser = createIsomorphicFn()
       revalidateIfStale: true, // fetch in background when stale
     })) as { data: BetterAuthSession | null }
     return session
-      ? toSessionClient({ ...session.user, image: session.user.image as string })
+      ? toSessionClient({
+          ...session.user,
+          image: session.user.image as string,
+        })
       : null
   })
   .server(async (_: RouterContext['queryClient']) => {
@@ -44,4 +46,3 @@ export const $getSessionUser = createIsomorphicFn()
       ? toSession({ ...session.user, image: session.user.image as string })
       : null
   })
-

@@ -1,9 +1,6 @@
-
 import * as React from 'react'
-import { Link } from "@tanstack/react-router"
-import {
-  Command,
-} from 'lucide-react'
+import { Link } from '@tanstack/react-router'
+import { Command } from 'lucide-react'
 
 import { NavMain } from '@/components/dash/nav-main'
 import { NavSecondary } from '@/components/dash/nav-secondary'
@@ -26,7 +23,10 @@ const data = {
   },
 }
 
-export function AppSidebar({ username, ...props }: { username: string } & React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({
+  username,
+  ...props
+}: { username: string } & React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>

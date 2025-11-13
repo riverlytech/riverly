@@ -20,7 +20,7 @@ const DeploymentRequest = z
     name: z
       .string()
       .describe(
-        "Absolute or name of the server as `username/name` or `name` format"
+        "Absolute or name of the server as `username/name` or `name` format",
       ),
     repo: z.string().optional(),
     artifact: z.string().optional(),
@@ -70,7 +70,7 @@ app.post(
             code: ErrorCodeEnum.BAD_REQUEST,
           },
         },
-        400
+        400,
       );
     }
   }),
@@ -97,7 +97,7 @@ app.post(
                 code: ErrorCodeEnum.NOT_FOUND,
               },
             },
-            404
+            404,
           );
         }
 
@@ -134,7 +134,7 @@ app.post(
                   code: ErrorCodeEnum.INTERNAL_SERVER_ERROR,
                 },
               },
-              400
+              400,
             );
           }
         }
@@ -159,7 +159,7 @@ app.post(
                   code: ErrorCodeEnum.NOT_FOUND,
                 },
               },
-              404
+              404,
             );
           }
 
@@ -176,7 +176,7 @@ app.post(
                   code: ErrorCodeEnum.FORBIDDEN,
                 },
               },
-              403
+              403,
             );
           }
 
@@ -187,7 +187,7 @@ app.post(
               githubInstallationId: ghInstallation.githubInstallationId,
               owner: repo.owner,
               repo: repo.repo,
-            })
+            }),
           );
           if (repoErr || !repoDetails) {
             return c.json(
@@ -197,7 +197,7 @@ app.post(
                   code: ErrorCodeEnum.NOT_FOUND,
                 },
               },
-              404
+              404,
             );
           }
           const [commitErr, commitHash] = await toAsyncErrorValue(() =>
@@ -206,7 +206,7 @@ app.post(
               owner: repo.owner,
               repo: repo.repo,
               branch: repoDetails.defaultBranch,
-            })
+            }),
           );
           const hash = commitErr || !commitHash ? "unknown" : commitHash;
 
@@ -248,7 +248,7 @@ app.post(
               buildId,
               revisionId,
             },
-            200
+            200,
           );
         }
         // TODO: Requires implementation
@@ -260,7 +260,7 @@ app.post(
                 code: ErrorCodeEnum.BAD_REQUEST,
               },
             },
-            400
+            400,
           );
         } else if (body.revisionId) {
           return c.json(
@@ -270,7 +270,7 @@ app.post(
                 code: ErrorCodeEnum.BAD_REQUEST,
               },
             },
-            400
+            400,
           );
         } else {
           return c.json(
@@ -280,7 +280,7 @@ app.post(
                 code: ErrorCodeEnum.BAD_REQUEST,
               },
             },
-            400
+            400,
           );
         }
       } else {
@@ -293,7 +293,7 @@ app.post(
                 code: ErrorCodeEnum.BAD_REQUEST,
               },
             },
-            404
+            404,
           );
         }
       }
@@ -306,10 +306,10 @@ app.post(
             message: "Internal server error occurred",
           },
         },
-        500
+        500,
       );
     }
-  }
+  },
 );
 
 export default app;

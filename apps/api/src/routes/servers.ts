@@ -34,7 +34,7 @@ app.post(
             code: ErrorCodeEnum.BAD_REQUEST,
           },
         },
-        400
+        400,
       );
     }
   }),
@@ -75,7 +75,7 @@ app.post(
         updatedAt: result.updatedAt,
       });
     }
-  }
+  },
 );
 
 export default app;

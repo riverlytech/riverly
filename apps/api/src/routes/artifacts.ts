@@ -41,7 +41,7 @@ app.post(
             message: "Server not found",
           },
         },
-        404
+        404,
       );
     }
 
@@ -53,7 +53,7 @@ app.post(
             message: "Local server cannot be deployed",
           },
         },
-        403
+        403,
       );
     }
 
@@ -83,7 +83,7 @@ app.post(
       expires,
       artifact: absolutePath,
     });
-  }
+  },
 );
 
 export default app;

@@ -9,7 +9,7 @@ jest.setTimeout(60000);
 
 if (!AUTH_TOKEN) {
   throw new Error(
-    "TEST_JWT_TOKEN environment variable must be defined to run API tests."
+    "TEST_JWT_TOKEN environment variable must be defined to run API tests.",
   );
 }
 
@@ -17,7 +17,7 @@ const apiClient = () => request(API_BASE_URL);
 
 const postDeployment = async (
   body: Record<string, unknown>,
-  token: string | null = AUTH_TOKEN
+  token: string | null = AUTH_TOKEN,
 ) => {
   const req = apiClient().post("/v1/deployment").send(body);
   if (token) {
@@ -37,7 +37,7 @@ describe("Deployment API validation", () => {
     const res = await apiClient().get("/");
     if (res.status !== 200) {
       throw new Error(
-        `Deployment API health check failed with status ${res.status}.`
+        `Deployment API health check failed with status ${res.status}.`,
       );
     }
   });

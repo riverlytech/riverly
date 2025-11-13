@@ -1,5 +1,5 @@
-import * as React from "react"
-import { LifeBuoy } from "lucide-react"
+import * as React from 'react'
+import { LifeBuoy } from 'lucide-react'
 
 import {
   SidebarGroup,
@@ -7,7 +7,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from '@/components/ui/sidebar'
 
 export function NavSecondary({
   username,

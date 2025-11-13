@@ -7,3 +7,6 @@ src/components/ui/**
 
 # Generated files
 routeTree.gen.ts
+dist/
+tsconfig.json
+
