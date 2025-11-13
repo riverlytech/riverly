@@ -28,7 +28,7 @@ export function DeploymentDetail({
 
   const avatarUrl = `https://avatar.vercel.sh/${deployment.username}`
   const createdDateLabel = format(new Date(deployment.createdAt), 'MMM d')
-  const domainUrl = `https://mcp.riverly.tech/${deployment.username}/${deployment.name}`
+  const domainUrl = `https://srv${deployment.deploymentId}-261298517661.us-central1.run.app`
   const [copiedText, copyToClipboard] = useCopyToClipboard()
   const hasCopiedDomain = copiedText === domainUrl
 
