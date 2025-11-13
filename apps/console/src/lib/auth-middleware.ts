@@ -30,21 +30,26 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
   })
 })
 
-export const authSession = createMiddleware().server(async ({ next }) => {
-  const session = (await Database.use((db) =>
-    auth(db, env).api.getSession({
+export const jwtToken = createMiddleware().server(async ({ next }) => {
+  let token: string | null = null
+
+  try {
+    const response = await fetch('/api/auth/token', {
       headers: getRequest().headers,
-      query: {
-        //
-        // https://www.better-auth.com/docs/concepts/session-management#session-caching
-        disableCookieCache: false,
-      },
-    }),
-  )) as BetterAuthSession | null
+    })
+
+    if (response.ok) {
+      const data = await response.json()
+      token = data.token ?? null
+    }
+  } catch (error) {
+    console.error(error)
+    token = null
+  }
 
   return await next({
     context: {
-      session: session ? session : null,
+      token,
     },
   })
 })

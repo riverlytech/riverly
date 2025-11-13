@@ -2,10 +2,11 @@ import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type z from 'zod/v4'
 import { DeploymentTarget } from '@riverly/app/ty'
-import { Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2, AlertCircle } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
   Form,
   FormControl,
@@ -23,16 +24,24 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { GitHubDeployForm } from '@/validations'
+import { githubDeployServerFn } from '@/funcs/deploy'
+import { useNavigate } from '@tanstack/react-router'
+import { useState } from 'react'
 
 type GitHubDeployFormValues = z.infer<typeof GitHubDeployForm>
 
 export function GitHubDeployFormComponent({
+  username,
   name,
   repo,
 }: {
+  username: string
   name: string
   repo: string
 }) {
+  const navigate = useNavigate()
+  const [error, setError] = useState<string | null>(null)
+
   const form = useForm({
     resolver: zodResolver(GitHubDeployForm),
     defaultValues: {
@@ -51,12 +60,47 @@ export function GitHubDeployFormComponent({
   })
 
   async function onSubmit(values: GitHubDeployFormValues) {
-    console.log('Form submitted:', values)
+    try {
+      setError(null)
+      const response = await githubDeployServerFn({ data: values })
+
+      if (response.success && response.result) {
+        const deploymentId = response.result.deploymentId
+        if (deploymentId) {
+          await navigate({
+            to: '/$username/deployments/$deploymentId',
+            params: {
+              username,
+              deploymentId,
+            },
+          })
+        } else {
+          await navigate({
+            to: '/$username/deployments',
+            params: { username },
+          })
+        }
+      } else {
+        setError(response.errors?.[0]?.message || 'Deployment failed')
+      }
+    } catch (err) {
+      console.error('Deployment error:', err)
+      setError(
+        err instanceof Error ? err.message : 'An unexpected error occurred',
+      )
+    }
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {error && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Something went wrong</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
         <FormField
           control={form.control}
           name="name"

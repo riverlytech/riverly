@@ -153,6 +153,7 @@ function RouteComponent() {
               <Separator />
 
               <GitHubDeployFormComponent
+                username={workspace.username}
                 name={`${workspace.username}/${server.name}`}
                 repo={`${repo.owner.login}/${repo.name}`}
               />
