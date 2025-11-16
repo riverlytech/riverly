@@ -41,9 +41,6 @@ coverage/
 *.tsbuildinfo
 .tscache/
 
-# Optional npm cache directory
-.npm
-
 # Optional REPL history
 .node_repl_history
 
@@ -58,9 +55,6 @@ lerna-debug.log*
 
 # Runtime data
 pids/
-*.pid
-*.seed
-*.pid.lock
 
 # IDE and editors
 .idea/
@@ -84,7 +78,6 @@ Thumbs.db
 # Framework specific
 .tanstack/
 .wrangler/
-.nitro/
 *.local
 wrangler.jsonc
 
