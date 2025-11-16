@@ -1,0 +1,34 @@
+{
+  "name": "@riverly/db",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "db:push": "bun drizzle-kit push",
+    "db:generate": "bun drizzle-kit generate",
+    "db:migrate": "bun drizzle-kit migrate",
+    "staging:db:push": "bun --env-file=.env.staging drizzle-kit push",
+    "staging:db:generate": "bun --env-file=.env.staging drizzle-kit generate",
+    "staging:db:migrate": "bun --env-file=.env.staging drizzle-kit migrate"
+  },
+  "exports": {
+    ".": "./index.ts"
+  },
+  "dependencies": {
+    "drizzle-kit": "catalog:",
+    "drizzle-orm": "catalog:",
+    "drizzle-zod": "catalog:",
+    "pg": "catalog:",
+    "ulid": "catalog:",
+    "zod": "catalog:",
+    "@riverly/config": "workspace:",
+    "@riverly/ty": "workspace:",
+    "@riverly/utils": "workspace:"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

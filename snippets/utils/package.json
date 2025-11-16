@@ -1,0 +1,19 @@
+{
+  "name": "@riverly/utils",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "dependencies": {
+    "jose": "catalog:",
+    "zod": "catalog:",
+    "nanoid": "catalog:"
+  }
+}

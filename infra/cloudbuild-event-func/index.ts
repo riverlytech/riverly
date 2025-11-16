@@ -178,7 +178,8 @@ const compiledSource = (() => {
             transpileResult.diagnostics,
             formatHost
           );
-          throw new Error(
+          // noinspection ExceptionCaughtLocallyJS
+            throw new Error(
             `Cloud Function TypeScript compilation failed:\n${message}`
           );
         }

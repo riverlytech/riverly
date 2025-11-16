@@ -1,5 +1,5 @@
 {
-  "name": "@riverly/utils",
+  "name": "@riverly/ty",
   "module": "index.ts",
   "type": "module",
   "private": true,
@@ -7,9 +7,7 @@
     ".": "./index.ts"
   },
   "dependencies": {
-    "jose": "catalog:",
-    "zod": "catalog:",
-    "nanoid": "catalog:"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@types/bun": "latest"
