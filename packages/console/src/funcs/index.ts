@@ -1,4 +1,10 @@
 import { createServerFn } from '@tanstack/react-start'
+import { setResponseStatus } from '@tanstack/react-start/server'
+import { BetterAuthError } from 'better-auth'
+import z from 'zod/v4'
+
+import { env } from '@riverly/config'
+import type { GitHubImportServer } from '@riverly/db'
 import {
   GitHub,
   Server,
@@ -6,14 +12,11 @@ import {
   ServerTracker,
   User,
 } from '@riverly/riverly'
-import { env } from '@riverly/config'
-import z from 'zod/v4'
 import type { DeploymentTargetType, ServerVisibility } from '@riverly/ty'
-import type { GitHubImportServer } from '@riverly/db'
-import { GitHubImportForm, NewServerForm, ProfileEditForm } from '@/validations'
+
 import { authMiddleware } from '@/lib/auth-middleware'
-import { setResponseStatus } from '@tanstack/react-start/server'
-import { BetterAuthError } from 'better-auth'
+import { GitHubImportForm, NewServerForm, ProfileEditForm } from '@/validations'
+
 
 export const activeServerCountFn = createServerFn({ method: 'GET' })
   .inputValidator((data: { userId: string }) => data)

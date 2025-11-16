@@ -5,8 +5,8 @@ import { CheckCheck, Copy } from 'lucide-react'
 import * as React from 'react'
 import { codeToHtml } from 'shiki'
 
-import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 type CopyableCodeBlockProps = {
   code: string

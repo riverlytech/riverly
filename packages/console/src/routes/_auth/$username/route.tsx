@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { $getWorkspace } from '@/lib/auth-workspace-fn'
+
 import { NotFound } from '@/components/commons/notfound'
+import { $getWorkspace } from '@/lib/auth-workspace-fn'
 
 export const Route = createFileRoute('/_auth/$username')({
   beforeLoad: async ({ context, params }) => {

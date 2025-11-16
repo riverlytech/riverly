@@ -1,10 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { AlertCircleIcon, GitBranch } from 'lucide-react'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+
 import { GitHubIcon } from '@/components/icons/icons'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { githubInstalledRepoDetailFn } from '@/funcs'
 import { GitHubImportServerForm } from '@/components/server/github-import-server'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { githubInstalledRepoDetailFn } from '@/funcs'
 
 type ImportRepoSearch = {
   owner?: string

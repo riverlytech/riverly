@@ -1,12 +1,13 @@
-import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import type z from 'zod/v4'
-import { DeploymentTarget } from '@riverly/ty'
+import { useNavigate } from '@tanstack/react-router'
 import { Plus, Trash2, AlertCircle } from 'lucide-react'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Switch } from '@/components/ui/switch'
+import { useState } from 'react'
+import { useForm, useFieldArray } from 'react-hook-form'
+
+import { DeploymentTarget } from '@riverly/ty'
+
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -16,6 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
@@ -23,10 +25,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { GitHubDeployForm } from '@/validations'
+import { Switch } from '@/components/ui/switch'
 import { githubDeployServerFn } from '@/funcs/deploy'
-import { useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
+import { GitHubDeployForm } from '@/validations'
+
+
+import type z from 'zod/v4'
 
 type GitHubDeployFormValues = z.infer<typeof GitHubDeployForm>
 

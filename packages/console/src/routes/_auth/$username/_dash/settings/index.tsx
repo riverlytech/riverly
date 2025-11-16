@@ -1,4 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
+
+import { ProfileForm } from '@/components/settings/profile-form'
 import {
   Card,
   CardContent,
@@ -6,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { ProfileForm } from '@/components/settings/profile-form'
 
 export const Route = createFileRoute('/_auth/$username/_dash/settings/')({
   component: RouteComponent,

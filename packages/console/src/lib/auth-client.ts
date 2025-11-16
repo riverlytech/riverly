@@ -1,6 +1,7 @@
 import { createAuthClient } from 'better-auth/react'
-import { fn } from '@riverly/utils'
+
 import { SelectUser } from '@riverly/db'
+import { fn } from '@riverly/utils'
 
 export const authClient = createAuthClient({
   baseURL: import.meta.env.VITE_BASE_URL,

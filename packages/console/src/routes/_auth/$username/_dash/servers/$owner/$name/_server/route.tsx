@@ -1,11 +1,12 @@
 import { Link, Outlet, createFileRoute } from '@tanstack/react-router'
+
+import { ServerNotFound } from '@/components/commons/notfound'
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
 } from '@/components/ui/navigation-menu'
-import { ServerNotFound } from '@/components/commons/notfound'
 import { getServerDetailFromNameFn } from '@/funcs'
 
 export const Route = createFileRoute(

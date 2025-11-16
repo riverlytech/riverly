@@ -1,12 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { GitHub, toSession } from '@riverly/riverly'
-import { GitHubInstallationSetupValue } from '@riverly/ty'
 import { z } from 'zod'
+
 import { env } from '@riverly/config'
 import type { UserTable } from '@riverly/db'
-import type { BetterAuthSession } from '@/lib/auth-types'
-import { auth } from '@/lib/auth'
 import { Database } from '@riverly/db'
+import { GitHub, toSession } from '@riverly/riverly'
+import { GitHubInstallationSetupValue } from '@riverly/ty'
+
+import { auth } from '@/lib/auth'
+import type { BetterAuthSession } from '@/lib/auth-types'
 
 const callbackSearchSchema = z.object({
   installationId: z.number(),

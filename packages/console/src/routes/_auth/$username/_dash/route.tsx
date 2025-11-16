@@ -1,11 +1,12 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
+
+import { AppSidebar } from '@/components/dash/app-sidebar'
+import { Separator } from '@/components/ui/separator'
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
-import { AppSidebar } from '@/components/dash/app-sidebar'
-import { Separator } from '@/components/ui/separator'
 
 export const Route = createFileRoute('/_auth/$username/_dash')({
   component: RouteComponent,

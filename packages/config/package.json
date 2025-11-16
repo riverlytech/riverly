@@ -3,6 +3,9 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "lint": "bunx eslint ."
+  },
   "exports": {
     ".": "./index.ts"
   },
@@ -11,7 +14,9 @@
     "@t3-oss/env-core": "catalog:"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "eslint": "^9.38.0",
+    "eslint-plugin-import-x": "^4.16.1"
   },
   "peerDependencies": {
     "typescript": "^5"

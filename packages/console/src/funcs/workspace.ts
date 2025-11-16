@@ -1,8 +1,10 @@
 import { createServerFn } from '@tanstack/react-start'
-import { authMiddleware } from '@/lib/auth-middleware'
 import { setResponseStatus } from '@tanstack/react-start/server'
 import { BetterAuthError } from 'better-auth'
+
 import { Workspace } from '@riverly/riverly'
+
+import { authMiddleware } from '@/lib/auth-middleware'
 
 export const membershipServerFn = createServerFn({ method: 'GET' })
   .inputValidator((data: { slug: string }) => data)

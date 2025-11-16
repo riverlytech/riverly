@@ -1,13 +1,15 @@
 import { createServerFn, createIsomorphicFn } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
-import { authMiddleware } from '@/lib/auth-middleware'
-import { authClient, toSession as toSessionClient  } from '@/lib/auth-client'
-import { auth } from '@/lib/auth'
-import { Database } from '@riverly/db'
+
 import { env } from '@riverly/config'
+import { Database } from '@riverly/db'
 import { toSession } from '@riverly/riverly'
-import type { RouterContext } from '@/routes/__root'
+
+import { auth } from '@/lib/auth'
+import { authClient, toSession as toSessionClient  } from '@/lib/auth-client'
+import { authMiddleware } from '@/lib/auth-middleware'
 import type { BetterAuthSession } from '@/lib/auth-types'
+import type { RouterContext } from '@/routes/__root'
 
 export const getSessionUser = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])

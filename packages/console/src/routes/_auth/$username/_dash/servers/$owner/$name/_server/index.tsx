@@ -1,19 +1,21 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { Globe, Rocket, Scale } from 'lucide-react'
+
 import { ServerVisibilityEnum } from '@riverly/ty'
+
 import { CopyableCodeBlock } from '@/components/commons/copyable-code-block'
-import { Button } from '@/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-// import { ExplorePlatform } from '@/components/dash/explore-platform'
-// import { getServerConfigFn } from '@/funcs'
-import { ConnectOrDeployNew } from '@/components/server/connect-or-deploy'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   GitHubIcon,
   TSIcon,
   PythonIcon,
   JSONIcon,
 } from '@/components/icons/icons'
+import { ConnectOrDeployNew } from '@/components/server/connect-or-deploy'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+// import { ExplorePlatform } from '@/components/dash/explore-platform'
+// import { getServerConfigFn } from '@/funcs'
 
 export const Route = createFileRoute(
   '/_auth/$username/_dash/servers/$owner/$name/_server/',

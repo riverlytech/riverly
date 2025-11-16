@@ -1,6 +1,7 @@
+import {createIsomorphicFn} from '@tanstack/react-start'
+
 import {membershipServerFn} from '@/funcs/workspace'
 import type {RouterContext} from '@/routes/__root'
-import {createIsomorphicFn} from '@tanstack/react-start'
 
 export const $getWorkspace = createIsomorphicFn()
   .client(

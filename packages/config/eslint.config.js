@@ -1,18 +1,15 @@
 //  @ts-check
 
-import { tanstackConfig } from '@tanstack/eslint-config'
+import importPlugin from 'eslint-plugin-import-x'
 
 export default [
-  ...tanstackConfig,
   {
-    ignores: [
-      'node_modules/**',
-      'src/components/ui/**',
-      'eslint.config.js',
-      'prettier.config.js',
-    ],
+    ignores: ['node_modules/**'],
   },
   {
+    plugins: {
+      import: importPlugin,
+    },
     settings: {
       'import/resolver': {
         typescript: true,

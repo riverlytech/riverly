@@ -1,8 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { userDeployment } from '@/funcs'
-import { DeploymentDetail } from '@/components/deployment/detail'
+
 import { WithClient } from '@/components/commons/with-client'
 import { DeploymentLogs } from '@/components/deployment/deployment-logs'
+import { DeploymentDetail } from '@/components/deployment/detail'
+import { userDeployment } from '@/funcs'
 
 export const Route = createFileRoute(
   '/_auth/$username/deployments/$deploymentId/',

@@ -1,15 +1,16 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
+
+import { GitHubSelectRepo } from '@/components/commons/github-select-repo'
 import { ExplorePlatform } from '@/components/dash/explore-platform'
+import { DeploymentPreview } from '@/components/deployment/preview'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   activeServerCountFn,
   deploymentsFn,
   recentlyViewedServersFn,
   topUsedServersFn,
 } from '@/funcs'
-import { Button } from '@/components/ui/button'
-import { DeploymentPreview } from '@/components/deployment/preview'
-import { Card, CardContent } from '@/components/ui/card'
-import { GitHubSelectRepo } from '@/components/commons/github-select-repo'
 
 export const Route = createFileRoute('/_auth/$username/_dash/')({
   loader: async ({ context }) => {

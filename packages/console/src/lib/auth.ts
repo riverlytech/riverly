@@ -2,16 +2,15 @@ import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { jwt } from 'better-auth/plugins'
 import { reactStartCookies } from 'better-auth/react-start'
-import { Database } from '@riverly/db'
-import {
+
+import { env, type Env } from '@riverly/config'
+import { Database,
   UserType,
   accounts,
   jwks,
   sessions,
   users,
-  verifications,
-} from '@riverly/db'
-import { env, type Env } from '@riverly/config'
+  verifications } from '@riverly/db'
 
 export const authConfig = {
   emailAndPassword: {

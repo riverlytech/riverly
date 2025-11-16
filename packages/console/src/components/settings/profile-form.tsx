@@ -1,7 +1,7 @@
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import type z from 'zod/v4'
-import { Input } from '@/components/ui/input'
+import { useForm } from 'react-hook-form'
+
+
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -12,8 +12,11 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { ProfileEditForm } from '@/validations'
+import { Input } from '@/components/ui/input'
 import { updateProfileNameFn } from '@/funcs'
+import { ProfileEditForm } from '@/validations'
+
+import type z from 'zod/v4'
 
 type NameFormValues = z.infer<typeof ProfileEditForm>
 

@@ -1,5 +1,6 @@
-import { BookOpen, ExternalLink, LayoutGrid, Users } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
+import { BookOpen, ExternalLink, LayoutGrid, Users } from 'lucide-react'
+
 import { cn } from '@/lib/utils'
 
 export function ExplorePlatform({ className }: { className?: string }) {

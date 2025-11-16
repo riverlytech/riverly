@@ -1,7 +1,9 @@
+import { Link } from '@tanstack/react-router'
 import { formatDistanceToNow } from 'date-fns'
 import { CheckCircle, GitCommitHorizontal } from 'lucide-react'
-import { Link } from '@tanstack/react-router'
+
 import type { DeploymentPreview } from '@riverly/ty'
+
 import { HashDisplay } from '@/components/commons/display-hash'
 import { Card, CardContent } from '@/components/ui/card'
 import {

@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { userInstalledServersFn } from '@/funcs'
+
 import { UserServerCard } from '@/components/server/preview'
+import { userInstalledServersFn } from '@/funcs'
 
 export const Route = createFileRoute(
   '/_auth/$username/_dash/servers/_list/public',

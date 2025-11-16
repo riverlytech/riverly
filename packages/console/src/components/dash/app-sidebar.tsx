@@ -1,6 +1,6 @@
-import * as React from 'react'
 import { Link } from '@tanstack/react-router'
 import { Command } from 'lucide-react'
+import * as React from 'react'
 
 import { NavMain } from '@/components/dash/nav-main'
 import { NavSecondary } from '@/components/dash/nav-secondary'

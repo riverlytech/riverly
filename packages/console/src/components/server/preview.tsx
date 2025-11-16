@@ -1,8 +1,10 @@
-import { CheckCircle, Rocket } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
+import { CheckCircle, Rocket } from 'lucide-react'
+
 import type { UserServerView } from '@riverly/riverly'
-import { Card, CardContent, CardFooter } from '@/components/ui/card'
+
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardFooter } from '@/components/ui/card'
 
 export function UserServerCard({
   username,

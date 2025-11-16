@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+
 import { GitHubLoginButton } from '@/components/auth/github-login-button'
 
 export const Route = createFileRoute('/login/$')({

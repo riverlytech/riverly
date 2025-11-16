@@ -1,4 +1,5 @@
 import useSWR from 'swr'
+
 import type { GitHubRepo } from '@riverly/ty'
 
 const fetcher = (

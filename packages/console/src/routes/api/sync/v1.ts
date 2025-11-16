@@ -1,9 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { env } from '@riverly/config'
 import axios from 'axios'
-import type { BetterAuthSession } from '@/lib/auth-types'
-import { auth } from '@/lib/auth'
+
+import { env } from '@riverly/config'
 import { Database } from '@riverly/db'
+
+import { auth } from '@/lib/auth'
+import type { BetterAuthSession } from '@/lib/auth-types'
+
 
 export const Route = createFileRoute('/api/sync/v1')({
   server: {

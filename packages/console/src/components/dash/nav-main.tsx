@@ -1,5 +1,19 @@
 import { Link } from '@tanstack/react-router'
 import {
+  House,
+  Server,
+  Plus,
+  CloudUpload,
+  Webhook,
+  Lock,
+  Globe,
+  FlaskConical,
+  Rocket,
+  ChevronRight,
+} from 'lucide-react'
+
+import { GitHubIcon } from '@/components/icons/icons'
+import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
@@ -15,19 +29,6 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar'
-import {
-  House,
-  Server,
-  Plus,
-  CloudUpload,
-  Webhook,
-  Lock,
-  Globe,
-  FlaskConical,
-  Rocket,
-  ChevronRight,
-} from 'lucide-react'
-import { GitHubIcon } from '@/components/icons/icons'
 
 export function NavMain({
   username,

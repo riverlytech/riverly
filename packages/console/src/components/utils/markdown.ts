@@ -1,9 +1,9 @@
-import remarkGfm from 'remark-gfm'
 import rehypePrettyCode from 'rehype-pretty-code'
-import { unified } from 'unified'
+import rehypeStringify from 'rehype-stringify'
+import remarkGfm from 'remark-gfm'
 import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
-import rehypeStringify from 'rehype-stringify'
+import { unified } from 'unified'
 import { visit } from 'unist-util-visit'
 
 const preprocessor = () => (tree: any) => {

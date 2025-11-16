@@ -1,4 +1,8 @@
+import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { GitBranch, AlertCircle } from 'lucide-react'
+
+import { ServerNotFound } from '@/components/commons/notfound'
+import { GitHubDeployFormComponent } from '@/components/deployment/github-deploy-form'
 import { GitHubIcon } from '@/components/icons/icons'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -11,10 +15,7 @@ import {
 } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { ServerNotFound } from '@/components/commons/notfound'
 import { getServerDetailFromNameFn, githubInstalledRepoDetailFn } from '@/funcs'
-import { GitHubDeployFormComponent } from '@/components/deployment/github-deploy-form'
 
 export const Route = createFileRoute(
   '/_auth/$username/_dash/servers/$owner/$name/deploy',
