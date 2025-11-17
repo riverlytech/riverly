@@ -1,16 +1,21 @@
 // @ts-check
 
 import js from "@eslint/js";
+import importPlugin from "eslint-plugin-import-x";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
-export default tseslint.config(
+export default [
   {
     ignores: ["dist/**", "node_modules/**"],
   },
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
   {
     files: ["src/**/*.{ts,tsx}"],
-    extends: [js.configs.recommended, ...tseslint.configs.recommended],
+    plugins: {
+      import: importPlugin,
+    },
     languageOptions: {
       parserOptions: {
         ecmaVersion: "latest",
@@ -21,6 +26,11 @@ export default tseslint.config(
         Bun: true,
       },
     },
+    settings: {
+      "import/resolver": {
+        typescript: true,
+      },
+    },
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unused-vars": [
@@ -29,6 +39,38 @@ export default tseslint.config(
       ],
       "no-console": "off",
       "no-empty": "off",
+      "import/order": [
+        "error",
+        {
+          groups: [
+            "builtin",
+            "external",
+            "internal",
+            ["parent", "sibling", "index"],
+            "object",
+            "type",
+          ],
+          pathGroups: [
+            {
+              pattern: "@riverly/**",
+              group: "internal",
+              position: "after",
+            },
+            {
+              pattern: "@/**",
+              group: "internal",
+              position: "after",
+            },
+          ],
+          pathGroupsExcludedImportTypes: ["builtin"],
+          "newlines-between": "always",
+          alphabetize: {
+            order: "asc",
+            caseInsensitive: true,
+          },
+        },
+      ],
+      "sort-imports": "off",
     },
   },
-);
+];

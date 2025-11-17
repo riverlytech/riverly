@@ -7,15 +7,15 @@
 CONSOLE_APP_NAME ?= riverly-console
 CONSOLE_TAG ?= latest
 CONSOLE_PORT ?= 3000
-CONSOLE_DOCKERFILE ?= apps/console/Dockerfile
-CONSOLE_ENV_FILE ?= apps/console/.env
+CONSOLE_DOCKERFILE ?= packages/console/Dockerfile
+CONSOLE_ENV_FILE ?= packages/console/.env
 
 # API App Variables
 API_APP_NAME ?= riverly-api
 API_TAG ?= latest
 API_PORT ?= 5000
-API_DOCKERFILE ?= apps/api/Dockerfile
-API_ENV_FILE ?= apps/api/.env
+API_DOCKERFILE ?= packages/api/Dockerfile
+API_ENV_FILE ?= packages/api/.env
 
 # --- Docker Targets for Console App ---
 

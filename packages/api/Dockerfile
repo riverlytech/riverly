@@ -3,68 +3,70 @@
 FROM oven/bun:1.3 AS base
 WORKDIR /usr/src/app
 
-# Install dependencies into temp directory
-# This will cache them and speed up future builds
+# Install dependencies(all) into temp directory
+# This includes dependencies and dev-dependencies
+# We only copy package.json required for pulling dependencies
 FROM base AS install
 WORKDIR /temp/dev
+# root
 COPY package.json bun.lock ./
-# Copy all workspace package.json files (required for lockfile validation)
-COPY apps/console/package.json apps/console/package.json
-COPY apps/api/package.json apps/api/package.json
-COPY apps/docs/package.json apps/docs/package.json
-COPY apps/worker/package.json apps/worker/package.json
-COPY packages/app/package.json packages/app/package.json
+# applications
+COPY packages/console/package.json packages/console/package.json
+COPY packages/api/package.json packages/api/package.json
+COPY packages/worker/package.json packages/worker/package.json
+# modules 
+COPY packages/riverly/package.json packages/riverly/package.json
+COPY packages/db/package.json packages/db/package.json
 COPY packages/utils/package.json packages/utils/package.json
+COPY packages/config/package.json packages/config/package.json
+COPY packages/ty/package.json packages/ty/package.json
 RUN bun install --frozen-lockfile
 
-# Build stage - copy source code and build the application
-FROM base AS prerelease
+# Build the application with installed dependencies
+# This also copies the sources required for build and dependencies from previous step
+FROM base AS build
 ENV NODE_ENV=production
-
-# Copy root dependencies
 COPY --from=install /temp/dev/node_modules ./node_modules
+# root
 COPY package.json bun.lock ./
-
-# Copy workspace packages source code (required for Bun workspaces)
-COPY packages/app ./packages/app
+# modules
+COPY packages/riverly ./packages/riverly
+COPY packages/db ./packages/db
 COPY packages/utils ./packages/utils
-
-# Copy api app
-COPY apps/api ./apps/api
-
-# Build the application
-WORKDIR /usr/src/app/apps/api
+COPY packages/config ./packages/config
+COPY packages/ty ./packages/ty
+# application
+COPY packages/api ./packages/api
+# build application
+# This generates build artifact
+WORKDIR /usr/src/app/packages/api
 RUN bun run build
 
-# Production stage - minimal runtime image
+# This installs production dependencies
+# Production dependencies are later copied for production
 FROM base AS release
 ENV NODE_ENV=production
-
-# Copy root package files
+# root
 COPY package.json bun.lock ./
-
-# Copy all workspace package.json files (required for lockfile validation)
-COPY apps/console/package.json apps/console/package.json
-COPY apps/api/package.json apps/api/package.json
-COPY apps/docs/package.json apps/docs/package.json
-COPY apps/worker/package.json apps/worker/package.json
-COPY packages/app/package.json packages/app/package.json
+# applications
+COPY packages/console/package.json packages/console/package.json
+COPY packages/api/package.json packages/api/package.json
+COPY packages/worker/package.json packages/worker/package.json
+# modules 
+COPY packages/riverly/package.json packages/riverly/package.json
+COPY packages/db/package.json packages/db/package.json
 COPY packages/utils/package.json packages/utils/package.json
-
-# Install production dependencies first (before copying source code)
+COPY packages/config/package.json packages/config/package.json
+COPY packages/ty/package.json packages/ty/package.json
 RUN bun install --frozen-lockfile --production
 
-# Copy workspace packages source code (needed for runtime)
-COPY packages/app/src packages/app/src
-COPY packages/app/drizzle.config.ts packages/app/drizzle.config.ts
-COPY packages/app/migrations packages/app/migrations
-COPY packages/utils/src packages/utils/src
+FROM base AS production
+ENV NODE_ENV=production
+COPY --from=release /usr/src/app/node_modules ./node_modules
+COPY --from=release /usr/src/app/packages/api/package.json packages/api/package.json
+COPY --from=build /usr/src/app/packages/api/dist packages/api/dist
 
-# Copy api app production artifacts
-COPY --from=prerelease /usr/src/app/apps/api/dist apps/api/dist
-COPY apps/api/package.json apps/api/package.json
-
-WORKDIR /usr/src/app/apps/api
+WORKDIR /usr/src/app/packages/api
 USER bun
 EXPOSE 5000/tcp
 ENTRYPOINT [ "bun", "run", "start" ]

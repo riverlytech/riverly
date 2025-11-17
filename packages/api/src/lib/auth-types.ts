@@ -5,8 +5,9 @@
  *  - Your custom `additionalFields` from auth config
  */
 
-import type { authConfig } from "./auth";
 import { auth } from "./auth";
+
+import type { authConfig } from "./auth";
 
 type JWTClaims = {
   iat: number; // Issued At

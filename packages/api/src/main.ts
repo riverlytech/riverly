@@ -1,13 +1,15 @@
 import "dotenv/config";
 import { Hono } from "hono";
 import { bearerAuth } from "hono/bearer-auth";
+
+import type { SessionUser } from "@riverly/ty";
+
 import { verifyBetterAuthToken } from "./middlewares/middlewares";
 import authRoutes from "./routes/auth";
+import deploymentRoutes from "./routes/deployments";
 import serverRoutes from "./routes/servers";
 import userRoutes from "./routes/users";
-import deploymentRoutes from "./routes/deployments";
 import v1internalRoutes from "./routes/v1internal";
-import type { SessionUser } from "@riverly/ty";
 
 declare module "hono" {
   interface ContextVariableMap {

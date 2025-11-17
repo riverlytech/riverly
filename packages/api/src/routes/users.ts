@@ -1,6 +1,8 @@
 import { Hono } from "hono";
-import { ErrorCodeEnum } from "./errors";
+
 import { User } from "@riverly/riverly";
+
+import { ErrorCodeEnum } from "./errors";
 
 const app = new Hono();
 
@@ -15,7 +17,7 @@ app.get("/:username", async (c) => {
           message: "User not found or does not exist",
         },
       },
-      404
+      404,
     );
   }
   const { userId, name, createdAt, updatedAt, image } = publicUser;

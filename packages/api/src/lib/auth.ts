@@ -1,6 +1,8 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { jwt } from "better-auth/plugins";
+
+import { env } from "@riverly/config";
 import { Database } from "@riverly/db";
 import {
   users,
@@ -10,7 +12,6 @@ import {
   jwks,
   UserType,
 } from "@riverly/db";
-import { env } from "@riverly/config";
 
 export const authConfig = {
   emailAndPassword: {

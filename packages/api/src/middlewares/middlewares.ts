@@ -1,8 +1,10 @@
-import type { Context } from "hono";
 import { jwtVerify, createRemoteJWKSet } from "jose";
+
 import { env } from "@riverly/config";
-import type { JWTVerifiedUser } from "../lib/auth-types";
 import { defaultAvatarUrl } from "@riverly/riverly";
+
+import type { JWTVerifiedUser } from "../lib/auth-types";
+import type { Context } from "hono";
 
 export async function verifyBetterAuthToken(token: string, c: Context) {
   try {

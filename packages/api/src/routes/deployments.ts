@@ -2,16 +2,18 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { bearerAuth } from "hono/bearer-auth";
 import z from "zod/v4";
-import { verifyBetterAuthToken } from "../middlewares/middlewares";
-import { ErrorCodeEnum } from "./errors";
-import { EnvsSchema, type Nothing, ServerConfigSchema } from "@riverly/ty";
-import { DeploymentTarget, TriggerTypeValue } from "@riverly/ty";
+
+import { env } from "@riverly/config";
+import type { MCPServerConfigTable } from "@riverly/db";
 import { parseAbsName, parseRepoUrl } from "@riverly/riverly";
 import { GitHub, Server, ServerDeployment } from "@riverly/riverly";
+import { EnvsSchema, type Nothing, ServerConfigSchema } from "@riverly/ty";
+import { DeploymentTarget, TriggerTypeValue } from "@riverly/ty";
 import { DeployWithGitHubRequest } from "@riverly/ty";
 import { toAsyncErrorValue } from "@riverly/utils";
-import type { MCPServerConfigTable } from "@riverly/db";
-import { env } from "@riverly/config";
+
+import { ErrorCodeEnum } from "./errors";
+import { verifyBetterAuthToken } from "../middlewares/middlewares";
 
 const app = new Hono();
 
