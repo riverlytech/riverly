@@ -41,6 +41,8 @@ export type UserTable = typeof users.$inferSelect;
 export const SelectUser = createSelectSchema(users);
 export const UpdateUser = createUpdateSchema(users);
 
+export type SelectUser = z.infer<typeof SelectUser>
+
 export const sessions = pgTable("session", {
   id: text("id").primaryKey(),
   expiresAt: timestamp("expires_at").notNull(),

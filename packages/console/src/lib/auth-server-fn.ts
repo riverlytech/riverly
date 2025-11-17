@@ -6,7 +6,7 @@ import { Database } from '@riverly/db'
 import { toSession } from '@riverly/riverly'
 
 import { auth } from '@/lib/auth'
-import { authClient, toSession as toSessionClient  } from '@/lib/auth-client'
+import { authClient, toSession as toSessionClient } from '@/lib/auth-client'
 import { authMiddleware } from '@/lib/auth-middleware'
 import type { BetterAuthSession } from '@/lib/auth-types'
 import type { RouterContext } from '@/routes/__root'
