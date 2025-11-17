@@ -1,12 +1,12 @@
 import { Storage } from "@google-cloud/storage";
 import { zValidator } from "@hono/zod-validator";
-import { ServerModeEnum } from "@riverly/app/ty";
+import { ServerModeEnum } from "@riverly/ty";
 import { Hono } from "hono";
 import { bearerAuth } from "hono/bearer-auth";
 import { z } from "zod";
 import { verifyBetterAuthToken } from "../middlewares/middlewares";
 import { ErrorCode } from "./errors";
-import { Server } from "@riverly/app";
+import { Server } from "@riverly/riverly";
 
 const app = new Hono();
 

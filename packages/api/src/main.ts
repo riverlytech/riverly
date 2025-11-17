@@ -7,7 +7,7 @@ import serverRoutes from "./routes/servers";
 import userRoutes from "./routes/users";
 import deploymentRoutes from "./routes/deployments";
 import v1internalRoutes from "./routes/v1internal";
-import type { SessionUser } from "@riverly/app/ty";
+import type { SessionUser } from "@riverly/ty";
 
 declare module "hono" {
   interface ContextVariableMap {

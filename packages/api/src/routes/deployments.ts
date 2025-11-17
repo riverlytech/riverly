@@ -4,14 +4,14 @@ import { bearerAuth } from "hono/bearer-auth";
 import z from "zod/v4";
 import { verifyBetterAuthToken } from "../middlewares/middlewares";
 import { ErrorCodeEnum } from "./errors";
-import { EnvsSchema, type Nothing, ServerConfigSchema } from "@riverly/app/ty";
-import { DeploymentTarget, TriggerTypeValue } from "@riverly/app/ty";
-import { parseAbsName, parseRepoUrl } from "@riverly/app";
-import { GitHub, Server, ServerDeployment } from "@riverly/app";
-import { DeployWithGitHubRequest } from "@riverly/app/ty";
+import { EnvsSchema, type Nothing, ServerConfigSchema } from "@riverly/ty";
+import { DeploymentTarget, TriggerTypeValue } from "@riverly/ty";
+import { parseAbsName, parseRepoUrl } from "@riverly/riverly";
+import { GitHub, Server, ServerDeployment } from "@riverly/riverly";
+import { DeployWithGitHubRequest } from "@riverly/ty";
 import { toAsyncErrorValue } from "@riverly/utils";
-import type { MCPServerConfigTable } from "@riverly/app/db/schema";
-import { env } from "@riverly/app/env";
+import type { MCPServerConfigTable } from "@riverly/db";
+import { env } from "@riverly/config";
 
 const app = new Hono();
 

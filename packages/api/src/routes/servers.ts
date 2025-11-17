@@ -1,12 +1,12 @@
 import { zValidator } from "@hono/zod-validator";
-import { AddServer } from "@riverly/app/db/schema";
+import { AddServer } from "@riverly/db";
 import { Hono } from "hono";
 import { bearerAuth } from "hono/bearer-auth";
 import { verifyBetterAuthToken } from "../middlewares/middlewares";
 import { ErrorCodeEnum } from "./errors";
-import { Server } from "@riverly/app";
+import { Server } from "@riverly/riverly";
 import { z } from "zod";
-import { env } from "@riverly/app/env";
+import { env } from "@riverly/config";
 
 const app = new Hono();
 
