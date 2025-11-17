@@ -23,7 +23,7 @@
     "drizzle-orm": "catalog:",
     "drizzle-zod": "catalog:",
     "pg": "catalog:",
-    "google-gax": "^5.0.4",
+    "google-gax": "^5.0.6",
     "jose": "catalog:",
     "octokit": "catalog:",
     "tsx": "^4.20.6",
