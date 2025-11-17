@@ -5,9 +5,9 @@
  *  - Your custom `additionalFields` from auth config
  */
 
-import { auth } from "./auth";
+import { authConfig } from "@riverly/riverly/auth";
 
-import type { authConfig } from "./auth";
+import { auth } from "./auth";
 
 type JWTClaims = {
   iat: number; // Issued At
@@ -67,13 +67,15 @@ type MapFields<T extends Record<string, FieldConfig>> = {
 /**
  * Your custom user type derived from `additionalFields`.
  */
-export type AuthUser = MapFields<AdditionalFields>;
+export type AuthUserFieldExtras = MapFields<AdditionalFields>;
 
 /**
  * The built-in Better Auth session type (when a session exists).
  * `getSession()` can return `null`, so we wrap it in `NonNullable` here.
  */
-type BaseSession = NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>;
+type BaseSession = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof auth>["api"]["getSession"]>>
+>;
 
 // type JWTVerified = NonNullable<Awaited<ReturnType<typeof jwtVerify>>>;
 
@@ -83,14 +85,18 @@ type BaseSession = NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>;
  *  - Built-in: id, name, email, image, etc.
  *  - Custom: username, githubId, isStaff, isBlocked
  */
-export type JWTVerifiedUser = BaseSession["user"] & AuthUser & JWTClaims;
+export type JWTVerifiedUser = BaseSession["user"] &
+  AuthUserFieldExtras &
+  JWTClaims;
 
 /**
  * Final session type that you can use for:
  * ```ts
- * const session = (await auth.api.getSession(...)) as CustomBetterAuthSession | null;
+ * const session = (await Database.use((db) =>
+ *   auth(db, env).api.getSession(...)
+ * )) as CustomBetterAuthSession | null;
  * ```
  */
-// export type CustomBetterAuthSession = Omit<BaseSession, 'user'> & {
-//   user: CustomUser;
-// };
+export type BetterAuthSession = Omit<BaseSession, "user"> & {
+  user: JWTVerifiedUser;
+};

@@ -14,7 +14,6 @@ export namespace Workspace {
           username: users.username,
           image: users.image,
           name: users.name,
-          type: users.type,
           createdAt: users.createdAt,
           updatedAt: users.updatedAt,
         })
@@ -39,7 +38,6 @@ export namespace Workspace {
             username: users.username,
             image: users.image,
             name: users.name,
-            type: users.type,
             createdAt: users.createdAt,
             updatedAt: users.updatedAt,
           })

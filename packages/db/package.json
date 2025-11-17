@@ -22,6 +22,7 @@
     "pg": "catalog:",
     "ulid": "catalog:",
     "zod": "catalog:",
+    "better-auth": "catalog:",
     "@riverly/config": "workspace:",
     "@riverly/ty": "workspace:",
     "@riverly/utils": "workspace:"

@@ -1,9 +1,13 @@
-import {env} from "@riverly/config";
-import type {ExtractTablesWithRelations} from "drizzle-orm";
-import {drizzle} from "drizzle-orm/node-postgres";
-import {type PgQueryResultHKT, type PgTransaction, type PgTransactionConfig,} from "drizzle-orm/pg-core";
-import {AsyncLocalStorage} from "node:async_hooks";
-import {Pool} from "pg";
+import { env } from "@riverly/config";
+import type { ExtractTablesWithRelations } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/node-postgres";
+import {
+  type PgQueryResultHKT,
+  type PgTransaction,
+  type PgTransactionConfig,
+} from "drizzle-orm/pg-core";
+import { AsyncLocalStorage } from "node:async_hooks";
+import { Pool } from "pg";
 
 /* -----------------------------------------------------
  * Utility: Lazy memoization with optional async cleanup
@@ -107,7 +111,7 @@ export namespace Database {
         console.error("[DB] Unexpected pool error:", err);
       });
 
-      return drizzle({client: pool, casing: "snake_case"});
+      return drizzle({ client: pool, casing: "snake_case" });
     },
     async (db) => {
       // graceful cleanup handler

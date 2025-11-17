@@ -1,41 +1,23 @@
-import {
-  boolean,
-  pgTable,
-  text,
-  timestamp,
-  varchar,
-} from "drizzle-orm/pg-core";
-import { createSchemaFactory } from "drizzle-zod";
-import z from "zod/v4";
+import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
 
-const { createSelectSchema, createUpdateSchema } = createSchemaFactory({
-  zodInstance: z,
-});
-
-export const users = pgTable("user", {
-  id: varchar("user_id", { length: 255 }).primaryKey().notNull(),
-  name: varchar("name", { length: 255 }).notNull(),
-  email: varchar("email", { length: 255 }).notNull().unique(),
-  emailVerified: boolean("email_verified")
-    .$defaultFn(() => false)
-    .notNull(),
-  image: varchar("image", { length: 511 }),
-  username: varchar("username", { length: 255 }).notNull().unique(),
-  githubId: varchar("github_id", { length: 64 }).notNull().unique(),
-  isStaff: boolean("is_staff").default(false).notNull(),
-  isBlocked: boolean("is_blocked").default(false).notNull(),
+export const user = pgTable("user", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  emailVerified: boolean("email_verified").default(false).notNull(),
+  image: text("image"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+  username: text("username"),
+  githubId: text("github_id"),
+  isStaff: boolean("is_staff").default(false),
+  isBlocked: boolean("is_blocked").default(false),
 });
 
-export type UserTable = typeof users.$inferSelect;
-
-export const SelectUser = createSelectSchema(users);
-export const UpdateUser = createUpdateSchema(users);
-
-export type SelectUser = z.infer<typeof SelectUser>;
-
-export const sessions = pgTable("session", {
+export const session = pgTable("session", {
   id: text("id").primaryKey(),
   expiresAt: timestamp("expires_at").notNull(),
   token: text("token").notNull().unique(),
@@ -45,19 +27,19 @@ export const sessions = pgTable("session", {
     .notNull(),
   ipAddress: text("ip_address"),
   userAgent: text("user_agent"),
-  userId: varchar("user_id", { length: 255 })
+  userId: text("user_id")
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => user.id, { onDelete: "cascade" }),
   activeOrganizationId: text("active_organization_id"),
 });
 
-export const accounts = pgTable("account", {
+export const account = pgTable("account", {
   id: text("id").primaryKey(),
   accountId: text("account_id").notNull(),
   providerId: text("provider_id").notNull(),
-  userId: varchar("user_id", { length: 255 })
+  userId: text("user_id")
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => user.id, { onDelete: "cascade" }),
   accessToken: text("access_token"),
   refreshToken: text("refresh_token"),
   idToken: text("id_token"),
@@ -71,7 +53,7 @@ export const accounts = pgTable("account", {
     .notNull(),
 });
 
-export const verifications = pgTable("verification", {
+export const verification = pgTable("verification", {
   id: text("id").primaryKey(),
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
@@ -83,45 +65,44 @@ export const verifications = pgTable("verification", {
     .notNull(),
 });
 
-export const jwks = pgTable("jwk", {
+export const jwks = pgTable("jwks", {
   id: text("id").primaryKey(),
   publicKey: text("public_key").notNull(),
   privateKey: text("private_key").notNull(),
   createdAt: timestamp("created_at").notNull(),
 });
 
-export const organizations = pgTable("organization", {
+export const organization = pgTable("organization", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   slug: text("slug").notNull().unique(),
   logo: text("logo"),
   createdAt: timestamp("created_at").notNull(),
   metadata: text("metadata"),
-  default: boolean("default").default(false).notNull(),
 });
 
-export const members = pgTable("member", {
+export const member = pgTable("member", {
   id: text("id").primaryKey(),
   organizationId: text("organization_id")
     .notNull()
-    .references(() => organizations.id, { onDelete: "cascade" }),
-  userId: varchar("user_id", { length: 255 })
+    .references(() => organization.id, { onDelete: "cascade" }),
+  userId: text("user_id")
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => user.id, { onDelete: "cascade" }),
   role: text("role").default("member").notNull(),
   createdAt: timestamp("created_at").notNull(),
 });
 
-export const invitations = pgTable("invitation", {
+export const invitation = pgTable("invitation", {
   id: text("id").primaryKey(),
   organizationId: text("organization_id")
     .notNull()
-    .references(() => organizations.id, { onDelete: "cascade" }),
+    .references(() => organization.id, { onDelete: "cascade" }),
   email: text("email").notNull(),
   role: text("role"),
   status: text("status").default("pending").notNull(),
   expiresAt: timestamp("expires_at").notNull(),
   inviterId: text("inviter_id")
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => user.id, { onDelete: "cascade" }),
 });

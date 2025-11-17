@@ -40,7 +40,7 @@
     "@riverly/utils": "workspace:*",
     "@riverly/db": "workspace:*",
     "@riverly/riverly": "workspace:*",
-    "@t3-oss/env-core": "^0.13.8",
+    "@t3-oss/env-core": "catalog:",
     "@tailwindcss/postcss": "^4.1.17",
     "@tailwindcss/vite": "^4.1.17",
     "@tanstack/react-devtools": "^0.8.1",
@@ -52,12 +52,12 @@
     "@tanstack/react-start": "^1.136.8",
     "@tanstack/router-plugin": "^1.136.8",
     "@uidotdev/usehooks": "^2.4.1",
-    "axios": "^1.13.2",
-    "better-auth": "^1.3.34",
+    "axios": "catalog:",
+    "better-auth": "catalog:",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
-    "date-fns": "^4.1.0",
+    "date-fns": "catalog:",
     "lucide-react": "^0.554.0",
     "motion": "^12.23.24",
     "postcss": "^8.5.6",
@@ -80,7 +80,7 @@
     "unist-util-visit": "^5.0.0",
     "vaul": "^1.1.2",
     "vite-tsconfig-paths": "^5.1.4",
-    "zod": "^4.1.12"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",
@@ -99,7 +99,6 @@
     "typescript": "^5.9.3",
     "vite": "^7.2.2",
     "vitest": "^4.0.9",
-    "web-vitals": "^5.1.0",
-    "wrangler": "^4.47.0"
+    "web-vitals": "^5.1.0"
   }
 }

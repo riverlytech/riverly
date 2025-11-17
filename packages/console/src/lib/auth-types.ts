@@ -5,7 +5,9 @@
  *  - Your custom `additionalFields` from auth config
  */
 
-import type { auth, authConfig } from './auth'
+import { authConfig } from '@riverly/riverly/auth'
+
+import { auth } from './auth'
 
 /**
  * Extracts the `additionalFields` object from your Better Auth config.

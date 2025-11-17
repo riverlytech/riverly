@@ -7,6 +7,7 @@
   },
   "exports": {
     ".": "./src/index.ts",
+    "./auth": "./src/lib/auth.ts",
     "./infra": "./src/infra/index.ts",
     "./infra/providers/gcp": "./src/infra/providers/gcp/index.ts"
   },
