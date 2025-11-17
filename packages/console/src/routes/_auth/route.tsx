@@ -11,7 +11,9 @@ export const Route = createFileRoute('/_auth')({
       context.queryClient,
     )) as SessionUser | null
     if (!sessionUser) {
-      throw redirect({ to: '/login/$' })
+      console.log(sessionUser)
+      console.log('********* WHY IS THIS HAPPENING ***********')
+      throw redirect({ to: '/login' })
     }
     return {
       sessionUser,
