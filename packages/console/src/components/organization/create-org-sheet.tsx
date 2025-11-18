@@ -1,4 +1,7 @@
+import { useCallback, useEffect, useRef, useState } from 'react'
+
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useDebounce } from '@uidotdev/usehooks'
 import { useForm } from 'react-hook-form'
 import z from 'zod/v4'
 
@@ -23,22 +26,14 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { authClient } from '@/lib/auth-client'
+import { CreateOrgForm } from '@/validations'
+import { createNewOrg } from '@/funcs/org'
 
-const CreateOrgFormSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
-  slug: z
-    .string()
-    .min(3, { message: 'Slug must be at least 3 characters.' })
-    .regex(/^[a-z0-9-]+$/, {
-      message: 'Use lowercase letters, numbers, and dashes only.',
-    }),
-})
-
-type CreateOrgFormValues = z.infer<typeof CreateOrgFormSchema>
+type CreateOrgFormValues = z.infer<typeof CreateOrgForm>
 
 export function CreateOrgSheetForm() {
   const form = useForm<CreateOrgFormValues>({
-    resolver: zodResolver(CreateOrgFormSchema),
+    resolver: zodResolver(CreateOrgForm),
     defaultValues: {
       name: '',
       slug: '',
@@ -46,8 +41,90 @@ export function CreateOrgSheetForm() {
     mode: 'onTouched',
   })
 
-  function onSubmit(values: CreateOrgFormValues) {
+  const [isCheckingSlug, setIsCheckingSlug] = useState(false)
+  const slugCheckIdRef = useRef(0)
+  const slugValue = form.watch('slug')
+  const debouncedSlug = useDebounce(slugValue, 500)
+
+  const checkSlugAvailability = useCallback(
+    async (slug: string) => {
+      const isValidSlug = CreateOrgForm.shape.slug.safeParse(slug)
+      if (!isValidSlug.success) {
+        return null
+      }
+      const checkId = ++slugCheckIdRef.current
+      setIsCheckingSlug(true)
+      try {
+        const { error } = await authClient.organization.checkSlug({ slug })
+        if (
+          slugCheckIdRef.current !== checkId ||
+          form.getValues('slug') !== slug
+        ) {
+          return null
+        }
+        if (error) {
+          form.setError('slug', {
+            type: 'slug-taken',
+            message: error.message ?? 'Slug is already taken.',
+          })
+          return false
+        }
+        form.clearErrors('slug')
+        return true
+      } catch (err) {
+        if (
+          slugCheckIdRef.current !== checkId ||
+          form.getValues('slug') !== slug
+        ) {
+          return null
+        }
+        form.setError('slug', {
+          type: 'slug-check',
+          message:
+            err instanceof Error
+              ? err.message
+              : 'Unable to verify slug availability. Try again.',
+        })
+        return false
+      } finally {
+        if (slugCheckIdRef.current === checkId) {
+          setIsCheckingSlug(false)
+        }
+      }
+    },
+    [form],
+  )
+
+  useEffect(() => {
+    const fieldError = form.getFieldState('slug').error
+    if (
+      fieldError?.type === 'slug-taken' ||
+      fieldError?.type === 'slug-check'
+    ) {
+      form.clearErrors('slug')
+    }
+  }, [slugValue, form])
+
+  useEffect(() => {
+    if (!debouncedSlug) {
+      return
+    }
+    void checkSlugAvailability(debouncedSlug)
+  }, [debouncedSlug, checkSlugAvailability])
+
+  async function onSubmit(values: CreateOrgFormValues) {
+    const slugAvailable = await checkSlugAvailability(values.slug)
+    if (slugAvailable === false) {
+      return
+    }
     console.log(values)
+    const resp = await createNewOrg({
+      data: {
+        name: values.name,
+        slug: values.slug,
+      },
+    })
+    console.log(resp)
   }
 
   return (
@@ -108,7 +185,10 @@ export function CreateOrgSheetForm() {
               />
             </div>
             <SheetFooter>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
+              <Button
+                type="submit"
+                disabled={form.formState.isSubmitting || isCheckingSlug}
+              >
                 Create Org
               </Button>
               <SheetClose asChild>

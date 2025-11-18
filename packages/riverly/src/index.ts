@@ -1,10 +1,10 @@
 export * from "./services/user";
+export * from "./services/organization.ts"
 export * from "./services/server";
 export * from "./services/deployment";
 export * from "./services/github";
 
 export * from "./services/marketplace";
-export * from "./services/workspace";
 
 export * from "./services/helpers";
 

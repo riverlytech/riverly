@@ -22,15 +22,15 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
   )) as BetterAuthSession | null
 
   return next({
-      context: {
-          user: session
-              ? toSession({
-                  ...session.user,
-                  image: session.user.image as string,
-              })
-              : null,
-      },
-  });
+    context: {
+      user: session
+        ? toSession({
+            ...session.user,
+            image: session.user.image as string,
+          })
+        : null,
+    },
+  })
 })
 
 export const jwtToken = createMiddleware().server(async ({ next }) => {
@@ -51,8 +51,8 @@ export const jwtToken = createMiddleware().server(async ({ next }) => {
   }
 
   return next({
-      context: {
-          token,
-      },
-  });
+    context: {
+      token,
+    },
+  })
 })

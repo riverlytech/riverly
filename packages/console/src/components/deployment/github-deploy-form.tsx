@@ -29,7 +29,6 @@ import { Switch } from '@/components/ui/switch'
 import { githubDeployServerFn } from '@/funcs/deploy'
 import { GitHubDeployForm } from '@/validations'
 
-
 import type z from 'zod/v4'
 
 type GitHubDeployFormValues = z.infer<typeof GitHubDeployForm>

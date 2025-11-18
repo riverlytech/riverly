@@ -8,7 +8,6 @@ import { env } from '@riverly/config'
 import { authMiddleware, jwtToken } from '@/lib/auth-middleware'
 import { GitHubDeployForm } from '@/validations'
 
-
 export const githubDeployServerFn = createServerFn({ method: 'POST' })
   .inputValidator(GitHubDeployForm)
   .middleware([authMiddleware, jwtToken])

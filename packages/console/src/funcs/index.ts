@@ -17,7 +17,6 @@ import type { DeploymentTargetType, ServerVisibility } from '@riverly/ty'
 import { authMiddleware } from '@/lib/auth-middleware'
 import { GitHubImportForm, NewServerForm, ProfileEditForm } from '@/validations'
 
-
 export const activeServerCountFn = createServerFn({ method: 'GET' })
   .inputValidator((data: { userId: string }) => data)
   .middleware([authMiddleware])

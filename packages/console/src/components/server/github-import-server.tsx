@@ -3,7 +3,6 @@ import { useNavigate } from '@tanstack/react-router'
 import { CircleAlert } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 
-
 import { Workspace } from '@riverly/riverly'
 import { ServerVisibilityEnum } from '@riverly/ty'
 

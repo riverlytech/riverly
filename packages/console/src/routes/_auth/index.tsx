@@ -26,6 +26,7 @@ import {
   NavigationMenuList,
 } from '@/components/ui/navigation-menu'
 import { Textarea } from '@/components/ui/textarea'
+import { LogOutButton } from '@/components/auth/logout-button'
 
 export const Route = createFileRoute('/_auth/')({
   component: App,
@@ -124,7 +125,9 @@ function App() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>{sessionUser.name}</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Log Out</DropdownMenuItem>
+              <DropdownMenuItem>
+                <LogOutButton redirect='/' />
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

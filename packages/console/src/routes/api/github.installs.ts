@@ -7,7 +7,6 @@ import { GitHub } from '@riverly/riverly'
 import { auth } from '@/lib/auth'
 import type { BetterAuthSession } from '@/lib/auth-types'
 
-
 export const Route = createFileRoute('/api/github/installs')({
   server: {
     handlers: {

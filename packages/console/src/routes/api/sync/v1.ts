@@ -7,7 +7,6 @@ import { Database } from '@riverly/db'
 import { auth } from '@/lib/auth'
 import type { BetterAuthSession } from '@/lib/auth-types'
 
-
 export const Route = createFileRoute('/api/sync/v1')({
   server: {
     handlers: {

@@ -1,5 +1,5 @@
-import {ServerDeployment} from "@riverly/riverly";
+import { ServerDeployment } from '@riverly/riverly'
 
 export type UserDeploymentDetail = Awaited<
-    ReturnType<typeof ServerDeployment.userDeployment>
->;
+  ReturnType<typeof ServerDeployment.userDeployment>
+>

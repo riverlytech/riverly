@@ -1,13 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 import { NotFound } from '@/components/commons/notfound'
-import { $getWorkspace } from '@/lib/auth-workspace-fn'
 
 export const Route = createFileRoute('/_auth/$username')({
-  beforeLoad: async ({ context, params }) => {
-    const workspace = await $getWorkspace(context.queryClient, {
-      slug: params.username,
-    })
+  beforeLoad: ({ context, params }) => {
+    console.log(context, params)
+    const workspace = null
     // There is hydration mismatch on throwing notFound() manually
     // this is a workaround by throwing an error.
     if (!workspace) throw new Error('Not Found')

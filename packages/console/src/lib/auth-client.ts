@@ -1,9 +1,11 @@
+import { organizationClient } from 'better-auth/client/plugins'
 import { createAuthClient } from 'better-auth/react'
 
 import { type SelectUser } from '@riverly/db'
 
 export const authClient = createAuthClient({
   baseURL: import.meta.env.VITE_BASE_URL,
+  plugins: [organizationClient()],
 })
 
 export const toSession = (user: SelectUser) => {

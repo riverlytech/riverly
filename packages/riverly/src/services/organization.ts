@@ -1,0 +1,77 @@
+import { Database } from "@riverly/db";
+import { eq } from "drizzle-orm";
+import { organizations, members, InsertOrganization, UpdateMember } from "@riverly/db";
+import { fn, NamedError } from "@riverly/utils";
+import z from "zod/v4";
+
+
+export const CreateOrgError = NamedError.create(
+  "CreateOrgError",
+  z.object({
+    message: z.string(),
+  })
+);
+
+
+export const CreateOrgMembershipError = NamedError.create(
+  "CreateOrgMembershipError",
+  z.object({
+    message: z.string(),
+  })
+);
+
+export namespace Organization {
+  export const fromID = fn(z.string(), async (id) =>
+    Database.transaction(async (tx) => {
+      return tx
+        .select()
+        .from(organizations)
+        .where(eq(organizations.id, id))
+        .execute()
+        .then((rows) => rows[0]);
+    })
+  );
+
+  export const insert = fn(
+    InsertOrganization,
+    async (values) =>
+      Database.transaction(async (tx) => {
+        return tx
+          .insert(organizations)
+          .values({ ...values })
+          .execute();
+      })
+  );
+
+  export const createOrgWithOwnership = fn(
+    z.object({ org: InsertOrganization, userId: z.string() }),
+    async (values) =>
+      Database.transaction(async (tx) => {
+        const { org, userId } = values;
+        const [createdOrg] = await tx
+          .insert(organizations)
+          .values({ ...org })
+          .returning()
+
+        if (!createdOrg) throw new CreateOrgError({ message: "Failed to create org" })
+
+        const newMembership = {
+          userId,
+          organizationId: createdOrg.id,
+          role: 'owner', // TODO: add enum
+        }
+
+        const [membership] = await tx
+          .insert(members)
+          .values({ ...newMembership })
+          .returning()
+
+        if (!membership) throw new CreateOrgMembershipError({ message: "Failed to create org membership" })
+
+        return {
+          organizationId: createdOrg.id,
+          memberId: membership.id,
+        }
+      })
+  );
+}

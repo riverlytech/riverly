@@ -8,7 +8,9 @@ import {
 import { createSchemaFactory } from "drizzle-zod";
 import z from "zod/v4";
 
-const { createSelectSchema, createUpdateSchema } = createSchemaFactory({
+import { genId } from "@riverly/utils";
+
+const { createSelectSchema, createUpdateSchema, createInsertSchema } = createSchemaFactory({
   zodInstance: z,
 });
 
@@ -28,12 +30,11 @@ export const users = pgTable("user", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export type UserTable = typeof users.$inferSelect;
-
 export const SelectUser = createSelectSchema(users);
 export const UpdateUser = createUpdateSchema(users);
 
 export type SelectUser = z.infer<typeof SelectUser>;
+export type UserTable = typeof users.$inferSelect;
 
 export const sessions = pgTable("session", {
   id: text("id").primaryKey(),
@@ -91,17 +92,27 @@ export const jwks = pgTable("jwk", {
 });
 
 export const organizations = pgTable("organization", {
-  id: text("id").primaryKey(),
+  id: text("id").primaryKey()
+    .$defaultFn(() => genId()),
   name: text("name").notNull(),
   slug: text("slug").notNull().unique(),
   logo: text("logo"),
-  createdAt: timestamp("created_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
   metadata: text("metadata"),
   default: boolean("default").default(false).notNull(),
 });
 
+
+export const SelectOrganization = createSelectSchema(organizations);
+export const UpdateOrganization = createUpdateSchema(organizations);
+export const InsertOrganization = createInsertSchema(organizations)
+
+export type SelectOrganization = z.infer<typeof SelectUser>;
+export type OrganizationTable = typeof organizations.$inferSelect;
+
 export const members = pgTable("member", {
-  id: text("id").primaryKey(),
+  id: text("id").primaryKey()
+    .$defaultFn(() => genId()),
   organizationId: text("organization_id")
     .notNull()
     .references(() => organizations.id, { onDelete: "cascade" }),
@@ -109,8 +120,15 @@ export const members = pgTable("member", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   role: text("role").default("member").notNull(),
-  createdAt: timestamp("created_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const SelectMember = createSelectSchema(members);
+export const UpdateMember = createUpdateSchema(members);
+export const InsertMember = createInsertSchema(members)
+
+export type SelectMember = z.infer<typeof SelectMember>;
+export type MemberTable = typeof organizations.$inferSelect;
 
 export const invitations = pgTable("invitation", {
   id: text("id").primaryKey(),

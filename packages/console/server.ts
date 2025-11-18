@@ -189,7 +189,7 @@ function isFileEligibleForPreloading(relativePath: string): boolean {
   }
 
   // If exclude patterns are specified, file must not match any
-  return !EXCLUDE_PATTERNS.some((pattern) => pattern.test(fileName));
+  return !EXCLUDE_PATTERNS.some((pattern) => pattern.test(fileName))
 }
 
 /**

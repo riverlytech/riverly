@@ -11,12 +11,11 @@ import {
   Hammer,
 } from 'lucide-react'
 
-
 import { HashDisplay } from '@/components/commons/display-hash'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import type { UserDeploymentDetail } from "@/lib/ty"
+import type { UserDeploymentDetail } from '@/lib/ty'
 
 import type { ReactNode } from 'react'
 

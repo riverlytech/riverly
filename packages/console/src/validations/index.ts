@@ -1,10 +1,6 @@
 import z from 'zod/v4'
 
-import {
-  ServerVisibilityEnum,
-  DeploymentTarget,
-  EnvsSchema,
-} from '@riverly/ty'
+import { ServerVisibilityEnum, DeploymentTarget, EnvsSchema } from '@riverly/ty'
 
 export const NewServerForm = z.object({
   name: z
@@ -66,3 +62,16 @@ export const GitHubDeployForm = z.object({
   envs: EnvsSchema,
   target: z.enum([DeploymentTarget.PREVIEW, DeploymentTarget.PRODUCTION]),
 })
+
+
+export const CreateOrgForm = z.object({
+  name: z.string().min(1, { message: 'Name must be at least 1 characters.' }),
+  slug: z
+    .string()
+    .min(3, { message: 'Slug must be at least 3 characters.' })
+    .regex(/^[a-z0-9-]+$/, {
+      message: 'Use lowercase letters, numbers, and dashes only.',
+    }),
+})
+
+
