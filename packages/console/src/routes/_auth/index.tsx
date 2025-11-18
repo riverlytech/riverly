@@ -1,5 +1,6 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 
+import { CreateOrgSheetForm } from '@/components/organization/create-org-sheet'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -135,7 +136,10 @@ function App() {
             <p className="text-sm text-muted-foreground">
               Signed in as {sessionUser.name}
             </p>
-            <h1 className="font-mono text-2xl font-semibold">Select a Org</h1>
+            <div className="flex justify-between items-center">
+              <h1 className="font-mono text-xl font-semibold">Select a Org</h1>
+              <CreateOrgSheetForm />
+            </div>
           </div>
 
           <ul className="space-y-3">
