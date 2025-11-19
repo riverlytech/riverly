@@ -3,9 +3,6 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { jwt, organization } from 'better-auth/plugins'
 import { reactStartCookies } from 'better-auth/react-start'
 
-import { Organization } from "@riverly/riverly"
-import { genId } from '@riverly/utils'
-
 import { type Env } from '@riverly/config'
 import {
   Database,
@@ -18,12 +15,13 @@ import {
   members,
   invitations,
 } from '@riverly/db'
+import { Organization } from '@riverly/riverly'
 import { authConfig } from '@riverly/riverly/auth'
+import { genId } from '@riverly/utils'
 
-export const auth = (
-  db: Database.TxOrDb,
-  env: Env,
-) => {
+import type { AuthenticatedUser } from './auth-types'
+
+export const auth = (db: Database.TxOrDb, env: Env) => {
   return betterAuth({
     appName: 'Riverly',
     ...authConfig,
@@ -61,18 +59,29 @@ export const auth = (
       user: {
         create: {
           after: async (user, _) => {
+            const authUser = user as AuthenticatedUser
+            if (authUser.defaultOrgId) return
             const values = {
               name: `${user.name}`,
               slug: `${user.username}-${genId(4)}`,
             }
-            const org = await Organization.createOrgWithOwnership({ org: values, userId: user.id })
-            console.log(`[Org] created: ${org.organizationId} memberId: ${org.memberId}`)
-          }
-        }
-      }
-    }
+            const org = await Organization.createDefaultOrg({
+              org: values,
+              userId: user.id,
+            })
+            console.log(
+              `[Org] default created: ${org.organizationId} memberId: ${org.memberId}`,
+            )
+          },
+        },
+      },
+      session: {
+        create: {
+          after: async () => { },
+        },
+      },
+    },
   })
 }
 
 export type AuthInstance = ReturnType<typeof auth>
-

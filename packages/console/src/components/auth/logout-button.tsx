@@ -1,8 +1,9 @@
-import { authClient } from '@/lib/auth-client';
 import { useNavigate } from '@tanstack/react-router'
 
-export async function LogOutButton({ redirect }: { redirect: string }) {
-  const navigate = useNavigate();
+import { authClient } from '@/lib/auth-client'
+
+export function LogOutButton({ redirect }: { redirect: string }) {
+  const navigate = useNavigate()
   const signout = async () => {
     return await authClient.signOut({
       fetchOptions: {
@@ -10,11 +11,13 @@ export async function LogOutButton({ redirect }: { redirect: string }) {
           navigate({ to: redirect }).then()
         },
       },
-    });
+    })
   }
   return (
     <div
-      onClick={() => { signout().then() }}
+      onClick={() => {
+        signout().then()
+      }}
     >
       Log Out
     </div>

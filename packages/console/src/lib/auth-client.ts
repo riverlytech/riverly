@@ -22,5 +22,6 @@ export const toSession = (user: SelectUser) => {
     image: avatarUrl,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
+    defaultOrgId: user.defaultOrgId
   }
 }

@@ -1,9 +1,13 @@
 import { Database } from "@riverly/db";
-import { eq } from "drizzle-orm";
-import { organizations, members, InsertOrganization, UpdateMember } from "@riverly/db";
+import { eq, desc } from "drizzle-orm";
+import {
+  organizations,
+  members,
+  InsertOrganization,
+  users,
+} from "@riverly/db";
 import { fn, NamedError } from "@riverly/utils";
 import z from "zod/v4";
-
 
 export const CreateOrgError = NamedError.create(
   "CreateOrgError",
@@ -11,7 +15,6 @@ export const CreateOrgError = NamedError.create(
     message: z.string(),
   })
 );
-
 
 export const CreateOrgMembershipError = NamedError.create(
   "CreateOrgMembershipError",
@@ -32,46 +35,73 @@ export namespace Organization {
     })
   );
 
-  export const insert = fn(
-    InsertOrganization,
-    async (values) =>
-      Database.transaction(async (tx) => {
-        return tx
-          .insert(organizations)
-          .values({ ...values })
-          .execute();
-      })
+  export const insert = fn(InsertOrganization, async (values) =>
+    Database.transaction(async (tx) => {
+      return tx
+        .insert(organizations)
+        .values({ ...values })
+        .execute();
+    })
   );
 
-  export const createOrgWithOwnership = fn(
+  export const createDefaultOrg = fn(
     z.object({ org: InsertOrganization, userId: z.string() }),
     async (values) =>
       Database.transaction(async (tx) => {
         const { org, userId } = values;
-        const [createdOrg] = await tx
+        const createdOrg = await tx
           .insert(organizations)
           .values({ ...org })
           .returning()
+          .execute()
+          .then((row) => row[0]);
 
-        if (!createdOrg) throw new CreateOrgError({ message: "Failed to create org" })
+        if (!createdOrg)
+          throw new CreateOrgError({ message: "Failed to create org" });
 
         const newMembership = {
           userId,
           organizationId: createdOrg.id,
-          role: 'owner', // TODO: add enum
-        }
+          role: "owner", // TODO: add enum
+        };
 
         const [membership] = await tx
           .insert(members)
           .values({ ...newMembership })
-          .returning()
+          .returning();
 
-        if (!membership) throw new CreateOrgMembershipError({ message: "Failed to create org membership" })
+        if (!membership)
+          throw new CreateOrgMembershipError({
+            message: "Failed to create org membership",
+          });
+
+        await tx
+          .update(users)
+          .set({ defaultOrgId: createdOrg.id })
+          .where(eq(users.id, userId)).execute();
 
         return {
           organizationId: createdOrg.id,
           memberId: membership.id,
-        }
+        };
       })
   );
+
+  export const memberOrgs = fn(z.object({ userId: z.string(), limit: z.number().default(100) }), async (filters) => {
+    return await Database.use(async (db) => {
+      const items = await db
+        .select({
+          name: organizations.name,
+          slug: organizations.slug,
+          logo: organizations.logo,
+          role: members.role,
+        })
+        .from(members)
+        .innerJoin(organizations, eq(members.organizationId, organizations.id))
+        .where(eq(members.userId, filters.userId))
+        .orderBy(desc(organizations.createdAt))
+        .limit(filters.limit)
+      return items;
+    });
+  });
 }

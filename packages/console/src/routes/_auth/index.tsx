@@ -1,5 +1,6 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 
+import { LogOutButton } from '@/components/auth/logout-button'
 import { CreateOrgSheetForm } from '@/components/organization/create-org-sheet'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -26,23 +27,22 @@ import {
   NavigationMenuList,
 } from '@/components/ui/navigation-menu'
 import { Textarea } from '@/components/ui/textarea'
-import { LogOutButton } from '@/components/auth/logout-button'
+import { makeDefaultOrgFn, memberOrgsFn } from '@/funcs/org'
 
 export const Route = createFileRoute('/_auth/')({
+  loader: async ({ context: { sessionUser } }) => {
+    await makeDefaultOrgFn()
+    const orgs = await memberOrgsFn({ data: { userId: sessionUser.userId } })
+    return { orgs }
+  },
   component: App,
 })
 
 function App() {
   const { sessionUser } = Route.useRouteContext()
+  const { orgs } = Route.useLoaderData()
   const username = sessionUser.username
   const avatarUrl = sessionUser.image || `https://avatar.vercel.sh/${username}`
-  const orgs = [
-    {
-      username,
-      name: sessionUser.name,
-      avatarUrl,
-    },
-  ]
   return (
     <div className="flex min-h-screen flex-col">
       <header className="flex shrink-0 items-center justify-between gap-3 px-4 pt-2 sm:px-8">
@@ -126,7 +126,7 @@ function App() {
               <DropdownMenuLabel>{sessionUser.name}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
-                <LogOutButton redirect='/' />
+                <LogOutButton redirect="/" />
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -147,15 +147,15 @@ function App() {
 
           <ul className="space-y-3">
             {orgs.map((org) => (
-              <li key={org.username}>
+              <li key={org.slug}>
                 <Link
                   to="/$username"
-                  params={{ username: org.username }}
+                  params={{ username: org.slug }}
                   className="bg-card text-card-foreground hover:border-primary/50 hover:bg-card/80 focus-visible:ring-ring block rounded-xl border p-4 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 >
                   <div className="flex items-center gap-4">
                     <Avatar className="size-12">
-                      <AvatarImage src={org.avatarUrl} alt={org.name} />
+                      <AvatarImage src={org.logo || `https://avatar.vercel.sh/${org.slug}`} alt={org.name} />
                       <AvatarFallback className="text-lg font-medium">
                         {org.name
                           .split(' ')
@@ -168,7 +168,7 @@ function App() {
                     <div className="flex flex-col">
                       <span className="text-lg font-medium">{org.name}</span>
                       <span className="text-muted-foreground">
-                        @{org.username}
+                        @{org.slug}
                       </span>
                     </div>
                   </div>

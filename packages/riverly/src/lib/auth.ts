@@ -53,14 +53,12 @@ export const authConfig = {
         defaultValue: false,
         input: false,
       },
-    },
-  },
-  organization: {
-    default: {
-      type: "boolean",
-      required: false,
-      defaultValue: false,
-      input: false,
+      defaultOrgId: {
+        type: "string",
+        required: false,
+        defaultValue: null,
+        input: false,
+      }
     },
   },
 } as const;

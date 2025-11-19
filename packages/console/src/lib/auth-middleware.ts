@@ -25,9 +25,9 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
     context: {
       user: session
         ? toSession({
-            ...session.user,
-            image: session.user.image as string,
-          })
+          ...session.user,
+          image: session.user.image as string,
+        })
         : null,
     },
   })
@@ -35,7 +35,6 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
 
 export const jwtToken = createMiddleware().server(async ({ next }) => {
   let token: string | null = null
-
   try {
     const response = await fetch('/api/auth/token', {
       headers: getRequest().headers,
@@ -49,7 +48,6 @@ export const jwtToken = createMiddleware().server(async ({ next }) => {
     console.error(error)
     token = null
   }
-
   return next({
     context: {
       token,

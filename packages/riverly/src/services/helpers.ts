@@ -60,5 +60,7 @@ export const toSession = fn(SelectUser, (user) => {
     image: avatarUrl,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
+    defaultOrgId: user.defaultOrgId,
   };
 });
+

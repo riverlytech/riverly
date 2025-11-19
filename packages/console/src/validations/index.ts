@@ -63,7 +63,6 @@ export const GitHubDeployForm = z.object({
   target: z.enum([DeploymentTarget.PREVIEW, DeploymentTarget.PRODUCTION]),
 })
 
-
 export const CreateOrgForm = z.object({
   name: z.string().min(1, { message: 'Name must be at least 1 characters.' }),
   slug: z
@@ -73,5 +72,3 @@ export const CreateOrgForm = z.object({
       message: 'Use lowercase letters, numbers, and dashes only.',
     }),
 })
-
-
