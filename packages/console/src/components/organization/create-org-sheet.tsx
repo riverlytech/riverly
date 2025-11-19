@@ -40,6 +40,7 @@ export function CreateOrgSheetForm() {
     mode: 'onTouched',
   })
 
+  const [open, setOpen] = useState(false)
   const [isCheckingSlug, setIsCheckingSlug] = useState(false)
   const slugCheckIdRef = useRef(0)
   const slugValue = form.watch('slug')
@@ -124,10 +125,12 @@ export function CreateOrgSheetForm() {
       },
     })
     console.log(resp)
+    form.reset()
+    setOpen(false)
   }
 
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="default" className="font-semibold">
           Create Org
