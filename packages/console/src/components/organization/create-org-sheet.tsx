@@ -1,6 +1,8 @@
+import { useCallback, useEffect, useRef, useState } from 'react'
+
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useDebounce } from '@uidotdev/usehooks'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useRouter } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import z from 'zod/v4'
 
@@ -45,6 +47,7 @@ export function CreateOrgSheetForm() {
   const slugCheckIdRef = useRef(0)
   const slugValue = form.watch('slug')
   const debouncedSlug = useDebounce(slugValue, 500)
+  const router = useRouter()
 
   const checkSlugAvailability = useCallback(
     async (slug: string) => {
@@ -117,14 +120,15 @@ export function CreateOrgSheetForm() {
     if (slugAvailable === false) {
       return
     }
-    console.log(values)
-    const resp = await createNewOrg({
+    await createNewOrg({
       data: {
         name: values.name,
         slug: values.slug,
       },
     })
-    console.log(resp)
+    await router.invalidate({
+      filter: (match) => match.fullPath === '/',
+    })
     form.reset()
     setOpen(false)
   }
