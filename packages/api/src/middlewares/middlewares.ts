@@ -1,7 +1,6 @@
 import { jwtVerify, createRemoteJWKSet } from "jose";
 
 import { env } from "@riverly/config";
-import { defaultAvatarUrl } from "@riverly/riverly";
 
 import type { JWTVerifiedUser } from "../lib/auth-types";
 import type { Context } from "hono";
@@ -19,12 +18,10 @@ export async function verifyBetterAuthToken(token: string, c: Context) {
       email: payload.email,
       name: payload.name,
       emailVerified: payload.emailVerified,
-      image: payload.image || defaultAvatarUrl(payload.username),
+      image: payload.image,
       createdAt: payload.createdAt,
       updatedAt: payload.updatedAt,
-      githubId: payload.githubId,
-      isStaff: payload.isStaff,
-      isBlocked: payload.isBlocked,
+      defaultOrgId: payload.defaultOrgId,
     };
     c.set("user", user);
     return true;

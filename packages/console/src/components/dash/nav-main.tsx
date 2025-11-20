@@ -31,10 +31,10 @@ import {
 } from '@/components/ui/sidebar'
 
 export function NavMain({
-  username,
+  slug,
   ...props
 }: {
-  username: string
+  slug: string
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   return (
     <SidebarGroup {...props}>
@@ -47,8 +47,8 @@ export function NavMain({
               activeProps={{
                 className: 'bg-accent',
               }}
-              params={{ username }}
-              to="/$username"
+              params={{ slug }}
+              to="/$slug"
             >
               {({ isActive }: { isActive: boolean }) => (
                 <>
@@ -76,8 +76,8 @@ export function NavMain({
                 activeProps={{
                   className: 'bg-accent',
                 }}
-                params={{ username }}
-                to="/$username/servers"
+                params={{ slug }}
+                to="/$slug/servers"
               >
                 {({ isActive }: { isActive: boolean }) => (
                   <>
@@ -112,8 +112,8 @@ export function NavMain({
                         activeProps={{
                           className: 'bg-accent',
                         }}
-                        params={{ username }}
-                        to="/$username/servers/new"
+                        params={{ slug }}
+                        to="/$slug/servers/new"
                       >
                         {({ isActive }: { isActive: boolean }) => (
                           <>
@@ -140,8 +140,8 @@ export function NavMain({
                         activeProps={{
                           className: 'bg-accent',
                         }}
-                        params={{ username }}
-                        to="/$username/servers/private"
+                        params={{ slug }}
+                        to="/$slug/servers/private"
                       >
                         {({ isActive }: { isActive: boolean }) => (
                           <>
@@ -168,8 +168,8 @@ export function NavMain({
                         activeProps={{
                           className: 'bg-accent',
                         }}
-                        params={{ username }}
-                        to="/$username/servers/public"
+                        params={{ slug }}
+                        to="/$slug/servers/public"
                       >
                         {({ isActive }: { isActive: boolean }) => (
                           <>
@@ -202,8 +202,8 @@ export function NavMain({
                 activeProps={{
                   className: 'bg-accent',
                 }}
-                params={{ username }}
-                to="/$username/deployments"
+                params={{ slug }}
+                to="/$slug/deployments"
               >
                 {({ isActive }: { isActive: boolean }) => (
                   <>
@@ -238,8 +238,8 @@ export function NavMain({
                         activeProps={{
                           className: 'bg-accent',
                         }}
-                        params={{ username }}
-                        to="/$username/deployments/production"
+                        params={{ slug }}
+                        to="/$slug/deployments/production"
                       >
                         {({ isActive }: { isActive: boolean }) => (
                           <>
@@ -270,8 +270,8 @@ export function NavMain({
                         activeProps={{
                           className: 'bg-accent',
                         }}
-                        params={{ username }}
-                        to="/$username/deployments/preview"
+                        params={{ slug }}
+                        to="/$slug/deployments/preview"
                       >
                         {({ isActive }: { isActive: boolean }) => (
                           <>
@@ -304,8 +304,8 @@ export function NavMain({
                 activeProps={{
                   className: 'bg-accent',
                 }}
-                params={{ username }}
-                to="/$username/settings"
+                params={{ slug }}
+                to="/$slug/settings"
               >
                 {({ isActive }: { isActive: boolean }) => (
                   <>
@@ -340,8 +340,8 @@ export function NavMain({
                         activeProps={{
                           className: 'bg-accent',
                         }}
-                        params={{ username }}
-                        to="/$username/settings/github"
+                        params={{ slug }}
+                        to="/$slug/settings/github"
                       >
                         {({ isActive }: { isActive: boolean }) => (
                           <>
@@ -370,8 +370,8 @@ export function NavMain({
                         activeProps={{
                           className: 'bg-accent',
                         }}
-                        params={{ username }}
-                        to="/$username/settings/webhooks"
+                        params={{ slug }}
+                        to="/$slug/settings/webhooks"
                       >
                         {({ isActive }: { isActive: boolean }) => (
                           <>

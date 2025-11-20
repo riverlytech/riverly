@@ -4,7 +4,7 @@ import type { GitHub } from '@riverly/riverly'
 
 const fetcher = (
   ...args: [RequestInfo, RequestInit?]
-): Promise<{ installs: GitHub.UserInstalls }> =>
+): Promise<{ installs: GitHub.OrgInstalls }> =>
   fetch(...args).then((res) => res.json())
 
 export function useGitHubInstalls() {

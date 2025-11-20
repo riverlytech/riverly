@@ -4,9 +4,9 @@ import {
   timestamp,
   unique,
   varchar,
+  text,
 } from "drizzle-orm/pg-core";
-import { type GitHubInstallationSetup } from "@riverly/ty";
-import { users } from "./users";
+import { organizations } from "./users";
 
 export type GitHubAccountType = "User" | "Organization";
 
@@ -22,26 +22,21 @@ export const gitHubInstallationTable = pgTable(
     accountType: varchar("account_type", { length: 64 })
       .$type<GitHubAccountType>()
       .notNull(),
-    userId: varchar("user_id", { length: 255 })
+    organizationId: text("organization_id")
       .notNull()
-      .references(() => users.id),
-    // TODO: remove as not needed
-    setupAction: varchar("setup_action", { length: 64 })
-      .$type<GitHubInstallationSetup>()
-      .notNull(),
+      .references(() => organizations.id),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
-  // TODO: remove github_installation_app_id_user_id_account_login_key constraint
   (table) => [
-    unique("github_installation_app_id_user_id_account_login_key").on(
+    unique("github_installation_app_id_organization_id_account_login_key").on(
       table.githubAppId,
-      table.userId,
+      table.organizationId,
       table.accountLogin
     ),
-    unique("github_installation_app_id_user_id_account_id").on(
+    unique("github_installation_app_id_organization_id_account_id").on(
       table.githubAppId,
-      table.userId,
+      table.organizationId,
       table.accountId
     ),
   ]

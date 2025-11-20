@@ -1,4 +1,4 @@
-import { env, type Env } from "@riverly/config";
+import { env } from "@riverly/config";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { jwt } from "better-auth/plugins";
@@ -31,7 +31,6 @@ export const authConfig = {
           name: profile.name || profile.login,
           email: profile.email,
           username: profile.login,
-          githubId: profile.id.toString(),
           image: profile.avatar_url,
         };
       },
@@ -40,25 +39,12 @@ export const authConfig = {
   user: {
     additionalFields: {
       username: { type: "string", required: false, input: true },
-      githubId: { type: "string", required: false, input: true },
-      isStaff: {
-        type: "boolean",
-        required: false,
-        defaultValue: false,
-        input: false,
-      },
-      isBlocked: {
-        type: "boolean",
-        required: false,
-        defaultValue: false,
-        input: false,
-      },
       defaultOrgId: {
         type: "string",
         required: false,
         defaultValue: null,
         input: false,
-      }
+      },
     },
   },
 } as const;

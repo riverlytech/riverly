@@ -64,13 +64,11 @@ type Revision =
   | { type: 'new'; version: ''; url: '' }
 
 export function ConnectOrDeployNew({
-  username,
-  owner,
-  name,
+  slug,
+  serverId,
 }: {
-  username: string
-  owner: string
-  name: string
+  slug: string
+  serverId: string
 }) {
   const [selectedRevision, setSelectedRevision] = useState<Revision>(
     mockRevisions[0]!,
@@ -98,8 +96,8 @@ export function ConnectOrDeployNew({
           className="justify-between flex-1 min-w-0 font-mono font-semibold"
         >
           <Link
-            to="/$username/servers/$owner/$name/deploy"
-            params={{ username, owner, name }}
+            to="/$slug/servers/$serverId/deploy"
+            params={{ slug, serverId }}
           >
             <div className="flex items-center gap-2">
               <PlusIcon className="h-4 w-4" />

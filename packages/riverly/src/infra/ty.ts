@@ -1,24 +1,27 @@
 import z from "zod/v4";
+import { MemberRole } from "@riverly/ty";
 
+//
 // Represents the schema for GitHub linked source build
-// Mandatory fields:
-// `user` for whom deploying the server
-// `server` the actual server being deployed for the user
 export const GitHubSourceBuilder = z.object({
-  user: z
+  org: z
     .object({
+      organizationId: z.string(),
+      name: z.string(),
+    })
+    .required(),
+  member: z
+    .object({
+      memberId: z.string(),
       userId: z.string(),
+      role: MemberRole,
       username: z.string(),
-      githubId: z.string(),
-      isStaff: z.boolean(),
-      isBlocked: z.boolean(),
     })
     .required(),
   server: z
     .object({
       serverId: z.string(),
-      username: z.string(),
-      name: z.string(),
+      title: z.string(),
     })
     .required(),
   githubRepo: z.string(),

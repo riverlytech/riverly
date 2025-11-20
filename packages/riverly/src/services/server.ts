@@ -3,29 +3,20 @@ import { createHash } from "crypto";
 import { and, desc, eq, or, sql } from "drizzle-orm";
 import { ulid } from "ulid";
 import z from "zod/v4";
-import { env } from "@riverly/config";
-import { Database } from "@riverly/db";
-import { defaultAvatarUrl, parseRepoUrl } from "./helpers";
+import { Database, organizations } from "@riverly/db";
+import { parseRepoUrl } from "./helpers";
 import {
   AddServer,
-  collectionTable,
   CreateServer,
   GitHubCreateServer,
   GitHubImportServer,
-  SelectServer,
-  serverCollectionTable,
   serverConfigTable,
   serverInstallTable,
   serverTable,
   UpsertServerConfig,
-  users,
 } from "@riverly/db";
-import { ServerModeEnum, ServerVisibility, ServerVisibilityEnum } from "@riverly/ty";
+import { ServerVisibility, ServerVisibilityEnum } from "@riverly/ty";
 import { GitHub } from "./github";
-
-export function serverHomepage(username: string, name: string) {
-  return `https://${env.BASEURL}/servers/${username}/${name}`;
-}
 
 export const ServerAddError = NamedError.create(
   "ServerAddError",
@@ -43,155 +34,107 @@ export const GitHubError = NamedError.create(
 );
 
 export namespace Server {
-  export const serversInCollection = fn(
-    z.object({ name: z.string(), limit: z.number().default(3) }),
-    async (filter) =>
-      await Database.use((db) =>
-        db
-          .select({
-            serverId: serverTable.serverId,
-            name: serverTable.name,
-            username: serverTable.username,
-            title: serverTable.title,
-            description: serverTable.description,
-            isClaimed: serverTable.isClaimed,
-            repository: serverTable.githubRepo,
-            avatarUrl: serverTable.avatarUrl,
-            usageCount: serverTable.usageCount,
-            visibility: serverTable.visibility,
-            mode: serverTable.mode,
-            homepage: serverTable.homepage,
-            license: serverTable.license,
-            readme: serverTable.readme,
-          })
-          .from(serverTable)
-          .innerJoin(
-            serverCollectionTable,
-            eq(serverTable.serverId, serverCollectionTable.serverId)
-          )
-          .innerJoin(
-            collectionTable,
-            eq(serverCollectionTable.collectionId, collectionTable.collectionId)
-          )
-          .where(
-            and(
-              eq(collectionTable.name, filter.name),
-              eq(serverTable.visibility, ServerVisibilityEnum.PUBLIC),
-              eq(serverTable.mode, ServerModeEnum.REMOTE)
-            )
-          )
-          .orderBy(desc(serverTable.usageCount))
-          .limit(filter.limit)
-      )
-  );
-
-  export const fromName = fn(
+  export const fromID = fn(
     z.object({
-      callerUserId: z.string(),
-      username: z.string(),
-      name: z.string(),
+      organizationId: z.string(),
+      serverId: z.string(),
     }),
     async (filter) => {
-      const result = await Database.use((db) =>
-        db
+      const result = await Database.use(async (db) => {
+        const r = await db
           .select({
-            serverId: serverTable.serverId,
-            name: serverTable.name,
-            username: serverTable.username,
+            serverId: serverTable.id,
             title: serverTable.title,
             description: serverTable.description,
-            isClaimed: serverTable.isClaimed,
-            avatarUrl: serverTable.avatarUrl,
+            verified: serverTable.verified,
+            image: serverTable.image,
             usageCount: serverTable.usageCount,
             visibility: serverTable.visibility,
             mode: serverTable.mode,
-            homepage: serverTable.homepage,
-            owner: {
-              username: users.username,
-              userId: users.id,
-              name: users.name,
-              image: users.image,
-              isStaff: users.isStaff,
-              isBlocked: users.isBlocked,
+            org: {
+              organizationId: organizations.id,
+              name: organizations.name,
+              logo: organizations.logo,
             },
             license: serverTable.license,
             readme: serverTable.readme,
           })
           .from(serverTable)
-          .innerJoin(users, eq(users.id, serverTable.userId))
+          .innerJoin(
+            organizations,
+            eq(organizations.id, serverTable.organizationId)
+          )
           .where(
             and(
-              eq(serverTable.username, filter.username),
-              eq(serverTable.name, filter.name)
+              eq(serverTable.organizationId, filter.organizationId),
+              eq(serverTable.id, filter.serverId)
             )
           )
           .execute()
-          .then((row) => row.at(0))
-      );
+          .then((row) => row[0] ?? null);
+        return r;
+      });
       if (!result) return result;
+      //
       // check for visibility, if private then check ownership,
       // if public return server
       if (result.visibility === ServerVisibilityEnum.PRIVATE) {
-        if (filter.callerUserId === result.owner.userId) return result;
-        else return undefined;
+        if (filter.organizationId === result.org.organizationId) return result;
+        else return null;
       }
       return result;
     }
   );
 
-  export const detailFromName = fn(
+  export const fromIDWithGit = fn(
     z.object({
-      callerUserId: z.string(),
-      username: z.string(),
-      name: z.string(),
+      organizationId: z.string(),
+      serverId: z.string(),
     }),
     async (filter) => {
-      const result = await Database.use((db) =>
-        db
+      const result = await Database.use(async (db) => {
+        const r = await db
           .select({
-            serverId: serverTable.serverId,
-            name: serverTable.name,
-            username: serverTable.username,
+            serverId: serverTable.id,
             title: serverTable.title,
             description: serverTable.description,
-            isClaimed: serverTable.isClaimed,
-            avatarUrl: serverTable.avatarUrl,
+            verified: serverTable.verified,
+            image: serverTable.image,
             usageCount: serverTable.usageCount,
             visibility: serverTable.visibility,
-            mode: serverTable.mode,
-            //
             githubRepo: serverTable.githubRepo,
             githubOwner: serverTable.githubOwner,
             branch: serverTable.branch,
-            //
-            owner: {
-              username: users.username,
-              userId: users.id,
-              name: users.name,
-              image: users.image,
-              isStaff: users.isStaff,
-              isBlocked: users.isBlocked,
+            mode: serverTable.mode,
+            org: {
+              organizationId: organizations.id,
+              name: organizations.name,
+              logo: organizations.logo,
             },
-            homepage: serverTable.homepage,
             license: serverTable.license,
             readme: serverTable.readme,
           })
           .from(serverTable)
-          .innerJoin(users, eq(users.id, serverTable.userId))
+          .innerJoin(
+            organizations,
+            eq(organizations.id, serverTable.organizationId)
+          )
           .where(
             and(
-              eq(serverTable.username, filter.username),
-              eq(serverTable.name, filter.name)
+              eq(serverTable.organizationId, filter.organizationId),
+              eq(serverTable.id, filter.serverId)
             )
           )
           .execute()
-          .then((row) => row.at(0))
-      );
-      if (!result) return null;
+          .then((row) => row[0] ?? null);
+        return r;
+      });
+      if (!result) return result;
+      //
       // check for visibility, if private then check ownership,
       // if public return server
       if (result.visibility === ServerVisibilityEnum.PRIVATE) {
-        if (filter.callerUserId === result.owner.userId) return result;
+        if (filter.organizationId === result.org.organizationId) return result;
         else return null;
       }
       return result;
@@ -199,50 +142,52 @@ export namespace Server {
   );
 
   export const publicServer = fn(
-    z.object({ username: z.string(), name: z.string() }),
+    z.object({
+      organizationId: z.string(),
+      serverId: z.string(),
+    }),
     async (filter) =>
       await Database.use((db) =>
         db
           .select({
-            serverId: serverTable.serverId,
-            name: serverTable.name,
-            username: serverTable.username,
+            serverId: serverTable.id,
             title: serverTable.title,
             description: serverTable.description,
-            isClaimed: serverTable.isClaimed,
-            repository: serverTable.githubRepo,
-            avatarUrl: serverTable.avatarUrl,
+            verified: serverTable.verified,
+            image: serverTable.image,
             usageCount: serverTable.usageCount,
             visibility: serverTable.visibility,
             mode: serverTable.mode,
-            homepage: serverTable.homepage,
-            owner: {
-              username: users.username,
-              userId: users.id,
-              name: users.name,
-              image: users.image,
-              isStaff: users.isStaff,
-              isBlocked: users.isBlocked,
+            org: {
+              organizationId: organizations.id,
+              name: organizations.name,
+              logo: organizations.logo,
             },
             license: serverTable.license,
             readme: serverTable.readme,
           })
           .from(serverTable)
-          .innerJoin(users, eq(users.id, serverTable.userId))
+          .innerJoin(
+            organizations,
+            eq(organizations.id, serverTable.organizationId)
+          )
           .where(
             and(
-              eq(serverTable.username, filter.username),
-              eq(serverTable.name, filter.name),
+              eq(serverTable.organizationId, filter.organizationId),
+              eq(serverTable.id, filter.serverId),
               eq(serverTable.visibility, ServerVisibilityEnum.PUBLIC)
             )
           )
           .execute()
-          .then((row) => row.at(0))
+          .then((row) => row[0] ?? null)
       )
   );
 
   export const ownedServer = fn(
-    z.object({ username: z.string(), name: z.string() }),
+    z.object({
+      organizationId: z.string(),
+      serverId: z.string(),
+    }),
     async (filter) =>
       await Database.use((db) =>
         db
@@ -250,18 +195,18 @@ export namespace Server {
           .from(serverTable)
           .where(
             and(
-              eq(serverTable.username, filter.username),
-              eq(serverTable.name, filter.name)
+              eq(serverTable.organizationId, filter.organizationId),
+              eq(serverTable.id, filter.serverId)
             )
           )
           .execute()
-          .then((row) => row.at(0))
+          .then((row) => row[0] ?? null)
       )
   );
 
-  export const userServers = fn(
+  export const orgServers = fn(
     z.object({
-      username: z.string(),
+      organizationId: z.string(),
       visibility: z.enum([
         ServerVisibilityEnum.PRIVATE,
         ServerVisibilityEnum.PUBLIC,
@@ -281,41 +226,37 @@ export namespace Server {
       return await Database.use((db) =>
         db
           .select({
-            serverId: serverTable.serverId,
-            name: serverTable.name,
-            username: serverTable.username,
+            serverId: serverTable.id,
             title: serverTable.title,
             description: serverTable.description,
-            isClaimed: serverTable.isClaimed,
-            repository: serverTable.githubRepo,
-            avatarUrl: serverTable.avatarUrl,
+            verified: serverTable.verified,
+            image: serverTable.image,
             usageCount: serverTable.usageCount,
             visibility: serverTable.visibility,
             mode: serverTable.mode,
-            homepage: serverTable.homepage,
-            owner: {
-              username: users.username,
-              userId: users.id,
-              name: users.name,
-              image: users.image,
-              isStaff: users.isStaff,
-              isBlocked: users.isBlocked,
+            org: {
+              organizationId: organizations.id,
+              name: organizations.name,
+              logo: organizations.logo,
             },
             license: serverTable.license,
             readme: serverTable.readme,
           })
           .from(serverTable)
-          .innerJoin(users, eq(serverTable.userId, users.id))
-          .where(and(eq(users.username, filter.username), condition))
+          .innerJoin(
+            organizations,
+            eq(serverTable.organizationId, organizations.id)
+          )
+          .where(and(eq(organizations.id, filter.organizationId), condition))
           .orderBy(desc(serverTable.usageCount))
           .limit(filter.limit)
       );
     }
   );
 
-  export const userInstalledServers = fn(
+  export const orgInstalledServers = fn(
     z.object({
-      userId: z.string(),
+      organizationId: z.string(),
       visibility: z.enum([
         ServerVisibilityEnum.PRIVATE,
         ServerVisibilityEnum.PUBLIC,
@@ -334,25 +275,18 @@ export namespace Server {
       return await Database.use((db) =>
         db
           .select({
-            serverId: serverTable.serverId,
-            name: serverTable.name,
-            username: serverTable.username,
+            serverId: serverTable.id,
             title: serverTable.title,
             description: serverTable.description,
-            isClaimed: serverTable.isClaimed,
-            repository: serverTable.githubRepo,
-            avatarUrl: serverTable.avatarUrl,
+            verified: serverTable.verified,
+            image: serverTable.image,
             usageCount: serverTable.usageCount,
             visibility: serverTable.visibility,
             mode: serverTable.mode,
-            homepage: serverTable.homepage,
-            owner: {
-              username: users.username,
-              userId: users.id,
-              name: users.name,
-              image: users.image,
-              isStaff: users.isStaff,
-              isBlocked: users.isBlocked,
+            org: {
+              organizationId: organizations.id,
+              name: organizations.name,
+              logo: organizations.logo,
             },
             license: serverTable.license,
             readme: serverTable.readme,
@@ -360,10 +294,18 @@ export namespace Server {
           .from(serverInstallTable)
           .innerJoin(
             serverTable,
-            eq(serverInstallTable.serverId, serverTable.serverId)
+            eq(serverInstallTable.serverId, serverTable.id)
           )
-          .innerJoin(users, eq(serverInstallTable.userId, users.id))
-          .where(and(eq(serverInstallTable.userId, filter.userId), condition))
+          .innerJoin(
+            organizations,
+            eq(serverInstallTable.organizationId, organizations.id)
+          )
+          .where(
+            and(
+              eq(serverInstallTable.organizationId, filter.organizationId),
+              condition
+            )
+          )
           .orderBy(desc(serverTable.usageCount), desc(serverTable.createdAt))
           .limit(filter.limit)
       );
@@ -372,21 +314,20 @@ export namespace Server {
 
   export const addNew = fn(AddServer, async (server) => {
     return await Database.transaction(async (tx) => {
-      const homepage = serverHomepage(server.username, server.name);
       const parsed = CreateServer.safeParse(server);
       if (!parsed.success)
         throw new ServerAddError({ message: parsed.error.message });
 
       const [newServer] = await tx
         .insert(serverTable)
-        .values({ ...parsed.data, homepage })
+        .values({ ...parsed.data })
         .returning();
       if (!newServer)
         throw new ServerAddError({ message: "Failed to insert new server" });
 
       await tx.insert(serverInstallTable).values({
-        serverId: newServer.serverId,
-        userId: server.userId,
+        serverId: newServer.id,
+        organizationId: server.organizationId,
       });
       return newServer;
     });
@@ -396,29 +337,31 @@ export namespace Server {
     GitHubImportServer.extend({ githubAppId: z.number() }),
     async (server) => {
       const [parseErr, pr] = parseRepoUrl(server.repoUrl);
-      if (parseErr || !pr)
+      if (parseErr || !pr) {
         throw new GitHubError({ message: "Bad GitHub repo name or URL" });
-
-      const ghInstalled = await GitHub.userInstallation({
-        userId: server.userId,
+      }
+      const ghInstalled = await GitHub.orgInstallation({
+        organizationId: server.organizationId,
         githubAppId: server.githubAppId,
         account: pr.owner,
       });
-      if (!ghInstalled)
+      if (!ghInstalled) {
         throw new GitHubError({
           message: "GitHub account is not connected",
           githubAppId: server.githubAppId,
         });
+      }
 
       const repo = await GitHub.repoDetail({
         githubInstallationId: ghInstalled.githubInstallationId,
         owner: pr.owner,
         repo: pr.repo,
       });
-      if (!repo)
+      if (!repo) {
         throw new GitHubError({
           message: "Repo does not exist or not connected",
         });
+      }
 
       const repoReadme = await GitHub.repoReadme({
         githubInstallationId: ghInstalled.githubInstallationId,
@@ -427,40 +370,28 @@ export namespace Server {
       });
 
       const request: z.infer<typeof GitHubCreateServer> = {
-        name: server.name,
         title: server.title,
         description: server.description,
         visibility: server.visibility,
-        userId: server.userId,
-        addedById: server.addedById,
-        username: server.username,
+        organizationId: server.organizationId,
+        memberId: server.memberId,
         githubRepo: repo.name,
         githubOwner: repo.owner.login,
         branch: repo.defaultBranch,
         githubRepositoryId: repo.id,
         license: repo.license ? { name: repo.license.name } : undefined,
         readme: repoReadme ?? undefined,
-        isClaimed: true,
       };
 
       const requestParsed = GitHubCreateServer.safeParse(request);
-      if (!requestParsed.success)
+      if (!requestParsed.success) {
         throw new GitHubError({
           message: "Failed GitHub import schema validation",
         });
+      }
 
       return await Database.transaction(async (tx) => {
-        const homepage = serverHomepage(
-          requestParsed.data.username,
-          requestParsed.data.githubRepo
-        );
-        const parsed = CreateServer.safeParse({
-          ...requestParsed.data,
-          avatarUrl:
-            requestParsed.data.avatarUrl ??
-            defaultAvatarUrl(requestParsed.data.name),
-          homepage,
-        });
+        const parsed = CreateServer.safeParse(requestParsed.data);
         if (!parsed.success) {
           throw new GitHubError({
             message: "Failed GitHub create server schema validation",
@@ -471,15 +402,15 @@ export namespace Server {
           .insert(serverTable)
           .values(parsed.data)
           .returning();
-
-        if (!newServer)
+        if (!newServer) {
           throw new GitHubError({
             message: "Failed to insert GitHub import server",
           });
+        }
 
         await tx.insert(serverInstallTable).values({
-          serverId: newServer.serverId,
-          userId: newServer.userId,
+          serverId: newServer.id,
+          organizationId: newServer.organizationId,
         });
         return newServer;
       });
@@ -496,9 +427,9 @@ export namespace Server {
       tx
         .select()
         .from(serverConfigTable)
-        .where(eq(serverConfigTable.serverId, serverId))
+        .where(eq(serverConfigTable.id, serverId))
         .execute()
-        .then((row) => row[0])
+        .then((row) => row[0] ?? null)
     );
   });
 
@@ -509,7 +440,7 @@ export namespace Server {
         .insert(serverConfigTable)
         .values({ ...upsert, configHash })
         .onConflictDoUpdate({
-          target: serverConfigTable.serverId,
+          target: serverConfigTable.id,
           set: {
             envs: upsert.envs,
             config: upsert.config,
@@ -521,68 +452,10 @@ export namespace Server {
         })
         .returning()
         .execute()
-        .then((row) => row[0]);
+        .then((row) => row[0] ?? null);
     });
   });
+
+  type ServerResult = Awaited<ReturnType<typeof fromID>>;
+  export type Server = NonNullable<ServerResult>;
 }
-
-export const ServerView = SelectServer.pick({
-  serverId: true,
-  name: true,
-  username: true,
-  title: true,
-  description: true,
-  isClaimed: true,
-  repository: true,
-  avatarUrl: true,
-  usageCount: true,
-  visibility: true,
-  mode: true,
-  homepage: true,
-  license: true,
-  readme: true,
-});
-
-export type ServerView = z.infer<typeof ServerView>;
-
-export const ServerInstalledSlimView = ServerView.pick({
-  serverId: true,
-  name: true,
-  username: true,
-  title: true,
-  avatarUrl: true,
-  isClaimed: true,
-  usageCount: true,
-}).extend({
-  installId: z.string(),
-});
-
-export type ServerInstallViewSlim = z.infer<typeof ServerInstalledSlimView>;
-
-export const ServerRecentlyView = SelectServer.pick({
-  serverId: true,
-  name: true,
-  username: true,
-  title: true,
-  avatarUrl: true,
-  isClaimed: true,
-  usageCount: true,
-  description: true,
-}).extend({
-  viewId: z.string(),
-});
-
-export type ServerRecentlyView = z.infer<typeof ServerRecentlyView>;
-
-export const UserServerView = ServerView.extend({
-  owner: z.object({
-    username: z.string(),
-    userId: z.string(),
-    name: z.string(),
-    image: z.string().nullable(),
-    isStaff: z.boolean(),
-    isBlocked: z.boolean(),
-  }),
-});
-
-export type UserServerView = z.infer<typeof UserServerView>;

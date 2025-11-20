@@ -17,7 +17,7 @@ export const serverCollectionTable = pgTable(
   {
     serverId: varchar("server_id", { length: 255 })
       .notNull()
-      .references(() => serverTable.serverId, { onDelete: "cascade" }),
+      .references(() => serverTable.id, { onDelete: "cascade" }),
     collectionId: varchar("collection_id", { length: 255 })
       .notNull()
       .references(() => collectionTable.collectionId, { onDelete: "cascade" }),

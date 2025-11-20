@@ -12,9 +12,6 @@ export const user = pgTable("user", {
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
   username: text("username"),
-  githubId: text("github_id"),
-  isStaff: boolean("is_staff").default(false),
-  isBlocked: boolean("is_blocked").default(false),
 });
 
 export const session = pgTable("session", {

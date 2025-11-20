@@ -24,7 +24,7 @@ export const Route = createFileRoute('/api/github/callback')({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        const session = (await Database.use((db) =>
+        const session = (await Database.transaction((db) =>
           auth(db, env).api.getSession({
             headers: request.headers,
           }),
@@ -48,7 +48,7 @@ export const Route = createFileRoute('/api/github/callback')({
           )
 
           await GitHub.upsertApp({
-            userId: sessionUser.userId,
+            organizationId: sessionUser.userId,
             githubAppId: env.GITHUB_APP_ID,
             githubInstallationId: validatedParams.installationId,
             setupAction: validatedParams.setupAction,

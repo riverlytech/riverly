@@ -1,27 +1,26 @@
 import { Link } from '@tanstack/react-router'
 import { CheckCircle, Rocket } from 'lucide-react'
 
-import type { UserServerView } from '@riverly/riverly'
+import type { Server } from '@riverly/riverly'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 
 export function UserServerCard({
-  username,
+  slug,
   server,
 }: {
-  username: string
-  server: UserServerView
+  slug: string
+  server: Server.Server
 }) {
-  const avatarUrl =
-    server.avatarUrl || `https://avatar.vercel.sh/${server.name}`
+  const image = server.image || `https://avatar.vercel.sh/${server.serverId}`
   return (
     <Card className="gap-2 group focus:outline-none p-0 rounded-sm  flex min-h-20 bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors duration-150 shadow-none group-focus:ring-2 group-focus:ring-zinc-400">
       <CardContent className="flex flex-col lg:flex-row gap-3 p-2 w-full h-full">
         <div className="w-20 h-20 min-w-20 min-h-20 overflow-hidden bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center border border-zinc-200 dark:border-zinc-700 self-start">
           <img
-            src={avatarUrl}
-            alt={server.name}
+            src={image}
+            alt={server.title}
             width={80}
             height={80}
             className="object-cover w-20 h-20"
@@ -32,21 +31,20 @@ export function UserServerCard({
           <div className="flex items-center gap-1">
             <CheckCircle className="w-3 h-3 text-zinc-400 dark:text-zinc-500" />
             <span className="text-sm text-zinc-500 dark:text-zinc-400 font-medium truncate">
-              {server.username}
+              {'server.username'}
             </span>
             <span className="text-sm text-zinc-400 dark:text-zinc-600">/</span>
             <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">
-              {server.name}
+              {'server.name'}
             </span>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" size="sm" asChild>
               <Link
-                to="/$username/servers/$owner/$name"
+                to="/$slug/servers/$serverId"
                 params={{
-                  username,
-                  owner: server.owner.username,
-                  name: server.name,
+                  slug,
+                  serverId: server.serverId,
                 }}
               >
                 View MCP Server

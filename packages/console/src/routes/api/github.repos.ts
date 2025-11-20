@@ -11,7 +11,7 @@ export const Route = createFileRoute('/api/github/repos')({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        const session = (await Database.use((db) =>
+        const session = (await Database.transaction((db) =>
           auth(db, env).api.getSession({
             headers: request.headers,
           }),
@@ -21,8 +21,8 @@ export const Route = createFileRoute('/api/github/repos')({
         const { searchParams } = new URL(request.url)
         const owner = searchParams.get('owner') ?? session.user.username
 
-        const ghAppInstall = await GitHub.userInstallation({
-          userId: session.user.id,
+        const ghAppInstall = await GitHub.orgInstallation({
+          organizationId: session.user.id,
           githubAppId: env.GITHUB_APP_ID,
           account: owner,
         })

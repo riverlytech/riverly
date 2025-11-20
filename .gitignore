@@ -132,3 +132,5 @@ vendor/
 .vite-cache/
 
 .secrets
+
+snippets/

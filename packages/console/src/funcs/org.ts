@@ -4,13 +4,12 @@ import { BetterAuthError } from 'better-auth'
 
 import { env } from '@riverly/config'
 import { Database } from '@riverly/db'
-import { Organization, User, } from '@riverly/riverly'
+import { Organization, User } from '@riverly/riverly'
 import { genId } from '@riverly/utils'
 
 import { auth } from '@/lib/auth'
 import { authMiddleware } from '@/lib/auth-middleware'
 import { CreateOrgForm } from '@/validations'
-
 
 export const createNewOrg = createServerFn({ method: 'POST' })
   .inputValidator(CreateOrgForm)
@@ -26,7 +25,7 @@ export const createNewOrg = createServerFn({ method: 'POST' })
       userId: sessionUser.userId, // server-only
       keepCurrentActiveOrganization: false,
     }
-    const resp = await Database.use((db) =>
+    const resp = await Database.transaction((db) =>
       auth(db, env).api.createOrganization({
         body,
       }),
@@ -41,16 +40,14 @@ export const makeDefaultOrgFn = createServerFn({ method: 'POST' })
       setResponseStatus(401)
       throw new BetterAuthError('Unauthorized')
     }
-
-    if (sessionUser.defaultOrgId) {
-      setResponseStatus(200)
-      return
-    }
-
     const user = await User.fromID(sessionUser.userId)
     if (!user) {
       setResponseStatus(404)
       throw new Error('Not Found')
+    }
+    if (user.defaultOrgId) {
+      setResponseStatus(200)
+      return
     }
     const values = {
       name: `${user.name}`,
@@ -63,9 +60,7 @@ export const makeDefaultOrgFn = createServerFn({ method: 'POST' })
   })
 
 export const memberOrgsFn = createServerFn({ method: 'GET' })
-  .inputValidator(
-    (data: { userId: string; limit?: number }) => data,
-  )
+  .inputValidator((data: { userId: string; limit?: number }) => data)
   .middleware([authMiddleware])
   .handler(async ({ data, context: { user } }) => {
     if (!user) {
@@ -78,3 +73,21 @@ export const memberOrgsFn = createServerFn({ method: 'GET' })
     })
   })
 
+export const orgMembership = createServerFn({ method: 'GET' })
+  .inputValidator((data: { slug: string; userId: string }) => data)
+  .middleware([authMiddleware])
+  .handler(async ({ data, context: { user } }) => {
+    if (!user) {
+      setResponseStatus(401)
+      throw new BetterAuthError('Unauthorized')
+    }
+    const membership = await Organization.orgMembership({
+      slug: data.slug,
+      userId: data.userId,
+    })
+    if (!membership) {
+      setResponseStatus(404)
+      return null
+    }
+    return membership
+  })

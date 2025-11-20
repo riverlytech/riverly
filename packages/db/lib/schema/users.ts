@@ -4,6 +4,7 @@ import {
   text,
   timestamp,
   varchar,
+  unique,
 } from "drizzle-orm/pg-core";
 import { createSchemaFactory } from "drizzle-zod";
 import z from "zod/v4";
@@ -16,7 +17,7 @@ const { createSelectSchema, createUpdateSchema, createInsertSchema } =
   });
 
 export const users = pgTable("user", {
-  id: varchar("user_id", { length: 255 }).primaryKey().notNull(),
+  id: varchar("id", { length: 255 }).primaryKey().notNull(),
   name: varchar("name", { length: 255 }).notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   emailVerified: boolean("email_verified")
@@ -24,13 +25,11 @@ export const users = pgTable("user", {
     .notNull(),
   image: varchar("image", { length: 511 }),
   username: varchar("username", { length: 255 }).notNull().unique(),
-  githubId: varchar("github_id", { length: 64 }).notNull().unique(),
-  isStaff: boolean("is_staff").default(false).notNull(),
-  isBlocked: boolean("is_blocked").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  defaultOrgId: text("default_org_id")
-    .references(() => organizations.id, { onDelete: "set null" }),
+  defaultOrgId: text("default_org_id").references(() => organizations.id, {
+    onDelete: "set null",
+  }),
 });
 
 export const SelectUser = createSelectSchema(users);
@@ -112,19 +111,28 @@ export const InsertOrganization = createInsertSchema(organizations);
 export type SelectOrganization = z.infer<typeof SelectUser>;
 export type OrganizationTable = typeof organizations.$inferSelect;
 
-export const members = pgTable("member", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => genId()),
-  organizationId: text("organization_id")
-    .notNull()
-    .references(() => organizations.id, { onDelete: "cascade" }),
-  userId: varchar("user_id", { length: 255 })
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  role: text("role").default("member").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+export const members = pgTable(
+  "member",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => genId()),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    userId: varchar("user_id", { length: 255 })
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    role: text("role").default("member").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [
+    unique("member_organization_id_user_id_key").on(
+      table.organizationId,
+      table.userId
+    ),
+  ]
+);
 
 export const SelectMember = createSelectSchema(members);
 export const UpdateMember = createUpdateSchema(members);
@@ -146,4 +154,3 @@ export const invitations = pgTable("invitation", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
 });
-

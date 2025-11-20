@@ -1,0 +1,45 @@
+import { createFileRoute } from '@tanstack/react-router'
+
+import { WithClient } from '@/components/commons/with-client'
+// import { DeploymentLogs } from '@/components/deployment/deployment-logs'
+// import { DeploymentDetail } from '@/components/deployment/detail'
+import { orgDeployment } from '@/funcs'
+
+export const Route = createFileRoute('/_auth/$slug/deployments/$deploymentId/')(
+  {
+    loader: async ({ context: { membership }, params: { deploymentId } }) => {
+      const deployment = await orgDeployment({
+        data: { organizationId: membership.org.id, deploymentId },
+      })
+      return {
+        deployment,
+      }
+    },
+    component: RouteComponent,
+  },
+)
+
+function RouteComponent() {
+  return (
+    <div className="py-12 px-4">
+      <div className="max-w-7xl mx-auto">
+        <div className="h-14">
+          <h1 className="text-xl font-mono font-semibold">
+            Deployment Details
+          </h1>
+        </div>
+        <div className="flex flex-col space-y-6">
+          ...
+          {/* <DeploymentDetail username={username} deployment={deployment} /> */}
+          <WithClient>
+            ...
+            {/* <DeploymentLogs
+              userId={workspace.userId}
+              deploymentId={deploymentId}
+            /> */}
+          </WithClient>
+        </div>
+      </div>
+    </div>
+  )
+}

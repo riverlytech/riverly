@@ -1,0 +1,51 @@
+import { createFileRoute } from '@tanstack/react-router'
+
+// import { ProfileForm } from '@/components/settings/profile-form'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+
+export const Route = createFileRoute('/_auth/$slug/_dash/settings/')({
+  component: RouteComponent,
+})
+
+function RouteComponent() {
+  return (
+    <div className="flex flex-col space-y-4 w-full md:w-3/4">
+      <Card className="shadow-none">
+        <CardHeader>
+          <CardTitle>Name</CardTitle>
+          <CardDescription>
+            Update your name displayed on your profile and across the platform.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          ...profile form...
+          {/* <ProfileForm defaultName={workspace.name} /> */}
+        </CardContent>
+      </Card>
+      <Card className="shadow-none">
+        <CardHeader>
+          <CardTitle>Update other details</CardTitle>
+          <CardDescription>
+            Your other profile details come from your GitHub profile.
+            <br />
+            To change them, visit:{' '}
+            <a
+              href="https://github.com/settings/profile"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline text-primary"
+            >
+              github.com/settings/profile
+            </a>
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    </div>
+  )
+}

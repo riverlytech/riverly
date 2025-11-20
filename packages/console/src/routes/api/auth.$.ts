@@ -9,9 +9,9 @@ export const Route = createFileRoute('/api/auth/$')({
   server: {
     handlers: {
       GET: ({ request }) =>
-        Database.use((db) => auth(db, env).handler(request)),
+        Database.transaction((db) => auth(db, env).handler(request)),
       POST: ({ request }) =>
-        Database.use((db) => auth(db, env).handler(request)),
+        Database.transaction((db) => auth(db, env).handler(request)),
     },
   },
 })

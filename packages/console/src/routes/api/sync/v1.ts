@@ -11,7 +11,7 @@ export const Route = createFileRoute('/api/sync/v1')({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        const session = (await Database.use((db) =>
+        const session = (await Database.transaction((db) =>
           auth(db, env).api.getSession({
             headers: request.headers,
           }),

@@ -1,11 +1,6 @@
 import { Database } from "@riverly/db";
-import { eq, desc } from "drizzle-orm";
-import {
-  organizations,
-  members,
-  InsertOrganization,
-  users,
-} from "@riverly/db";
+import { eq, desc, and } from "drizzle-orm";
+import { organizations, members, InsertOrganization, users } from "@riverly/db";
 import { fn, NamedError } from "@riverly/utils";
 import z from "zod/v4";
 
@@ -59,15 +54,13 @@ export namespace Organization {
         if (!createdOrg)
           throw new CreateOrgError({ message: "Failed to create org" });
 
-        const newMembership = {
-          userId,
-          organizationId: createdOrg.id,
-          role: "owner", // TODO: add enum
-        };
-
         const [membership] = await tx
           .insert(members)
-          .values({ ...newMembership })
+          .values({
+            organizationId: createdOrg.id,
+            userId: userId,
+            role: "owner",
+          })
           .returning();
 
         if (!membership)
@@ -78,7 +71,8 @@ export namespace Organization {
         await tx
           .update(users)
           .set({ defaultOrgId: createdOrg.id })
-          .where(eq(users.id, userId)).execute();
+          .where(eq(users.id, userId))
+          .execute();
 
         return {
           organizationId: createdOrg.id,
@@ -87,21 +81,72 @@ export namespace Organization {
       })
   );
 
-  export const memberOrgs = fn(z.object({ userId: z.string(), limit: z.number().default(100) }), async (filters) => {
-    return await Database.use(async (db) => {
-      const items = await db
-        .select({
-          name: organizations.name,
-          slug: organizations.slug,
-          logo: organizations.logo,
-          role: members.role,
-        })
-        .from(members)
-        .innerJoin(organizations, eq(members.organizationId, organizations.id))
-        .where(eq(members.userId, filters.userId))
-        .orderBy(desc(organizations.createdAt))
-        .limit(filters.limit)
-      return items;
-    });
-  });
+  export const memberOrgs = fn(
+    z.object({ userId: z.string(), limit: z.number().default(100) }),
+    async (filters) => {
+      return await Database.use(async (db) => {
+        const items = await db
+          .select({
+            name: organizations.name,
+            slug: organizations.slug,
+            logo: organizations.logo,
+            role: members.role,
+          })
+          .from(members)
+          .innerJoin(
+            organizations,
+            eq(members.organizationId, organizations.id)
+          )
+          .where(eq(members.userId, filters.userId))
+          .orderBy(desc(organizations.createdAt))
+          .limit(filters.limit);
+        return items;
+      });
+    }
+  );
+
+  export const orgMembership = fn(
+    z.object({ slug: z.string(), userId: z.string() }),
+    async (filters) => {
+      return await Database.use(async (db) => {
+        return db
+          .select({
+            id: members.id,
+            role: members.role,
+            org: {
+              id: organizations.id,
+              name: organizations.name,
+              slug: organizations.slug,
+              logo: organizations.logo,
+              createdAt: organizations.createdAt,
+              metadata: organizations.metadata,
+            },
+            user: {
+              id: users.id,
+              name: users.name,
+              email: users.email,
+              emailVerified: users.emailVerified,
+              image: users.image,
+              username: users.username,
+              createdAt: users.createdAt,
+              defaultOrgId: users.defaultOrgId,
+            },
+          })
+          .from(members)
+          .innerJoin(
+            organizations,
+            eq(members.organizationId, organizations.id)
+          )
+          .innerJoin(users, eq(members.userId, users.id))
+          .where(
+            and(
+              eq(organizations.slug, filters.slug),
+              eq(members.userId, filters.userId)
+            )
+          )
+          .execute()
+          .then((row) => row[0] ?? null);
+      });
+    }
+  );
 }

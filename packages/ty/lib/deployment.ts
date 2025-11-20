@@ -1,5 +1,6 @@
 import z from "zod/v4";
 import { EnvsSchema, ServerConfigSchema } from "./server";
+import { MemberRole } from "./user";
 
 /**
  * Enumeration of possible deployment statuses throughout the deployment lifecycle.
@@ -46,20 +47,22 @@ export const RevisionStatusSchema = z.enum(Object.values(RevisionStatusValue));
 export type RevisionStatus = z.infer<typeof RevisionStatusSchema>;
 
 export const BaseDeployRequest = z.object({
-  user: z
+  org: z.object({
+    organizationId: z.string(),
+    name: z.string(),
+  }),
+  member: z
     .object({
+      memberId: z.string(),
+      role: MemberRole,
       userId: z.string(),
       username: z.string(),
-      githubId: z.string(),
-      isStaff: z.boolean(),
-      isBlocked: z.boolean(),
     })
     .required(),
   server: z
     .object({
       serverId: z.string(),
-      username: z.string(),
-      name: z.string(),
+      title: z.string(),
     })
     .required(),
   serverConfig: z
@@ -87,19 +90,3 @@ export const DeployWithGitHubRequest = BaseDeployRequest.extend({
 export const DeployWithArtifactRequest = BaseDeployRequest.extend({
   artifact: z.string(),
 });
-
-export type DeploymentPreview = {
-  deploymentId: string;
-  username: string;
-  name: string;
-  title: string;
-  avatarUrl: string | null;
-  status: DeploymentStatusType;
-  imageDigest: string | null;
-  buildId: string;
-  createdAt: Date;
-};
-
-// export type UserDeploymentDetail = Awaited<
-//   ReturnType<typeof ServerDeployment.userDeployment>
-// >;

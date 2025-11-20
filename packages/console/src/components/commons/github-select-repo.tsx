@@ -1,4 +1,3 @@
-'use client'
 import { useNavigate } from '@tanstack/react-router'
 import {
   AlertCircle,
@@ -32,11 +31,13 @@ import { useGitHubInstalls } from '@/hooks/use-github-installs'
 import { useRepos } from '@/hooks/use-repos'
 import { cn } from '@/lib/utils'
 
-export function GitHubSelectRepo({ username }: { username: string }) {
+export function GitHubSelectRepo({ slug }: { slug: string }) {
   const navigate = useNavigate()
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState('')
-  const [selectedOwner, setSelectedOwner] = React.useState<string>(username)
+  const [selectedOwner, setSelectedOwner] = React.useState<string | undefined>(
+    undefined,
+  )
   const [installDropdownOpen, setInstallDropdownOpen] = React.useState(false)
 
   const { data, isLoading, isError, mutate } = useRepos(selectedOwner)
@@ -50,8 +51,8 @@ export function GitHubSelectRepo({ username }: { username: string }) {
     if (value) {
       const [owner, name] = value.split('/')
       navigate({
-        to: '/$username/servers/import',
-        params: { username },
+        to: '/$slug/servers/import',
+        params: { slug },
         search: { owner, name },
       }).then()
     }

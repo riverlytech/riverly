@@ -3,15 +3,8 @@ import z from 'zod/v4'
 import { ServerVisibilityEnum, DeploymentTarget, EnvsSchema } from '@riverly/ty'
 
 export const NewServerForm = z.object({
-  name: z
-    .string()
-    .min(1, { message: 'Name is required.' })
-    .max(32, { message: 'Name must not be longer than 32 characters.' })
-    .regex(/^(?!-)(?!.*--)[a-zA-Z0-9._-]+(?<!-)$/, {
-      message:
-        'Name can only contain letters, numbers, hyphens, periods, and underscores.',
-    })
-    .transform((val) => val.toLowerCase()),
+  organizationId: z.string(),
+  memberId: z.string(),
   title: z
     .string()
     .min(3, { message: 'Title must be at least 3 characters.' })
@@ -26,15 +19,9 @@ export const NewServerForm = z.object({
 })
 
 export const GitHubImportForm = z.object({
-  name: z
-    .string()
-    .min(1, { message: 'Name is required.' })
-    .max(32, { message: 'Name must not be longer than 32 characters.' })
-    .regex(/^(?!-)(?!.*--)[a-zA-Z0-9._-]+(?<!-)$/, {
-      message:
-        'Name can only contain letters, numbers, hyphens, periods, and underscores.',
-    })
-    .transform((val) => val.toLowerCase()),
+  organizationId: z.string(),
+  memberId: z.string(),
+  repoUrl: z.string(),
   title: z
     .string()
     .min(3, { message: 'Title must be at least 3 characters.' })
@@ -56,7 +43,7 @@ export const ProfileEditForm = z.object({
 })
 
 export const GitHubDeployForm = z.object({
-  name: z.string(),
+  serverId: z.string(),
   repo: z.string(),
   rootDir: z.string().min(1, 'Root directory is required'),
   envs: EnvsSchema,

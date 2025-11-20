@@ -11,15 +11,15 @@ export const Route = createFileRoute('/api/github/installs')({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        const session = (await Database.use((db) =>
+        const session = (await Database.transaction((db) =>
           auth(db, env).api.getSession({
             headers: request.headers,
           }),
         )) as BetterAuthSession | null
         if (!session) return Response.redirect(new URL('/login', request.url))
 
-        const installs = await GitHub.userInstalls({
-          userId: session.user.id,
+        const installs = await GitHub.orgInstalls({
+          organizationId: session.user.id,
           githubAppId: env.GITHUB_APP_ID,
         })
 

@@ -20,13 +20,13 @@ export const $getSessionUser = createIsomorphicFn()
     })) as { data: BetterAuthSession | null }
     return session
       ? toSessionClient({
-        ...session.user,
-        image: session.user.image as string,
-      })
+          ...session.user,
+          image: session.user.image as string,
+        })
       : null
   })
   .server(async (_: RouterContext['queryClient']) => {
-    const session = (await Database.use((db) =>
+    const session = (await Database.transaction((db) =>
       auth(db, env).api.getSession({
         headers: getRequest().headers,
         query: {
@@ -41,4 +41,3 @@ export const $getSessionUser = createIsomorphicFn()
       ? toSession({ ...session.user, image: session.user.image as string })
       : null
   })
-

@@ -10,7 +10,7 @@ import { auth } from './auth'
 import type { BetterAuthSession } from './auth-types'
 
 export const authMiddleware = createMiddleware().server(async ({ next }) => {
-  const session = (await Database.use((db) =>
+  const session = (await Database.transaction((db) =>
     auth(db, env).api.getSession({
       headers: getRequest().headers,
       query: {
@@ -25,9 +25,9 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
     context: {
       user: session
         ? toSession({
-          ...session.user,
-          image: session.user.image as string,
-        })
+            ...session.user,
+            image: session.user.image as string,
+          })
         : null,
     },
   })

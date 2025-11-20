@@ -24,16 +24,16 @@ const data = {
 }
 
 export function AppSidebar({
-  username,
+  slug,
   ...props
-}: { username: string } & React.ComponentProps<typeof Sidebar>) {
+}: { slug: string } & React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link to="/$username" params={{ username }}>
+              <Link to="/$slug" params={{ slug }}>
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   <Command className="size-4" />
                 </div>
@@ -46,8 +46,8 @@ export function AppSidebar({
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain username={username} />
-        <NavSecondary username={username} className="mt-auto" />
+        <NavMain slug={slug} />
+        <NavSecondary slug={slug} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

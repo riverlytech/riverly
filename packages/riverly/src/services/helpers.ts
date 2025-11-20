@@ -1,10 +1,6 @@
 import { fn } from "@riverly/utils";
 import { SelectUser } from "@riverly/db";
 
-export function defaultAvatarUrl(name: string) {
-  return `https://avatar.vercel.sh/${name}`;
-}
-
 export function parseRepoUrl(
   repoUrl: string
 ): [Error | null, { owner: string; repo: string } | null] {
@@ -47,20 +43,16 @@ export function parseAbsName(username: string, name: string): [string, string] {
 }
 
 export const toSession = fn(SelectUser, (user) => {
-  const avatarUrl = user.image || `https://avatar.vercel.sh/${user.username}`;
+  const image = user.image || `https://avatar.vercel.sh/${user.username}`;
   return {
     userId: user.id,
     name: user.name,
     username: user.username,
-    githubId: user.githubId,
     email: user.email,
     emailVerified: user.emailVerified,
-    isStaff: user.isStaff,
-    isBlocked: user.isBlocked,
-    image: avatarUrl,
+    image: image,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
     defaultOrgId: user.defaultOrgId,
   };
 });
-

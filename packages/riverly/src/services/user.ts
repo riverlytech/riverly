@@ -19,7 +19,7 @@ export namespace User {
         .from(users)
         .where(eq(users.username, username))
         .execute()
-        .then((rows) => rows.at(0));
+        .then((rows) => rows[0] ?? null);
     })
   );
 
@@ -30,7 +30,7 @@ export namespace User {
         .from(users)
         .where(eq(users.id, id))
         .execute()
-        .then((rows) => rows[0]);
+        .then((rows) => rows[0] ?? null);
     })
   );
 

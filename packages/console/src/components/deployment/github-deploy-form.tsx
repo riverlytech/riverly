@@ -34,12 +34,12 @@ import type z from 'zod/v4'
 type GitHubDeployFormValues = z.infer<typeof GitHubDeployForm>
 
 export function GitHubDeployFormComponent({
-  username,
-  name,
+  slug,
+  serverId,
   repo,
 }: {
-  username: string
-  name: string
+  slug: string
+  serverId: string
   repo: string
 }) {
   const navigate = useNavigate()
@@ -48,7 +48,7 @@ export function GitHubDeployFormComponent({
   const form = useForm({
     resolver: zodResolver(GitHubDeployForm),
     defaultValues: {
-      name,
+      serverId,
       repo,
       rootDir: './',
       envs: [],
@@ -71,16 +71,16 @@ export function GitHubDeployFormComponent({
         const deploymentId = response.result.deploymentId
         if (deploymentId) {
           await navigate({
-            to: '/$username/deployments/$deploymentId',
+            to: '/$slug/deployments/$deploymentId',
             params: {
-              username,
+              slug,
               deploymentId,
             },
           })
         } else {
           await navigate({
-            to: '/$username/deployments',
-            params: { username },
+            to: '/$slug/deployments',
+            params: { slug },
           })
         }
       } else {
@@ -106,7 +106,7 @@ export function GitHubDeployFormComponent({
         )}
         <FormField
           control={form.control}
-          name="name"
+          name="serverId"
           render={({ field }) => (
             <FormItem>
               <FormControl>

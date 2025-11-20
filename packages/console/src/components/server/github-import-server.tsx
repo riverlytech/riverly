@@ -3,7 +3,6 @@ import { useNavigate } from '@tanstack/react-router'
 import { CircleAlert } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 
-import { Workspace } from '@riverly/riverly'
 import { ServerVisibilityEnum } from '@riverly/ty'
 
 import { Alert, AlertTitle } from '@/components/ui/alert'
@@ -41,14 +40,16 @@ import type z from 'zod/v4'
 type GitHubImportFormValues = z.infer<typeof GitHubImportForm>
 
 export function GitHubImportServerForm({
-  workspace: workspace,
-  name,
-  fullName,
+  slug,
+  organizationId,
+  memberId,
+  repoFullName,
   isPrivate,
 }: {
-  workspace: Workspace.WorkspaceWithMembership
-  name: string // mcping
-  fullName: string // sanchitrk/mcping
+  slug: string
+  organizationId: string
+  memberId: string
+  repoFullName: string // sanchitrk/mcping
   isPrivate: boolean
 }) {
   const navigate = useNavigate()
@@ -58,29 +59,31 @@ export function GitHubImportServerForm({
   const form = useForm<GitHubImportFormValues>({
     resolver: zodResolver(GitHubImportForm),
     defaultValues: {
-      name: name,
       title: '',
       description: '',
+      organizationId: organizationId,
+      memberId: memberId,
       visibility: visibility,
+      repoUrl: repoFullName,
     },
     mode: 'onTouched',
   })
 
   async function onSubmit(values: GitHubImportFormValues) {
     const request = {
-      name: values.name,
+      organizationId: values.organizationId,
+      memberId: values.memberId,
       title: values.title,
       description: values.description,
       visibility: values.visibility,
-      repoUrl: fullName,
+      repoUrl: values.repoUrl,
     }
-    const res = await importServerFromGitHub({ data: request })
+    const response = await importServerFromGitHub({ data: request })
     navigate({
-      to: '/$username/servers/$owner/$name',
+      to: '/$slug/servers/$serverId',
       params: {
-        username: workspace.username,
-        owner: res.username,
-        name: res.name,
+        slug,
+        serverId: response.serverId,
       },
     }).then()
   }
@@ -92,23 +95,24 @@ export function GitHubImportServerForm({
           <CardContent className="space-y-6">
             <FormField
               control={form.control}
-              name="name"
+              name="organizationId"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="acme"
-                      disabled={form.formState.isSubmitting}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Pick a short and memorable name, or keep it the same as the
-                    GitHub repo name.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
+                <Input
+                  className="hidden"
+                  disabled={form.formState.isSubmitting}
+                  {...field}
+                />
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="memberId"
+              render={({ field }) => (
+                <Input
+                  className="hidden"
+                  disabled={form.formState.isSubmitting}
+                  {...field}
+                />
               )}
             />
             <FormField

@@ -27,6 +27,7 @@ export const auth = (db: Database.TxOrDb, env: Env) => {
     ...authConfig,
     database: drizzleAdapter(db, {
       provider: 'pg',
+      transaction: true,
       schema: {
         user: users,
         session: sessions,
@@ -77,7 +78,7 @@ export const auth = (db: Database.TxOrDb, env: Env) => {
       },
       session: {
         create: {
-          after: async () => { },
+          after: async () => {},
         },
       },
     },

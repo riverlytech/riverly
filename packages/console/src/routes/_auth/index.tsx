@@ -48,7 +48,7 @@ function App() {
       <header className="flex shrink-0 items-center justify-between gap-3 px-4 pt-2 sm:px-8">
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <div className="mr-1">
-            <Link to="/$username" params={{ username }} className="font-mono">
+            <Link to="/" className="font-mono">
               riverly.
             </Link>
           </div>
@@ -126,7 +126,7 @@ function App() {
               <DropdownMenuLabel>{sessionUser.name}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
-                <LogOutButton redirect="/" />
+                <LogOutButton redirect="/login" />
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -149,13 +149,16 @@ function App() {
             {orgs.map((org) => (
               <li key={org.slug}>
                 <Link
-                  to="/$username"
-                  params={{ username: org.slug }}
+                  to="/$slug"
+                  params={{ slug: org.slug }}
                   className="bg-card text-card-foreground hover:border-primary/50 hover:bg-card/80 focus-visible:ring-ring block rounded-xl border p-4 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 >
                   <div className="flex items-center gap-4">
                     <Avatar className="size-12">
-                      <AvatarImage src={org.logo || `https://avatar.vercel.sh/${org.slug}`} alt={org.name} />
+                      <AvatarImage
+                        src={org.logo || `https://avatar.vercel.sh/${org.slug}`}
+                        alt={org.name}
+                      />
                       <AvatarFallback className="text-lg font-medium">
                         {org.name
                           .split(' ')
@@ -167,9 +170,7 @@ function App() {
                     </Avatar>
                     <div className="flex flex-col">
                       <span className="text-lg font-medium">{org.name}</span>
-                      <span className="text-muted-foreground">
-                        @{org.slug}
-                      </span>
+                      <span className="text-muted-foreground">@{org.slug}</span>
                     </div>
                   </div>
                 </Link>

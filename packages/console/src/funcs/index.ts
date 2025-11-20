@@ -5,63 +5,21 @@ import z from 'zod/v4'
 
 import { env } from '@riverly/config'
 import type { GitHubImportServer } from '@riverly/db'
-import {
-  GitHub,
-  Server,
-  ServerDeployment,
-  ServerTracker,
-  User,
-} from '@riverly/riverly'
+import { GitHub, Server, ServerDeployment, User } from '@riverly/riverly'
 import type { DeploymentTargetType, ServerVisibility } from '@riverly/ty'
 
 import { authMiddleware } from '@/lib/auth-middleware'
 import { GitHubImportForm, NewServerForm, ProfileEditForm } from '@/validations'
 
-export const activeServerCountFn = createServerFn({ method: 'GET' })
-  .inputValidator((data: { userId: string }) => data)
-  .middleware([authMiddleware])
-  .handler(async ({ data, context: { user } }) => {
-    if (!user) {
-      setResponseStatus(401)
-      throw new BetterAuthError('Unauthorized')
-    }
-    return ServerTracker.activeCount(data.userId)
-  })
-
-export const topUsedServersFn = createServerFn({ method: 'GET' })
-  .inputValidator((data: { userId: string; limit?: number }) => data)
-  .middleware([authMiddleware])
-  .handler(async ({ data, context: { user } }) => {
-    if (!user) {
-      setResponseStatus(401)
-      throw new BetterAuthError('Unauthorized')
-    }
-    return ServerTracker.topUsedServers({
-      userId: data.userId,
-      limit: data.limit ?? 3,
-    })
-  })
-
-export const recentlyViewedServersFn = createServerFn({ method: 'GET' })
-  .inputValidator((data: { userId: string; limit?: number }) => data)
-  .middleware([authMiddleware])
-  .handler(async ({ data, context: { user } }) => {
-    if (!user) {
-      setResponseStatus(401)
-      throw new BetterAuthError('Unauthorized')
-    }
-    return ServerTracker.recentlyViewedServers({
-      userId: data.userId,
-      limit: data.limit ?? 3,
-    })
-  })
-
 type DeploymentTarget = DeploymentTargetType | 'all'
 
 export const deploymentsFn = createServerFn({ method: 'GET' })
   .inputValidator(
-    (data: { userId: string; limit?: number; target?: DeploymentTarget }) =>
-      data,
+    (data: {
+      organizationId: string
+      limit?: number
+      target?: DeploymentTarget
+    }) => data,
   )
   .middleware([authMiddleware])
   .handler(async ({ data, context: { user } }) => {
@@ -70,7 +28,7 @@ export const deploymentsFn = createServerFn({ method: 'GET' })
       throw new BetterAuthError('Unauthorized')
     }
     return ServerDeployment.deployments({
-      userId: data.userId,
+      organizationId: data.organizationId,
       limit: data.limit ?? 3,
       target: data.target ?? 'all',
     })
@@ -79,7 +37,7 @@ export const deploymentsFn = createServerFn({ method: 'GET' })
 export const serverDeploymentsFn = createServerFn({ method: 'GET' })
   .inputValidator(
     (data: {
-      userId: string
+      organizationId: string
       limit?: number
       serverId: string
       target?: DeploymentTarget
@@ -92,23 +50,25 @@ export const serverDeploymentsFn = createServerFn({ method: 'GET' })
       throw new BetterAuthError('Unauthorized')
     }
     return ServerDeployment.serverDeployments({
-      userId: data.userId,
+      organizationId: data.organizationId,
       serverId: data.serverId,
       limit: data.limit ?? 3,
       target: data.target ?? 'all',
     })
   })
 
-export const userDeployment = createServerFn({ method: 'GET' })
-  .inputValidator((data: { deploymentId: string }) => data)
+export const orgDeployment = createServerFn({ method: 'GET' })
+  .inputValidator(
+    (data: { organizationId: string; deploymentId: string }) => data,
+  )
   .middleware([authMiddleware])
   .handler(async ({ data, context: { user: sessionUser } }) => {
     if (!sessionUser) {
       setResponseStatus(401)
       throw new BetterAuthError('Unauthorized')
     }
-    const res = await ServerDeployment.userDeployment({
-      userId: sessionUser.userId,
+    const res = await ServerDeployment.orgDeployment({
+      organizationId: data.organizationId,
       deploymentId: data.deploymentId,
     })
     return res
@@ -116,9 +76,13 @@ export const userDeployment = createServerFn({ method: 'GET' })
 
 type Visibility = ServerVisibility | 'both'
 
-export const userInstalledServersFn = createServerFn({ method: 'GET' })
+export const orgInstalledServersFn = createServerFn({ method: 'GET' })
   .inputValidator(
-    (data: { userId: string; limit?: number; visibility: Visibility }) => data,
+    (data: {
+      organizationId: string
+      limit?: number
+      visibility: Visibility
+    }) => data,
   )
   .middleware([authMiddleware])
   .handler(async ({ data, context: { user } }) => {
@@ -126,18 +90,18 @@ export const userInstalledServersFn = createServerFn({ method: 'GET' })
       setResponseStatus(401)
       throw new BetterAuthError('Unauthorized')
     }
-    return Server.userInstalledServers({
-      userId: data.userId,
+    return Server.orgInstalledServers({
+      organizationId: data.organizationId,
       limit: data.limit ?? 3,
       visibility: data.visibility,
     })
   })
 
-export const githubInstalledRepoDetailFn = createServerFn({
+export const githubRepoDetailFn = createServerFn({
   method: 'GET',
 })
   .inputValidator(
-    (data: { userId: string; owner: string; name: string }) => data,
+    (data: { organizationId: string; owner: string; name: string }) => data,
   )
   .middleware([authMiddleware])
   .handler(async ({ data, context: { user } }) => {
@@ -145,8 +109,8 @@ export const githubInstalledRepoDetailFn = createServerFn({
       setResponseStatus(401)
       throw new BetterAuthError('Unauthorized')
     }
-    const installation = await GitHub.userInstallation({
-      userId: data.userId,
+    const installation = await GitHub.orgInstallation({
+      organizationId: data.organizationId,
       githubAppId: env.GITHUB_APP_ID,
       account: data.owner,
     })
@@ -168,50 +132,80 @@ export const addNewServerFn = createServerFn({ method: 'POST' })
       throw new BetterAuthError('Unauthorized')
     }
     const newServer = {
-      userId: sessionUser.userId,
-      addedById: sessionUser.userId,
-      username: sessionUser.username,
-      name: data.name,
+      organizationId: data.organizationId,
+      memberId: data.memberId,
       title: data.title,
       description: data.description,
       isClaimed: false,
       visibility: data.visibility,
     }
     const response = await Server.addNew(newServer)
-    return response
+    return {
+      serverId: response.id,
+    }
   })
 
-export const getServerFromNameFn = createServerFn({ method: 'GET' })
-  .inputValidator((data: { username: string; name: string }) => data)
+export const getServerFromIDFn = createServerFn({ method: 'GET' })
+  .inputValidator((data: { organizationId: string; serverId: string }) => data)
   .middleware([authMiddleware])
   .handler(async ({ data, context: { user: sessionUser } }) => {
     if (!sessionUser) {
       setResponseStatus(401)
       throw new BetterAuthError('Unauthorized')
     }
-    const response = await Server.fromName({
-      callerUserId: sessionUser.userId,
-      username: data.username,
-      name: data.name,
+    const response = await Server.fromID({
+      organizationId: data.organizationId,
+      serverId: data.serverId,
     })
     return response
   })
 
-export const getServerDetailFromNameFn = createServerFn({ method: 'GET' })
-  .inputValidator((data: { username: string; name: string }) => data)
+export const getServerFromIDWithGitFn = createServerFn({ method: 'GET' })
+  .inputValidator((data: { organizationId: string; serverId: string }) => data)
   .middleware([authMiddleware])
   .handler(async ({ data, context: { user: sessionUser } }) => {
     if (!sessionUser) {
       setResponseStatus(401)
       throw new BetterAuthError('Unauthorized')
     }
-    const response = await Server.detailFromName({
-      callerUserId: sessionUser.userId,
-      username: data.username,
-      name: data.name,
+    const response = await Server.fromIDWithGit({
+      organizationId: data.organizationId,
+      serverId: data.serverId,
     })
     return response
   })
+
+// export const getServerFromNameFn = createServerFn({ method: 'GET' })
+//   .inputValidator((data: { username: string; name: string }) => data)
+//   .middleware([authMiddleware])
+//   .handler(async ({ data, context: { user: sessionUser } }) => {
+//     if (!sessionUser) {
+//       setResponseStatus(401)
+//       throw new BetterAuthError('Unauthorized')
+//     }
+//     const response = await Server.fromName({
+//       callerUserId: sessionUser.userId,
+//       username: data.username,
+//       name: data.name,
+//     })
+//     return response
+//   })
+
+// export const getServerDetailFromNameFn = createServerFn({ method: 'GET' })
+//   .inputValidator((data: { username: string; name: string }) => data)
+//   .middleware([authMiddleware])
+//   .handler(async ({ data, context: { user: sessionUser } }) => {
+//     if (!sessionUser) {
+//       setResponseStatus(401)
+//       throw new BetterAuthError('Unauthorized')
+//     }
+//     const response = await Server.detailFromName({
+//       callerUserId: sessionUser.userId,
+//       username: data.username,
+//       name: data.name,
+//     })
+//     return response
+//   })
 
 export const getServerConfigFn = createServerFn({ method: 'GET' })
   .inputValidator((data: { serverId: string }) => data)
@@ -235,15 +229,16 @@ export const updateProfileNameFn = createServerFn({ method: 'POST' })
     })
   })
 
-export const userGitHubInstallationFn = createServerFn({ method: 'GET' })
+export const orgGitHubInstallationFn = createServerFn({ method: 'GET' })
+  .inputValidator((data: { organizationId: string }) => data)
   .middleware([authMiddleware])
-  .handler(async ({ context: { user: sessionUser } }) => {
+  .handler(async ({ data, context: { user: sessionUser } }) => {
     if (!sessionUser) {
       setResponseStatus(401)
       throw new BetterAuthError('Unauthorized')
     }
-    const response = await GitHub.userInstallation({
-      userId: sessionUser.userId,
+    const response = await GitHub.orgInstallation({
+      organizationId: data.organizationId,
       githubAppId: env.GITHUB_APP_ID,
       account: sessionUser.username,
     })
@@ -259,13 +254,11 @@ export const importServerFromGitHub = createServerFn({ method: 'POST' })
       throw new BetterAuthError('Unauthorized')
     }
     const request: z.infer<typeof GitHubImportServer> = {
-      name: data.name,
       title: data.title,
       description: data.description,
       visibility: data.visibility,
-      userId: sessionUser.userId,
-      username: sessionUser.username,
-      addedById: sessionUser.userId,
+      organizationId: data.organizationId,
+      memberId: data.memberId,
       repoUrl: data.repoUrl,
     }
     const response = await Server.importFromGitHub({
@@ -273,8 +266,6 @@ export const importServerFromGitHub = createServerFn({ method: 'POST' })
       githubAppId: env.GITHUB_APP_ID,
     })
     return {
-      serverId: response.serverId,
-      username: response.username,
-      name: response.name,
+      serverId: response.id,
     }
   })

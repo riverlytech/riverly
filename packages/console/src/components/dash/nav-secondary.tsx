@@ -10,10 +10,10 @@ import {
 } from '@/components/ui/sidebar'
 
 export function NavSecondary({
-  username,
+  slug,
   ...props
 }: {
-  username: string
+  slug: string
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   return (
     <SidebarGroup {...props}>

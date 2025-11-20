@@ -90,7 +90,7 @@ export const CloudBuildBuildDeploy = Deployer.define(
         tags: [
           `deployment-id-${params.deployment.deploymentId.toLowerCase()}` as const,
           `build-id-${params.build.buildId.toLowerCase()}` as const,
-          `user-id-${params.user.userId.toLowerCase()}` as const,
+          `org-id-${params.org.organizationId.toLowerCase()}` as const,
           `deployment-target-${params.deployment.target.toLowerCase()}` as const,
           `ty-build-deploy` as const,
         ],
@@ -229,8 +229,7 @@ export const CloudBuildBuildDeploy = Deployer.define(
         typeof globalThis !== "undefined" &&
         typeof (globalThis as { Bun?: unknown }).Bun !== "undefined";
       const shouldUseRestTransport =
-        isBunRuntime ||
-        gcpConfig.GCP_USE_REST_CLOUDBUILD === "1";
+        isBunRuntime || gcpConfig.GCP_USE_REST_CLOUDBUILD === "1";
       const cloudBuildClientOptions: ConstructorParameters<
         typeof CloudBuildClient
       >[0] = {
@@ -378,7 +377,7 @@ function normalizeBuildId(raw?: string | null): string | null {
   if (!trimmed) return null;
 
   const segment = trimmed.includes("/")
-    ? trimmed.split("/").filter(Boolean).pop() ?? trimmed
+    ? (trimmed.split("/").filter(Boolean).pop() ?? trimmed)
     : trimmed;
 
   if (looksLikeUuid(segment)) {
@@ -506,10 +505,10 @@ function buildArtifactPath(
 ): string {
   const regionPrefix = `${config.GCP_REGION}-docker.pkg.dev`;
   const repository = "a0dotrun-paas-images";
-  const userSegment = params.user.userId.toLowerCase();
+  const orgSegment = params.org.organizationId.toLowerCase();
   const serverSegment = params.server.serverId.toLowerCase();
   const tag = params.build.buildId.toLowerCase();
-  return `${regionPrefix}/${config.GCP_PROJECT_ID}/${repository}/${userSegment}/servers/${serverSegment}:${tag}`;
+  return `${regionPrefix}/${config.GCP_PROJECT_ID}/${repository}/${orgSegment}/servers/${serverSegment}:${tag}`;
 }
 
 function buildServiceName(deploymentId: string): string {

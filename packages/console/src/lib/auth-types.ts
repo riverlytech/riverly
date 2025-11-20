@@ -73,7 +73,7 @@ type BaseSession = NonNullable<
  * Merge built-in Better Auth `user` type with your custom `AuthUser` fields.
  * This means `session.user` will autocomplete both sets of fields:
  *  - Built-in: id, name, email, image, etc.
- *  - Custom: username, githubId, isStaff, isBlocked
+ *  - Custom: username
  */
 export type AuthenticatedUser = BaseSession['user'] & AuthUserFieldExtras
 

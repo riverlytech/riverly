@@ -5,7 +5,6 @@ import { App as GhApp } from "octokit";
 import z from "zod/v4";
 import { Database } from "@riverly/db";
 import { type GitHubAccountType, gitHubInstallationTable } from "@riverly/db";
-import { type GitHubInstallationSetup } from "@riverly/ty";
 import { type ServerReadme } from "@riverly/ty";
 import { env } from "@riverly/config";
 
@@ -46,7 +45,7 @@ export namespace GitHub {
 
   export const upsertApp = fn(
     z.object({
-      userId: z.string(),
+      organizationId: z.string(),
       githubInstallationId: z.number(),
       githubAppId: z.number(),
       accountId: z.number(),
@@ -73,7 +72,7 @@ export namespace GitHub {
           .where(
             and(
               eq(gitHubInstallationTable.githubAppId, gh.githubAppId),
-              eq(gitHubInstallationTable.userId, gh.userId),
+              eq(gitHubInstallationTable.organizationId, gh.organizationId),
               or(
                 eq(gitHubInstallationTable.accountLogin, gh.accountLogin),
                 eq(gitHubInstallationTable.accountId, gh.accountId)
@@ -90,8 +89,7 @@ export namespace GitHub {
             accountId: gh.accountId,
             accountLogin: gh.accountLogin,
             accountType: gh.accountType as GitHubAccountType,
-            userId: gh.userId,
-            setupAction: gh.setupAction as GitHubInstallationSetup,
+            organizationId: gh.organizationId,
           })
           .returning({
             id: gitHubInstallationTable.githubInstallationId,
@@ -101,21 +99,20 @@ export namespace GitHub {
       })
   );
 
-  export const userInstallation = fn(
+  export const orgInstallation = fn(
     z.object({
-      userId: z.string(),
+      organizationId: z.string(),
       githubAppId: z.number(),
       account: z.string(),
     }),
     async (filter) => {
       return await Database.use(async (db) => {
-        const res = await db
+        return await db
           .select({
             githubInstallationId: gitHubInstallationTable.githubInstallationId,
             githubAppId: gitHubInstallationTable.githubAppId,
             accountLogin: gitHubInstallationTable.accountLogin,
             accountType: gitHubInstallationTable.accountType,
-            setupAction: gitHubInstallationTable.setupAction,
             createdAt: gitHubInstallationTable.createdAt,
             updatedAt: gitHubInstallationTable.updatedAt,
           })
@@ -123,19 +120,18 @@ export namespace GitHub {
           .where(
             and(
               eq(gitHubInstallationTable.githubAppId, filter.githubAppId),
-              eq(gitHubInstallationTable.userId, filter.userId),
+              eq(gitHubInstallationTable.organizationId, filter.organizationId),
               eq(gitHubInstallationTable.accountLogin, filter.account)
             )
           )
           .execute()
-          .then((rows) => rows.at(0));
-        return res ?? undefined;
+          .then((rows) => rows[0] ?? null);
       });
     }
   );
 
-  export const userInstalls = fn(
-    z.object({ userId: z.string(), githubAppId: z.number() }),
+  export const orgInstalls = fn(
+    z.object({ organizationId: z.string(), githubAppId: z.number() }),
     async (filter) =>
       await Database.use(async (db) =>
         db
@@ -144,7 +140,6 @@ export namespace GitHub {
             githubAppId: gitHubInstallationTable.githubAppId,
             accountLogin: gitHubInstallationTable.accountLogin,
             accountType: gitHubInstallationTable.accountType,
-            setupAction: gitHubInstallationTable.setupAction,
             createdAt: gitHubInstallationTable.createdAt,
             updatedAt: gitHubInstallationTable.updatedAt,
           })
@@ -152,7 +147,7 @@ export namespace GitHub {
           .where(
             and(
               eq(gitHubInstallationTable.githubAppId, filter.githubAppId),
-              eq(gitHubInstallationTable.userId, filter.userId)
+              eq(gitHubInstallationTable.organizationId, filter.organizationId)
             )
           )
           .orderBy(asc(gitHubInstallationTable.createdAt))
@@ -161,9 +156,8 @@ export namespace GitHub {
   );
 
   export const repos = fn(z.number(), async (githubInstallationId) => {
-    const octokit = await getGhApp().getInstallationOctokit(
-      githubInstallationId
-    );
+    const octokit =
+      await getGhApp().getInstallationOctokit(githubInstallationId);
     const repos = await octokit.paginate(
       octokit.rest.apps.listReposAccessibleToInstallation,
       {
@@ -262,5 +256,5 @@ export namespace GitHub {
     }
   );
 
-  export type UserInstalls = Awaited<ReturnType<typeof userInstalls>>;
+  export type OrgInstalls = Awaited<ReturnType<typeof orgInstalls>>;
 }

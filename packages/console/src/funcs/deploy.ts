@@ -17,7 +17,7 @@ export const githubDeployServerFn = createServerFn({ method: 'POST' })
       throw new BetterAuthError('Unauthorized')
     }
     const payload = {
-      name: data.name,
+      serverId: data.serverId,
       repo: data.repo,
       target: data.target,
       config: {

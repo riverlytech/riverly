@@ -9,19 +9,16 @@ export const authClient = createAuthClient({
 })
 
 export const toSession = (user: SelectUser) => {
-  const avatarUrl = user.image || `https://avatar.vercel.sh/${user.username}`
+  const image = user.image || `https://avatar.vercel.sh/${user.username}`
   return {
     userId: user.id,
     name: user.name,
     username: user.username,
-    githubId: user.githubId,
     email: user.email,
     emailVerified: user.emailVerified,
-    isStaff: user.isStaff,
-    isBlocked: user.isBlocked,
-    image: avatarUrl,
+    image: image,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
-    defaultOrgId: user.defaultOrgId
+    defaultOrgId: user.defaultOrgId,
   }
 }

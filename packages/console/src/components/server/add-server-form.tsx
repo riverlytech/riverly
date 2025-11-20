@@ -39,14 +39,23 @@ import type z from 'zod/v4'
 
 type NewServerFormValues = z.infer<typeof NewServerForm>
 
-export function AddServerForm({ username }: { username: string }) {
+export function AddServerForm({
+  slug,
+  organizationId,
+  memberId,
+}: {
+  slug: string
+  organizationId: string
+  memberId: string
+}) {
   const navigate = useNavigate()
   const form = useForm<NewServerFormValues>({
     resolver: zodResolver(NewServerForm),
     defaultValues: {
       title: '',
       description: '',
-      name: '',
+      organizationId: organizationId,
+      memberId: memberId,
       visibility: ServerVisibilityEnum.PRIVATE,
     },
     mode: 'onTouched',
@@ -55,15 +64,16 @@ export function AddServerForm({ username }: { username: string }) {
   async function onSubmit(values: NewServerFormValues) {
     const response = await addNewServerFn({
       data: {
-        name: values.name,
+        organizationId: values.organizationId,
+        memberId: values.memberId,
         title: values.title,
         description: values.description,
         visibility: values.visibility,
       },
     })
     navigate({
-      to: '/$username/servers/$owner/$name',
-      params: { username, owner: response.username, name: response.name },
+      to: '/$slug/servers/$serverId',
+      params: { slug, serverId: response.serverId },
     }).then()
   }
 
@@ -74,31 +84,24 @@ export function AddServerForm({ username }: { username: string }) {
           <CardContent className="space-y-6">
             <FormField
               control={form.control}
-              name="name"
+              name="organizationId"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <div className="flex items-center gap-2">
-                    <span className="flex items-center font-mono">
-                      {username}
-                    </span>
-                    <span className="text-muted-foreground">/</span>
-                    <FormControl>
-                      <Input
-                        className="bg-background"
-                        placeholder="my-awesome-server"
-                        disabled={form.formState.isSubmitting}
-                        {...field}
-                      />
-                    </FormControl>
-                  </div>
-                  <FormDescription>
-                    Pick a short and memorable name, like{' '}
-                    <span className="font-mono">space-crm</span>. You can use
-                    lower case characters and dashes.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
+                <Input
+                  className="hidden"
+                  disabled={form.formState.isSubmitting}
+                  {...field}
+                />
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="memberId"
+              render={({ field }) => (
+                <Input
+                  className="hidden"
+                  disabled={form.formState.isSubmitting}
+                  {...field}
+                />
               )}
             />
             <FormField
@@ -152,7 +155,6 @@ export function AddServerForm({ username }: { username: string }) {
               name="visibility"
               render={({ field }) => (
                 <FormItem>
-                  {/* <FormLabel>Visibility</FormLabel> */}
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
