@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { processMarkdown } from '@/components/utils/markdown'
 
 export const Route = createFileRoute(
-  '/_auth/$slug/_dash/servers/$serverId/_server/readme',
+  '/_auth/$slug/_dash/servers/$serverId/readme',
 )({
   loader: async ({ params }) => {
     const res = await fetch(`/api/servers/${params.serverId}/readme`)

@@ -25,39 +25,36 @@ import { Route as AuthUsersUsernameRouteImport } from './routes/_auth/users.$use
 import { Route as AuthSlugDashRouteRouteImport } from './routes/_auth/$slug/_dash/route'
 import { Route as AuthSlugDashIndexRouteImport } from './routes/_auth/$slug/_dash/index'
 import { Route as ApiServersServerIdReadmeRouteImport } from './routes/api/servers/$serverId.readme'
-import { Route as AuthSlugDashDeploymentsRouteImport } from './routes/_auth/$slug/_dash/deployments'
-import { Route as AuthSlugDeploymentsDeploymentIdRouteRouteImport } from './routes/_auth/$slug/deployments.$deploymentId/route'
 import { Route as AuthSlugDashSettingsRouteRouteImport } from './routes/_auth/$slug/_dash/settings/route'
-import { Route as AuthSlugDeploymentsDeploymentIdIndexRouteImport } from './routes/_auth/$slug/deployments.$deploymentId/index'
+import { Route as AuthSlugDashDeploymentsRouteRouteImport } from './routes/_auth/$slug/_dash/deployments/route'
 import { Route as AuthSlugDashSettingsIndexRouteImport } from './routes/_auth/$slug/_dash/settings/index'
-import { Route as AuthSlugDashDeploymentsIndexRouteImport } from './routes/_auth/$slug/_dash/deployments.index'
-import { Route as AuthSlugDeploymentsDeploymentIdLogsRouteImport } from './routes/_auth/$slug/deployments.$deploymentId/logs'
+import { Route as AuthSlugDashDeploymentsIndexRouteImport } from './routes/_auth/$slug/_dash/deployments/index'
 import { Route as AuthSlugDashSettingsWebhooksRouteImport } from './routes/_auth/$slug/_dash/settings/webhooks'
 import { Route as AuthSlugDashSettingsGithubRouteImport } from './routes/_auth/$slug/_dash/settings/github'
 import { Route as AuthSlugDashServersNewRouteImport } from './routes/_auth/$slug/_dash/servers/new'
 import { Route as AuthSlugDashServersImportRouteImport } from './routes/_auth/$slug/_dash/servers/import'
-import { Route as AuthSlugDashDeploymentsProductionRouteImport } from './routes/_auth/$slug/_dash/deployments.production'
-import { Route as AuthSlugDashDeploymentsPreviewRouteImport } from './routes/_auth/$slug/_dash/deployments.preview'
+import { Route as AuthSlugDashDeploymentsProductionRouteImport } from './routes/_auth/$slug/_dash/deployments/production'
+import { Route as AuthSlugDashDeploymentsPreviewRouteImport } from './routes/_auth/$slug/_dash/deployments/preview'
 import { Route as AuthSlugDashServersListRouteRouteImport } from './routes/_auth/$slug/_dash/servers/_list/route'
+import { Route as AuthSlugDashServersServerIdRouteRouteImport } from './routes/_auth/$slug/_dash/servers/$serverId/route'
+import { Route as AuthSlugDashDeploymentsDeploymentIdRouteRouteImport } from './routes/_auth/$slug/_dash/deployments/$deploymentId/route'
 import { Route as AuthSlugDashServersListIndexRouteImport } from './routes/_auth/$slug/_dash/servers/_list/index'
+import { Route as AuthSlugDashServersServerIdIndexRouteImport } from './routes/_auth/$slug/_dash/servers/$serverId/index'
+import { Route as AuthSlugDashDeploymentsDeploymentIdIndexRouteImport } from './routes/_auth/$slug/_dash/deployments/$deploymentId/index'
 import { Route as AuthSlugDashServersListPublicRouteImport } from './routes/_auth/$slug/_dash/servers/_list/public'
 import { Route as AuthSlugDashServersListPrivateRouteImport } from './routes/_auth/$slug/_dash/servers/_list/private'
+import { Route as AuthSlugDashServersServerIdSettingsRouteImport } from './routes/_auth/$slug/_dash/servers/$serverId/settings'
+import { Route as AuthSlugDashServersServerIdReadmeRouteImport } from './routes/_auth/$slug/_dash/servers/$serverId/readme'
 import { Route as AuthSlugDashServersServerIdDeployRouteImport } from './routes/_auth/$slug/_dash/servers/$serverId/deploy'
-import { Route as AuthSlugDashServersServerIdServerRouteRouteImport } from './routes/_auth/$slug/_dash/servers/$serverId/_server/route'
-import { Route as AuthSlugDashServersServerIdServerIndexRouteImport } from './routes/_auth/$slug/_dash/servers/$serverId/_server/index'
-import { Route as AuthSlugDashServersServerIdServerSettingsRouteImport } from './routes/_auth/$slug/_dash/servers/$serverId/_server/settings'
-import { Route as AuthSlugDashServersServerIdServerReadmeRouteImport } from './routes/_auth/$slug/_dash/servers/$serverId/_server/readme'
-import { Route as AuthSlugDashServersServerIdServerDeploymentsRouteImport } from './routes/_auth/$slug/_dash/servers/$serverId/_server/deployments'
-import { Route as AuthSlugDashServersServerIdServerAnalyticsRouteImport } from './routes/_auth/$slug/_dash/servers/$serverId/_server/analytics'
-import { Route as AuthSlugDashServersServerIdServerDeploymentsIndexRouteImport } from './routes/_auth/$slug/_dash/servers/$serverId/_server/deployments.index'
-import { Route as AuthSlugDashServersServerIdServerDeploymentsProductionRouteImport } from './routes/_auth/$slug/_dash/servers/$serverId/_server/deployments.production'
-import { Route as AuthSlugDashServersServerIdServerDeploymentsPreviewRouteImport } from './routes/_auth/$slug/_dash/servers/$serverId/_server/deployments.preview'
+import { Route as AuthSlugDashServersServerIdAnalyticsRouteImport } from './routes/_auth/$slug/_dash/servers/$serverId/analytics'
+import { Route as AuthSlugDashDeploymentsDeploymentIdLogsRouteImport } from './routes/_auth/$slug/_dash/deployments/$deploymentId/logs'
+import { Route as AuthSlugDashServersServerIdDeploymentsRouteRouteImport } from './routes/_auth/$slug/_dash/servers/$serverId/deployments/route'
+import { Route as AuthSlugDashServersServerIdDeploymentsIndexRouteImport } from './routes/_auth/$slug/_dash/servers/$serverId/deployments/index'
+import { Route as AuthSlugDashServersServerIdDeploymentsProductionRouteImport } from './routes/_auth/$slug/_dash/servers/$serverId/deployments/production'
+import { Route as AuthSlugDashServersServerIdDeploymentsPreviewRouteImport } from './routes/_auth/$slug/_dash/servers/$serverId/deployments/preview'
 
 const AuthSlugDashServersRouteImport = createFileRoute(
   '/_auth/$slug/_dash/servers',
-)()
-const AuthSlugDashServersServerIdRouteImport = createFileRoute(
-  '/_auth/$slug/_dash/servers/$serverId',
 )()
 
 const LoginRoute = LoginRouteImport.update({
@@ -134,34 +131,17 @@ const ApiServersServerIdReadmeRoute =
     path: '/api/servers/$serverId/readme',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AuthSlugDashDeploymentsRoute = AuthSlugDashDeploymentsRouteImport.update({
-  id: '/deployments',
-  path: '/deployments',
-  getParentRoute: () => AuthSlugDashRouteRoute,
-} as any)
-const AuthSlugDeploymentsDeploymentIdRouteRoute =
-  AuthSlugDeploymentsDeploymentIdRouteRouteImport.update({
-    id: '/deployments/$deploymentId',
-    path: '/deployments/$deploymentId',
-    getParentRoute: () => AuthSlugRouteRoute,
-  } as any)
 const AuthSlugDashSettingsRouteRoute =
   AuthSlugDashSettingsRouteRouteImport.update({
     id: '/settings',
     path: '/settings',
     getParentRoute: () => AuthSlugDashRouteRoute,
   } as any)
-const AuthSlugDashServersServerIdRoute =
-  AuthSlugDashServersServerIdRouteImport.update({
-    id: '/$serverId',
-    path: '/$serverId',
-    getParentRoute: () => AuthSlugDashServersRoute,
-  } as any)
-const AuthSlugDeploymentsDeploymentIdIndexRoute =
-  AuthSlugDeploymentsDeploymentIdIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AuthSlugDeploymentsDeploymentIdRouteRoute,
+const AuthSlugDashDeploymentsRouteRoute =
+  AuthSlugDashDeploymentsRouteRouteImport.update({
+    id: '/deployments',
+    path: '/deployments',
+    getParentRoute: () => AuthSlugDashRouteRoute,
   } as any)
 const AuthSlugDashSettingsIndexRoute =
   AuthSlugDashSettingsIndexRouteImport.update({
@@ -173,13 +153,7 @@ const AuthSlugDashDeploymentsIndexRoute =
   AuthSlugDashDeploymentsIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => AuthSlugDashDeploymentsRoute,
-  } as any)
-const AuthSlugDeploymentsDeploymentIdLogsRoute =
-  AuthSlugDeploymentsDeploymentIdLogsRouteImport.update({
-    id: '/logs',
-    path: '/logs',
-    getParentRoute: () => AuthSlugDeploymentsDeploymentIdRouteRoute,
+    getParentRoute: () => AuthSlugDashDeploymentsRouteRoute,
   } as any)
 const AuthSlugDashSettingsWebhooksRoute =
   AuthSlugDashSettingsWebhooksRouteImport.update({
@@ -208,24 +182,48 @@ const AuthSlugDashDeploymentsProductionRoute =
   AuthSlugDashDeploymentsProductionRouteImport.update({
     id: '/production',
     path: '/production',
-    getParentRoute: () => AuthSlugDashDeploymentsRoute,
+    getParentRoute: () => AuthSlugDashDeploymentsRouteRoute,
   } as any)
 const AuthSlugDashDeploymentsPreviewRoute =
   AuthSlugDashDeploymentsPreviewRouteImport.update({
     id: '/preview',
     path: '/preview',
-    getParentRoute: () => AuthSlugDashDeploymentsRoute,
+    getParentRoute: () => AuthSlugDashDeploymentsRouteRoute,
   } as any)
 const AuthSlugDashServersListRouteRoute =
   AuthSlugDashServersListRouteRouteImport.update({
     id: '/_list',
     getParentRoute: () => AuthSlugDashServersRoute,
   } as any)
+const AuthSlugDashServersServerIdRouteRoute =
+  AuthSlugDashServersServerIdRouteRouteImport.update({
+    id: '/servers/$serverId',
+    path: '/servers/$serverId',
+    getParentRoute: () => AuthSlugDashRouteRoute,
+  } as any)
+const AuthSlugDashDeploymentsDeploymentIdRouteRoute =
+  AuthSlugDashDeploymentsDeploymentIdRouteRouteImport.update({
+    id: '/$deploymentId',
+    path: '/$deploymentId',
+    getParentRoute: () => AuthSlugDashDeploymentsRouteRoute,
+  } as any)
 const AuthSlugDashServersListIndexRoute =
   AuthSlugDashServersListIndexRouteImport.update({
     id: '/',
     path: '/',
     getParentRoute: () => AuthSlugDashServersListRouteRoute,
+  } as any)
+const AuthSlugDashServersServerIdIndexRoute =
+  AuthSlugDashServersServerIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthSlugDashServersServerIdRouteRoute,
+  } as any)
+const AuthSlugDashDeploymentsDeploymentIdIndexRoute =
+  AuthSlugDashDeploymentsDeploymentIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthSlugDashDeploymentsDeploymentIdRouteRoute,
   } as any)
 const AuthSlugDashServersListPublicRoute =
   AuthSlugDashServersListPublicRouteImport.update({
@@ -239,64 +237,59 @@ const AuthSlugDashServersListPrivateRoute =
     path: '/private',
     getParentRoute: () => AuthSlugDashServersListRouteRoute,
   } as any)
+const AuthSlugDashServersServerIdSettingsRoute =
+  AuthSlugDashServersServerIdSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthSlugDashServersServerIdRouteRoute,
+  } as any)
+const AuthSlugDashServersServerIdReadmeRoute =
+  AuthSlugDashServersServerIdReadmeRouteImport.update({
+    id: '/readme',
+    path: '/readme',
+    getParentRoute: () => AuthSlugDashServersServerIdRouteRoute,
+  } as any)
 const AuthSlugDashServersServerIdDeployRoute =
   AuthSlugDashServersServerIdDeployRouteImport.update({
     id: '/deploy',
     path: '/deploy',
-    getParentRoute: () => AuthSlugDashServersServerIdRoute,
+    getParentRoute: () => AuthSlugDashServersServerIdRouteRoute,
   } as any)
-const AuthSlugDashServersServerIdServerRouteRoute =
-  AuthSlugDashServersServerIdServerRouteRouteImport.update({
-    id: '/_server',
-    getParentRoute: () => AuthSlugDashServersServerIdRoute,
-  } as any)
-const AuthSlugDashServersServerIdServerIndexRoute =
-  AuthSlugDashServersServerIdServerIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AuthSlugDashServersServerIdServerRouteRoute,
-  } as any)
-const AuthSlugDashServersServerIdServerSettingsRoute =
-  AuthSlugDashServersServerIdServerSettingsRouteImport.update({
-    id: '/settings',
-    path: '/settings',
-    getParentRoute: () => AuthSlugDashServersServerIdServerRouteRoute,
-  } as any)
-const AuthSlugDashServersServerIdServerReadmeRoute =
-  AuthSlugDashServersServerIdServerReadmeRouteImport.update({
-    id: '/readme',
-    path: '/readme',
-    getParentRoute: () => AuthSlugDashServersServerIdServerRouteRoute,
-  } as any)
-const AuthSlugDashServersServerIdServerDeploymentsRoute =
-  AuthSlugDashServersServerIdServerDeploymentsRouteImport.update({
-    id: '/deployments',
-    path: '/deployments',
-    getParentRoute: () => AuthSlugDashServersServerIdServerRouteRoute,
-  } as any)
-const AuthSlugDashServersServerIdServerAnalyticsRoute =
-  AuthSlugDashServersServerIdServerAnalyticsRouteImport.update({
+const AuthSlugDashServersServerIdAnalyticsRoute =
+  AuthSlugDashServersServerIdAnalyticsRouteImport.update({
     id: '/analytics',
     path: '/analytics',
-    getParentRoute: () => AuthSlugDashServersServerIdServerRouteRoute,
+    getParentRoute: () => AuthSlugDashServersServerIdRouteRoute,
   } as any)
-const AuthSlugDashServersServerIdServerDeploymentsIndexRoute =
-  AuthSlugDashServersServerIdServerDeploymentsIndexRouteImport.update({
+const AuthSlugDashDeploymentsDeploymentIdLogsRoute =
+  AuthSlugDashDeploymentsDeploymentIdLogsRouteImport.update({
+    id: '/logs',
+    path: '/logs',
+    getParentRoute: () => AuthSlugDashDeploymentsDeploymentIdRouteRoute,
+  } as any)
+const AuthSlugDashServersServerIdDeploymentsRouteRoute =
+  AuthSlugDashServersServerIdDeploymentsRouteRouteImport.update({
+    id: '/deployments',
+    path: '/deployments',
+    getParentRoute: () => AuthSlugDashServersServerIdRouteRoute,
+  } as any)
+const AuthSlugDashServersServerIdDeploymentsIndexRoute =
+  AuthSlugDashServersServerIdDeploymentsIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => AuthSlugDashServersServerIdServerDeploymentsRoute,
+    getParentRoute: () => AuthSlugDashServersServerIdDeploymentsRouteRoute,
   } as any)
-const AuthSlugDashServersServerIdServerDeploymentsProductionRoute =
-  AuthSlugDashServersServerIdServerDeploymentsProductionRouteImport.update({
+const AuthSlugDashServersServerIdDeploymentsProductionRoute =
+  AuthSlugDashServersServerIdDeploymentsProductionRouteImport.update({
     id: '/production',
     path: '/production',
-    getParentRoute: () => AuthSlugDashServersServerIdServerDeploymentsRoute,
+    getParentRoute: () => AuthSlugDashServersServerIdDeploymentsRouteRoute,
   } as any)
-const AuthSlugDashServersServerIdServerDeploymentsPreviewRoute =
-  AuthSlugDashServersServerIdServerDeploymentsPreviewRouteImport.update({
+const AuthSlugDashServersServerIdDeploymentsPreviewRoute =
+  AuthSlugDashServersServerIdDeploymentsPreviewRouteImport.update({
     id: '/preview',
     path: '/preview',
-    getParentRoute: () => AuthSlugDashServersServerIdServerDeploymentsRoute,
+    getParentRoute: () => AuthSlugDashServersServerIdDeploymentsRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -310,11 +303,12 @@ export interface FileRoutesByFullPath {
   '/api/github/installs': typeof ApiGithubInstallsRoute
   '/api/github/repos': typeof ApiGithubReposRoute
   '/api/sync/v1': typeof ApiSyncV1Route
+  '/$slug/deployments': typeof AuthSlugDashDeploymentsRouteRouteWithChildren
   '/$slug/settings': typeof AuthSlugDashSettingsRouteRouteWithChildren
-  '/$slug/deployments/$deploymentId': typeof AuthSlugDeploymentsDeploymentIdRouteRouteWithChildren
-  '/$slug/deployments': typeof AuthSlugDashDeploymentsRouteWithChildren
   '/api/servers/$serverId/readme': typeof ApiServersServerIdReadmeRoute
   '/$slug/': typeof AuthSlugDashIndexRoute
+  '/$slug/deployments/$deploymentId': typeof AuthSlugDashDeploymentsDeploymentIdRouteRouteWithChildren
+  '/$slug/servers/$serverId': typeof AuthSlugDashServersServerIdRouteRouteWithChildren
   '/$slug/servers': typeof AuthSlugDashServersListRouteRouteWithChildren
   '/$slug/deployments/preview': typeof AuthSlugDashDeploymentsPreviewRoute
   '/$slug/deployments/production': typeof AuthSlugDashDeploymentsProductionRoute
@@ -322,23 +316,22 @@ export interface FileRoutesByFullPath {
   '/$slug/servers/new': typeof AuthSlugDashServersNewRoute
   '/$slug/settings/github': typeof AuthSlugDashSettingsGithubRoute
   '/$slug/settings/webhooks': typeof AuthSlugDashSettingsWebhooksRoute
-  '/$slug/deployments/$deploymentId/logs': typeof AuthSlugDeploymentsDeploymentIdLogsRoute
   '/$slug/deployments/': typeof AuthSlugDashDeploymentsIndexRoute
   '/$slug/settings/': typeof AuthSlugDashSettingsIndexRoute
-  '/$slug/deployments/$deploymentId/': typeof AuthSlugDeploymentsDeploymentIdIndexRoute
-  '/$slug/servers/$serverId': typeof AuthSlugDashServersServerIdServerRouteRouteWithChildren
+  '/$slug/servers/$serverId/deployments': typeof AuthSlugDashServersServerIdDeploymentsRouteRouteWithChildren
+  '/$slug/deployments/$deploymentId/logs': typeof AuthSlugDashDeploymentsDeploymentIdLogsRoute
+  '/$slug/servers/$serverId/analytics': typeof AuthSlugDashServersServerIdAnalyticsRoute
   '/$slug/servers/$serverId/deploy': typeof AuthSlugDashServersServerIdDeployRoute
+  '/$slug/servers/$serverId/readme': typeof AuthSlugDashServersServerIdReadmeRoute
+  '/$slug/servers/$serverId/settings': typeof AuthSlugDashServersServerIdSettingsRoute
   '/$slug/servers/private': typeof AuthSlugDashServersListPrivateRoute
   '/$slug/servers/public': typeof AuthSlugDashServersListPublicRoute
+  '/$slug/deployments/$deploymentId/': typeof AuthSlugDashDeploymentsDeploymentIdIndexRoute
+  '/$slug/servers/$serverId/': typeof AuthSlugDashServersServerIdIndexRoute
   '/$slug/servers/': typeof AuthSlugDashServersListIndexRoute
-  '/$slug/servers/$serverId/analytics': typeof AuthSlugDashServersServerIdServerAnalyticsRoute
-  '/$slug/servers/$serverId/deployments': typeof AuthSlugDashServersServerIdServerDeploymentsRouteWithChildren
-  '/$slug/servers/$serverId/readme': typeof AuthSlugDashServersServerIdServerReadmeRoute
-  '/$slug/servers/$serverId/settings': typeof AuthSlugDashServersServerIdServerSettingsRoute
-  '/$slug/servers/$serverId/': typeof AuthSlugDashServersServerIdServerIndexRoute
-  '/$slug/servers/$serverId/deployments/preview': typeof AuthSlugDashServersServerIdServerDeploymentsPreviewRoute
-  '/$slug/servers/$serverId/deployments/production': typeof AuthSlugDashServersServerIdServerDeploymentsProductionRoute
-  '/$slug/servers/$serverId/deployments/': typeof AuthSlugDashServersServerIdServerDeploymentsIndexRoute
+  '/$slug/servers/$serverId/deployments/preview': typeof AuthSlugDashServersServerIdDeploymentsPreviewRoute
+  '/$slug/servers/$serverId/deployments/production': typeof AuthSlugDashServersServerIdDeploymentsProductionRoute
+  '/$slug/servers/$serverId/deployments/': typeof AuthSlugDashServersServerIdDeploymentsIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
@@ -359,20 +352,20 @@ export interface FileRoutesByTo {
   '/$slug/servers/new': typeof AuthSlugDashServersNewRoute
   '/$slug/settings/github': typeof AuthSlugDashSettingsGithubRoute
   '/$slug/settings/webhooks': typeof AuthSlugDashSettingsWebhooksRoute
-  '/$slug/deployments/$deploymentId/logs': typeof AuthSlugDeploymentsDeploymentIdLogsRoute
   '/$slug/deployments': typeof AuthSlugDashDeploymentsIndexRoute
   '/$slug/settings': typeof AuthSlugDashSettingsIndexRoute
-  '/$slug/deployments/$deploymentId': typeof AuthSlugDeploymentsDeploymentIdIndexRoute
-  '/$slug/servers/$serverId': typeof AuthSlugDashServersServerIdServerIndexRoute
+  '/$slug/deployments/$deploymentId/logs': typeof AuthSlugDashDeploymentsDeploymentIdLogsRoute
+  '/$slug/servers/$serverId/analytics': typeof AuthSlugDashServersServerIdAnalyticsRoute
   '/$slug/servers/$serverId/deploy': typeof AuthSlugDashServersServerIdDeployRoute
+  '/$slug/servers/$serverId/readme': typeof AuthSlugDashServersServerIdReadmeRoute
+  '/$slug/servers/$serverId/settings': typeof AuthSlugDashServersServerIdSettingsRoute
   '/$slug/servers/private': typeof AuthSlugDashServersListPrivateRoute
   '/$slug/servers/public': typeof AuthSlugDashServersListPublicRoute
-  '/$slug/servers/$serverId/analytics': typeof AuthSlugDashServersServerIdServerAnalyticsRoute
-  '/$slug/servers/$serverId/readme': typeof AuthSlugDashServersServerIdServerReadmeRoute
-  '/$slug/servers/$serverId/settings': typeof AuthSlugDashServersServerIdServerSettingsRoute
-  '/$slug/servers/$serverId/deployments/preview': typeof AuthSlugDashServersServerIdServerDeploymentsPreviewRoute
-  '/$slug/servers/$serverId/deployments/production': typeof AuthSlugDashServersServerIdServerDeploymentsProductionRoute
-  '/$slug/servers/$serverId/deployments': typeof AuthSlugDashServersServerIdServerDeploymentsIndexRoute
+  '/$slug/deployments/$deploymentId': typeof AuthSlugDashDeploymentsDeploymentIdIndexRoute
+  '/$slug/servers/$serverId': typeof AuthSlugDashServersServerIdIndexRoute
+  '/$slug/servers/$serverId/deployments/preview': typeof AuthSlugDashServersServerIdDeploymentsPreviewRoute
+  '/$slug/servers/$serverId/deployments/production': typeof AuthSlugDashServersServerIdDeploymentsProductionRoute
+  '/$slug/servers/$serverId/deployments': typeof AuthSlugDashServersServerIdDeploymentsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -388,11 +381,12 @@ export interface FileRoutesById {
   '/api/github/installs': typeof ApiGithubInstallsRoute
   '/api/github/repos': typeof ApiGithubReposRoute
   '/api/sync/v1': typeof ApiSyncV1Route
+  '/_auth/$slug/_dash/deployments': typeof AuthSlugDashDeploymentsRouteRouteWithChildren
   '/_auth/$slug/_dash/settings': typeof AuthSlugDashSettingsRouteRouteWithChildren
-  '/_auth/$slug/deployments/$deploymentId': typeof AuthSlugDeploymentsDeploymentIdRouteRouteWithChildren
-  '/_auth/$slug/_dash/deployments': typeof AuthSlugDashDeploymentsRouteWithChildren
   '/api/servers/$serverId/readme': typeof ApiServersServerIdReadmeRoute
   '/_auth/$slug/_dash/': typeof AuthSlugDashIndexRoute
+  '/_auth/$slug/_dash/deployments/$deploymentId': typeof AuthSlugDashDeploymentsDeploymentIdRouteRouteWithChildren
+  '/_auth/$slug/_dash/servers/$serverId': typeof AuthSlugDashServersServerIdRouteRouteWithChildren
   '/_auth/$slug/_dash/servers': typeof AuthSlugDashServersRouteWithChildren
   '/_auth/$slug/_dash/servers/_list': typeof AuthSlugDashServersListRouteRouteWithChildren
   '/_auth/$slug/_dash/deployments/preview': typeof AuthSlugDashDeploymentsPreviewRoute
@@ -401,24 +395,22 @@ export interface FileRoutesById {
   '/_auth/$slug/_dash/servers/new': typeof AuthSlugDashServersNewRoute
   '/_auth/$slug/_dash/settings/github': typeof AuthSlugDashSettingsGithubRoute
   '/_auth/$slug/_dash/settings/webhooks': typeof AuthSlugDashSettingsWebhooksRoute
-  '/_auth/$slug/deployments/$deploymentId/logs': typeof AuthSlugDeploymentsDeploymentIdLogsRoute
   '/_auth/$slug/_dash/deployments/': typeof AuthSlugDashDeploymentsIndexRoute
   '/_auth/$slug/_dash/settings/': typeof AuthSlugDashSettingsIndexRoute
-  '/_auth/$slug/deployments/$deploymentId/': typeof AuthSlugDeploymentsDeploymentIdIndexRoute
-  '/_auth/$slug/_dash/servers/$serverId': typeof AuthSlugDashServersServerIdRouteWithChildren
-  '/_auth/$slug/_dash/servers/$serverId/_server': typeof AuthSlugDashServersServerIdServerRouteRouteWithChildren
+  '/_auth/$slug/_dash/servers/$serverId/deployments': typeof AuthSlugDashServersServerIdDeploymentsRouteRouteWithChildren
+  '/_auth/$slug/_dash/deployments/$deploymentId/logs': typeof AuthSlugDashDeploymentsDeploymentIdLogsRoute
+  '/_auth/$slug/_dash/servers/$serverId/analytics': typeof AuthSlugDashServersServerIdAnalyticsRoute
   '/_auth/$slug/_dash/servers/$serverId/deploy': typeof AuthSlugDashServersServerIdDeployRoute
+  '/_auth/$slug/_dash/servers/$serverId/readme': typeof AuthSlugDashServersServerIdReadmeRoute
+  '/_auth/$slug/_dash/servers/$serverId/settings': typeof AuthSlugDashServersServerIdSettingsRoute
   '/_auth/$slug/_dash/servers/_list/private': typeof AuthSlugDashServersListPrivateRoute
   '/_auth/$slug/_dash/servers/_list/public': typeof AuthSlugDashServersListPublicRoute
+  '/_auth/$slug/_dash/deployments/$deploymentId/': typeof AuthSlugDashDeploymentsDeploymentIdIndexRoute
+  '/_auth/$slug/_dash/servers/$serverId/': typeof AuthSlugDashServersServerIdIndexRoute
   '/_auth/$slug/_dash/servers/_list/': typeof AuthSlugDashServersListIndexRoute
-  '/_auth/$slug/_dash/servers/$serverId/_server/analytics': typeof AuthSlugDashServersServerIdServerAnalyticsRoute
-  '/_auth/$slug/_dash/servers/$serverId/_server/deployments': typeof AuthSlugDashServersServerIdServerDeploymentsRouteWithChildren
-  '/_auth/$slug/_dash/servers/$serverId/_server/readme': typeof AuthSlugDashServersServerIdServerReadmeRoute
-  '/_auth/$slug/_dash/servers/$serverId/_server/settings': typeof AuthSlugDashServersServerIdServerSettingsRoute
-  '/_auth/$slug/_dash/servers/$serverId/_server/': typeof AuthSlugDashServersServerIdServerIndexRoute
-  '/_auth/$slug/_dash/servers/$serverId/_server/deployments/preview': typeof AuthSlugDashServersServerIdServerDeploymentsPreviewRoute
-  '/_auth/$slug/_dash/servers/$serverId/_server/deployments/production': typeof AuthSlugDashServersServerIdServerDeploymentsProductionRoute
-  '/_auth/$slug/_dash/servers/$serverId/_server/deployments/': typeof AuthSlugDashServersServerIdServerDeploymentsIndexRoute
+  '/_auth/$slug/_dash/servers/$serverId/deployments/preview': typeof AuthSlugDashServersServerIdDeploymentsPreviewRoute
+  '/_auth/$slug/_dash/servers/$serverId/deployments/production': typeof AuthSlugDashServersServerIdDeploymentsProductionRoute
+  '/_auth/$slug/_dash/servers/$serverId/deployments/': typeof AuthSlugDashServersServerIdDeploymentsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -433,11 +425,12 @@ export interface FileRouteTypes {
     | '/api/github/installs'
     | '/api/github/repos'
     | '/api/sync/v1'
-    | '/$slug/settings'
-    | '/$slug/deployments/$deploymentId'
     | '/$slug/deployments'
+    | '/$slug/settings'
     | '/api/servers/$serverId/readme'
     | '/$slug/'
+    | '/$slug/deployments/$deploymentId'
+    | '/$slug/servers/$serverId'
     | '/$slug/servers'
     | '/$slug/deployments/preview'
     | '/$slug/deployments/production'
@@ -445,20 +438,19 @@ export interface FileRouteTypes {
     | '/$slug/servers/new'
     | '/$slug/settings/github'
     | '/$slug/settings/webhooks'
-    | '/$slug/deployments/$deploymentId/logs'
     | '/$slug/deployments/'
     | '/$slug/settings/'
-    | '/$slug/deployments/$deploymentId/'
-    | '/$slug/servers/$serverId'
-    | '/$slug/servers/$serverId/deploy'
-    | '/$slug/servers/private'
-    | '/$slug/servers/public'
-    | '/$slug/servers/'
-    | '/$slug/servers/$serverId/analytics'
     | '/$slug/servers/$serverId/deployments'
+    | '/$slug/deployments/$deploymentId/logs'
+    | '/$slug/servers/$serverId/analytics'
+    | '/$slug/servers/$serverId/deploy'
     | '/$slug/servers/$serverId/readme'
     | '/$slug/servers/$serverId/settings'
+    | '/$slug/servers/private'
+    | '/$slug/servers/public'
+    | '/$slug/deployments/$deploymentId/'
     | '/$slug/servers/$serverId/'
+    | '/$slug/servers/'
     | '/$slug/servers/$serverId/deployments/preview'
     | '/$slug/servers/$serverId/deployments/production'
     | '/$slug/servers/$serverId/deployments/'
@@ -482,17 +474,17 @@ export interface FileRouteTypes {
     | '/$slug/servers/new'
     | '/$slug/settings/github'
     | '/$slug/settings/webhooks'
-    | '/$slug/deployments/$deploymentId/logs'
     | '/$slug/deployments'
     | '/$slug/settings'
-    | '/$slug/deployments/$deploymentId'
-    | '/$slug/servers/$serverId'
-    | '/$slug/servers/$serverId/deploy'
-    | '/$slug/servers/private'
-    | '/$slug/servers/public'
+    | '/$slug/deployments/$deploymentId/logs'
     | '/$slug/servers/$serverId/analytics'
+    | '/$slug/servers/$serverId/deploy'
     | '/$slug/servers/$serverId/readme'
     | '/$slug/servers/$serverId/settings'
+    | '/$slug/servers/private'
+    | '/$slug/servers/public'
+    | '/$slug/deployments/$deploymentId'
+    | '/$slug/servers/$serverId'
     | '/$slug/servers/$serverId/deployments/preview'
     | '/$slug/servers/$serverId/deployments/production'
     | '/$slug/servers/$serverId/deployments'
@@ -510,11 +502,12 @@ export interface FileRouteTypes {
     | '/api/github/installs'
     | '/api/github/repos'
     | '/api/sync/v1'
-    | '/_auth/$slug/_dash/settings'
-    | '/_auth/$slug/deployments/$deploymentId'
     | '/_auth/$slug/_dash/deployments'
+    | '/_auth/$slug/_dash/settings'
     | '/api/servers/$serverId/readme'
     | '/_auth/$slug/_dash/'
+    | '/_auth/$slug/_dash/deployments/$deploymentId'
+    | '/_auth/$slug/_dash/servers/$serverId'
     | '/_auth/$slug/_dash/servers'
     | '/_auth/$slug/_dash/servers/_list'
     | '/_auth/$slug/_dash/deployments/preview'
@@ -523,24 +516,22 @@ export interface FileRouteTypes {
     | '/_auth/$slug/_dash/servers/new'
     | '/_auth/$slug/_dash/settings/github'
     | '/_auth/$slug/_dash/settings/webhooks'
-    | '/_auth/$slug/deployments/$deploymentId/logs'
     | '/_auth/$slug/_dash/deployments/'
     | '/_auth/$slug/_dash/settings/'
-    | '/_auth/$slug/deployments/$deploymentId/'
-    | '/_auth/$slug/_dash/servers/$serverId'
-    | '/_auth/$slug/_dash/servers/$serverId/_server'
+    | '/_auth/$slug/_dash/servers/$serverId/deployments'
+    | '/_auth/$slug/_dash/deployments/$deploymentId/logs'
+    | '/_auth/$slug/_dash/servers/$serverId/analytics'
     | '/_auth/$slug/_dash/servers/$serverId/deploy'
+    | '/_auth/$slug/_dash/servers/$serverId/readme'
+    | '/_auth/$slug/_dash/servers/$serverId/settings'
     | '/_auth/$slug/_dash/servers/_list/private'
     | '/_auth/$slug/_dash/servers/_list/public'
+    | '/_auth/$slug/_dash/deployments/$deploymentId/'
+    | '/_auth/$slug/_dash/servers/$serverId/'
     | '/_auth/$slug/_dash/servers/_list/'
-    | '/_auth/$slug/_dash/servers/$serverId/_server/analytics'
-    | '/_auth/$slug/_dash/servers/$serverId/_server/deployments'
-    | '/_auth/$slug/_dash/servers/$serverId/_server/readme'
-    | '/_auth/$slug/_dash/servers/$serverId/_server/settings'
-    | '/_auth/$slug/_dash/servers/$serverId/_server/'
-    | '/_auth/$slug/_dash/servers/$serverId/_server/deployments/preview'
-    | '/_auth/$slug/_dash/servers/$serverId/_server/deployments/production'
-    | '/_auth/$slug/_dash/servers/$serverId/_server/deployments/'
+    | '/_auth/$slug/_dash/servers/$serverId/deployments/preview'
+    | '/_auth/$slug/_dash/servers/$serverId/deployments/production'
+    | '/_auth/$slug/_dash/servers/$serverId/deployments/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -662,20 +653,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiServersServerIdReadmeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_auth/$slug/_dash/deployments': {
-      id: '/_auth/$slug/_dash/deployments'
-      path: '/deployments'
-      fullPath: '/$slug/deployments'
-      preLoaderRoute: typeof AuthSlugDashDeploymentsRouteImport
-      parentRoute: typeof AuthSlugDashRouteRoute
-    }
-    '/_auth/$slug/deployments/$deploymentId': {
-      id: '/_auth/$slug/deployments/$deploymentId'
-      path: '/deployments/$deploymentId'
-      fullPath: '/$slug/deployments/$deploymentId'
-      preLoaderRoute: typeof AuthSlugDeploymentsDeploymentIdRouteRouteImport
-      parentRoute: typeof AuthSlugRouteRoute
-    }
     '/_auth/$slug/_dash/settings': {
       id: '/_auth/$slug/_dash/settings'
       path: '/settings'
@@ -683,19 +660,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSlugDashSettingsRouteRouteImport
       parentRoute: typeof AuthSlugDashRouteRoute
     }
-    '/_auth/$slug/_dash/servers/$serverId': {
-      id: '/_auth/$slug/_dash/servers/$serverId'
-      path: '/$serverId'
-      fullPath: '/$slug/servers/$serverId'
-      preLoaderRoute: typeof AuthSlugDashServersServerIdRouteImport
-      parentRoute: typeof AuthSlugDashServersRoute
-    }
-    '/_auth/$slug/deployments/$deploymentId/': {
-      id: '/_auth/$slug/deployments/$deploymentId/'
-      path: '/'
-      fullPath: '/$slug/deployments/$deploymentId/'
-      preLoaderRoute: typeof AuthSlugDeploymentsDeploymentIdIndexRouteImport
-      parentRoute: typeof AuthSlugDeploymentsDeploymentIdRouteRoute
+    '/_auth/$slug/_dash/deployments': {
+      id: '/_auth/$slug/_dash/deployments'
+      path: '/deployments'
+      fullPath: '/$slug/deployments'
+      preLoaderRoute: typeof AuthSlugDashDeploymentsRouteRouteImport
+      parentRoute: typeof AuthSlugDashRouteRoute
     }
     '/_auth/$slug/_dash/settings/': {
       id: '/_auth/$slug/_dash/settings/'
@@ -709,14 +679,7 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/$slug/deployments/'
       preLoaderRoute: typeof AuthSlugDashDeploymentsIndexRouteImport
-      parentRoute: typeof AuthSlugDashDeploymentsRoute
-    }
-    '/_auth/$slug/deployments/$deploymentId/logs': {
-      id: '/_auth/$slug/deployments/$deploymentId/logs'
-      path: '/logs'
-      fullPath: '/$slug/deployments/$deploymentId/logs'
-      preLoaderRoute: typeof AuthSlugDeploymentsDeploymentIdLogsRouteImport
-      parentRoute: typeof AuthSlugDeploymentsDeploymentIdRouteRoute
+      parentRoute: typeof AuthSlugDashDeploymentsRouteRoute
     }
     '/_auth/$slug/_dash/settings/webhooks': {
       id: '/_auth/$slug/_dash/settings/webhooks'
@@ -751,14 +714,14 @@ declare module '@tanstack/react-router' {
       path: '/production'
       fullPath: '/$slug/deployments/production'
       preLoaderRoute: typeof AuthSlugDashDeploymentsProductionRouteImport
-      parentRoute: typeof AuthSlugDashDeploymentsRoute
+      parentRoute: typeof AuthSlugDashDeploymentsRouteRoute
     }
     '/_auth/$slug/_dash/deployments/preview': {
       id: '/_auth/$slug/_dash/deployments/preview'
       path: '/preview'
       fullPath: '/$slug/deployments/preview'
       preLoaderRoute: typeof AuthSlugDashDeploymentsPreviewRouteImport
-      parentRoute: typeof AuthSlugDashDeploymentsRoute
+      parentRoute: typeof AuthSlugDashDeploymentsRouteRoute
     }
     '/_auth/$slug/_dash/servers/_list': {
       id: '/_auth/$slug/_dash/servers/_list'
@@ -767,12 +730,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSlugDashServersListRouteRouteImport
       parentRoute: typeof AuthSlugDashServersRoute
     }
+    '/_auth/$slug/_dash/servers/$serverId': {
+      id: '/_auth/$slug/_dash/servers/$serverId'
+      path: '/servers/$serverId'
+      fullPath: '/$slug/servers/$serverId'
+      preLoaderRoute: typeof AuthSlugDashServersServerIdRouteRouteImport
+      parentRoute: typeof AuthSlugDashRouteRoute
+    }
+    '/_auth/$slug/_dash/deployments/$deploymentId': {
+      id: '/_auth/$slug/_dash/deployments/$deploymentId'
+      path: '/$deploymentId'
+      fullPath: '/$slug/deployments/$deploymentId'
+      preLoaderRoute: typeof AuthSlugDashDeploymentsDeploymentIdRouteRouteImport
+      parentRoute: typeof AuthSlugDashDeploymentsRouteRoute
+    }
     '/_auth/$slug/_dash/servers/_list/': {
       id: '/_auth/$slug/_dash/servers/_list/'
       path: '/'
       fullPath: '/$slug/servers/'
       preLoaderRoute: typeof AuthSlugDashServersListIndexRouteImport
       parentRoute: typeof AuthSlugDashServersListRouteRoute
+    }
+    '/_auth/$slug/_dash/servers/$serverId/': {
+      id: '/_auth/$slug/_dash/servers/$serverId/'
+      path: '/'
+      fullPath: '/$slug/servers/$serverId/'
+      preLoaderRoute: typeof AuthSlugDashServersServerIdIndexRouteImport
+      parentRoute: typeof AuthSlugDashServersServerIdRouteRoute
+    }
+    '/_auth/$slug/_dash/deployments/$deploymentId/': {
+      id: '/_auth/$slug/_dash/deployments/$deploymentId/'
+      path: '/'
+      fullPath: '/$slug/deployments/$deploymentId/'
+      preLoaderRoute: typeof AuthSlugDashDeploymentsDeploymentIdIndexRouteImport
+      parentRoute: typeof AuthSlugDashDeploymentsDeploymentIdRouteRoute
     }
     '/_auth/$slug/_dash/servers/_list/public': {
       id: '/_auth/$slug/_dash/servers/_list/public'
@@ -788,78 +779,111 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSlugDashServersListPrivateRouteImport
       parentRoute: typeof AuthSlugDashServersListRouteRoute
     }
+    '/_auth/$slug/_dash/servers/$serverId/settings': {
+      id: '/_auth/$slug/_dash/servers/$serverId/settings'
+      path: '/settings'
+      fullPath: '/$slug/servers/$serverId/settings'
+      preLoaderRoute: typeof AuthSlugDashServersServerIdSettingsRouteImport
+      parentRoute: typeof AuthSlugDashServersServerIdRouteRoute
+    }
+    '/_auth/$slug/_dash/servers/$serverId/readme': {
+      id: '/_auth/$slug/_dash/servers/$serverId/readme'
+      path: '/readme'
+      fullPath: '/$slug/servers/$serverId/readme'
+      preLoaderRoute: typeof AuthSlugDashServersServerIdReadmeRouteImport
+      parentRoute: typeof AuthSlugDashServersServerIdRouteRoute
+    }
     '/_auth/$slug/_dash/servers/$serverId/deploy': {
       id: '/_auth/$slug/_dash/servers/$serverId/deploy'
       path: '/deploy'
       fullPath: '/$slug/servers/$serverId/deploy'
       preLoaderRoute: typeof AuthSlugDashServersServerIdDeployRouteImport
-      parentRoute: typeof AuthSlugDashServersServerIdRoute
+      parentRoute: typeof AuthSlugDashServersServerIdRouteRoute
     }
-    '/_auth/$slug/_dash/servers/$serverId/_server': {
-      id: '/_auth/$slug/_dash/servers/$serverId/_server'
-      path: '/$serverId'
-      fullPath: '/$slug/servers/$serverId'
-      preLoaderRoute: typeof AuthSlugDashServersServerIdServerRouteRouteImport
-      parentRoute: typeof AuthSlugDashServersServerIdRoute
-    }
-    '/_auth/$slug/_dash/servers/$serverId/_server/': {
-      id: '/_auth/$slug/_dash/servers/$serverId/_server/'
-      path: '/'
-      fullPath: '/$slug/servers/$serverId/'
-      preLoaderRoute: typeof AuthSlugDashServersServerIdServerIndexRouteImport
-      parentRoute: typeof AuthSlugDashServersServerIdServerRouteRoute
-    }
-    '/_auth/$slug/_dash/servers/$serverId/_server/settings': {
-      id: '/_auth/$slug/_dash/servers/$serverId/_server/settings'
-      path: '/settings'
-      fullPath: '/$slug/servers/$serverId/settings'
-      preLoaderRoute: typeof AuthSlugDashServersServerIdServerSettingsRouteImport
-      parentRoute: typeof AuthSlugDashServersServerIdServerRouteRoute
-    }
-    '/_auth/$slug/_dash/servers/$serverId/_server/readme': {
-      id: '/_auth/$slug/_dash/servers/$serverId/_server/readme'
-      path: '/readme'
-      fullPath: '/$slug/servers/$serverId/readme'
-      preLoaderRoute: typeof AuthSlugDashServersServerIdServerReadmeRouteImport
-      parentRoute: typeof AuthSlugDashServersServerIdServerRouteRoute
-    }
-    '/_auth/$slug/_dash/servers/$serverId/_server/deployments': {
-      id: '/_auth/$slug/_dash/servers/$serverId/_server/deployments'
-      path: '/deployments'
-      fullPath: '/$slug/servers/$serverId/deployments'
-      preLoaderRoute: typeof AuthSlugDashServersServerIdServerDeploymentsRouteImport
-      parentRoute: typeof AuthSlugDashServersServerIdServerRouteRoute
-    }
-    '/_auth/$slug/_dash/servers/$serverId/_server/analytics': {
-      id: '/_auth/$slug/_dash/servers/$serverId/_server/analytics'
+    '/_auth/$slug/_dash/servers/$serverId/analytics': {
+      id: '/_auth/$slug/_dash/servers/$serverId/analytics'
       path: '/analytics'
       fullPath: '/$slug/servers/$serverId/analytics'
-      preLoaderRoute: typeof AuthSlugDashServersServerIdServerAnalyticsRouteImport
-      parentRoute: typeof AuthSlugDashServersServerIdServerRouteRoute
+      preLoaderRoute: typeof AuthSlugDashServersServerIdAnalyticsRouteImport
+      parentRoute: typeof AuthSlugDashServersServerIdRouteRoute
     }
-    '/_auth/$slug/_dash/servers/$serverId/_server/deployments/': {
-      id: '/_auth/$slug/_dash/servers/$serverId/_server/deployments/'
+    '/_auth/$slug/_dash/deployments/$deploymentId/logs': {
+      id: '/_auth/$slug/_dash/deployments/$deploymentId/logs'
+      path: '/logs'
+      fullPath: '/$slug/deployments/$deploymentId/logs'
+      preLoaderRoute: typeof AuthSlugDashDeploymentsDeploymentIdLogsRouteImport
+      parentRoute: typeof AuthSlugDashDeploymentsDeploymentIdRouteRoute
+    }
+    '/_auth/$slug/_dash/servers/$serverId/deployments': {
+      id: '/_auth/$slug/_dash/servers/$serverId/deployments'
+      path: '/deployments'
+      fullPath: '/$slug/servers/$serverId/deployments'
+      preLoaderRoute: typeof AuthSlugDashServersServerIdDeploymentsRouteRouteImport
+      parentRoute: typeof AuthSlugDashServersServerIdRouteRoute
+    }
+    '/_auth/$slug/_dash/servers/$serverId/deployments/': {
+      id: '/_auth/$slug/_dash/servers/$serverId/deployments/'
       path: '/'
       fullPath: '/$slug/servers/$serverId/deployments/'
-      preLoaderRoute: typeof AuthSlugDashServersServerIdServerDeploymentsIndexRouteImport
-      parentRoute: typeof AuthSlugDashServersServerIdServerDeploymentsRoute
+      preLoaderRoute: typeof AuthSlugDashServersServerIdDeploymentsIndexRouteImport
+      parentRoute: typeof AuthSlugDashServersServerIdDeploymentsRouteRoute
     }
-    '/_auth/$slug/_dash/servers/$serverId/_server/deployments/production': {
-      id: '/_auth/$slug/_dash/servers/$serverId/_server/deployments/production'
+    '/_auth/$slug/_dash/servers/$serverId/deployments/production': {
+      id: '/_auth/$slug/_dash/servers/$serverId/deployments/production'
       path: '/production'
       fullPath: '/$slug/servers/$serverId/deployments/production'
-      preLoaderRoute: typeof AuthSlugDashServersServerIdServerDeploymentsProductionRouteImport
-      parentRoute: typeof AuthSlugDashServersServerIdServerDeploymentsRoute
+      preLoaderRoute: typeof AuthSlugDashServersServerIdDeploymentsProductionRouteImport
+      parentRoute: typeof AuthSlugDashServersServerIdDeploymentsRouteRoute
     }
-    '/_auth/$slug/_dash/servers/$serverId/_server/deployments/preview': {
-      id: '/_auth/$slug/_dash/servers/$serverId/_server/deployments/preview'
+    '/_auth/$slug/_dash/servers/$serverId/deployments/preview': {
+      id: '/_auth/$slug/_dash/servers/$serverId/deployments/preview'
       path: '/preview'
       fullPath: '/$slug/servers/$serverId/deployments/preview'
-      preLoaderRoute: typeof AuthSlugDashServersServerIdServerDeploymentsPreviewRouteImport
-      parentRoute: typeof AuthSlugDashServersServerIdServerDeploymentsRoute
+      preLoaderRoute: typeof AuthSlugDashServersServerIdDeploymentsPreviewRouteImport
+      parentRoute: typeof AuthSlugDashServersServerIdDeploymentsRouteRoute
     }
   }
 }
+
+interface AuthSlugDashDeploymentsDeploymentIdRouteRouteChildren {
+  AuthSlugDashDeploymentsDeploymentIdLogsRoute: typeof AuthSlugDashDeploymentsDeploymentIdLogsRoute
+  AuthSlugDashDeploymentsDeploymentIdIndexRoute: typeof AuthSlugDashDeploymentsDeploymentIdIndexRoute
+}
+
+const AuthSlugDashDeploymentsDeploymentIdRouteRouteChildren: AuthSlugDashDeploymentsDeploymentIdRouteRouteChildren =
+  {
+    AuthSlugDashDeploymentsDeploymentIdLogsRoute:
+      AuthSlugDashDeploymentsDeploymentIdLogsRoute,
+    AuthSlugDashDeploymentsDeploymentIdIndexRoute:
+      AuthSlugDashDeploymentsDeploymentIdIndexRoute,
+  }
+
+const AuthSlugDashDeploymentsDeploymentIdRouteRouteWithChildren =
+  AuthSlugDashDeploymentsDeploymentIdRouteRoute._addFileChildren(
+    AuthSlugDashDeploymentsDeploymentIdRouteRouteChildren,
+  )
+
+interface AuthSlugDashDeploymentsRouteRouteChildren {
+  AuthSlugDashDeploymentsDeploymentIdRouteRoute: typeof AuthSlugDashDeploymentsDeploymentIdRouteRouteWithChildren
+  AuthSlugDashDeploymentsPreviewRoute: typeof AuthSlugDashDeploymentsPreviewRoute
+  AuthSlugDashDeploymentsProductionRoute: typeof AuthSlugDashDeploymentsProductionRoute
+  AuthSlugDashDeploymentsIndexRoute: typeof AuthSlugDashDeploymentsIndexRoute
+}
+
+const AuthSlugDashDeploymentsRouteRouteChildren: AuthSlugDashDeploymentsRouteRouteChildren =
+  {
+    AuthSlugDashDeploymentsDeploymentIdRouteRoute:
+      AuthSlugDashDeploymentsDeploymentIdRouteRouteWithChildren,
+    AuthSlugDashDeploymentsPreviewRoute: AuthSlugDashDeploymentsPreviewRoute,
+    AuthSlugDashDeploymentsProductionRoute:
+      AuthSlugDashDeploymentsProductionRoute,
+    AuthSlugDashDeploymentsIndexRoute: AuthSlugDashDeploymentsIndexRoute,
+  }
+
+const AuthSlugDashDeploymentsRouteRouteWithChildren =
+  AuthSlugDashDeploymentsRouteRoute._addFileChildren(
+    AuthSlugDashDeploymentsRouteRouteChildren,
+  )
 
 interface AuthSlugDashSettingsRouteRouteChildren {
   AuthSlugDashSettingsGithubRoute: typeof AuthSlugDashSettingsGithubRoute
@@ -879,23 +903,55 @@ const AuthSlugDashSettingsRouteRouteWithChildren =
     AuthSlugDashSettingsRouteRouteChildren,
   )
 
-interface AuthSlugDashDeploymentsRouteChildren {
-  AuthSlugDashDeploymentsPreviewRoute: typeof AuthSlugDashDeploymentsPreviewRoute
-  AuthSlugDashDeploymentsProductionRoute: typeof AuthSlugDashDeploymentsProductionRoute
-  AuthSlugDashDeploymentsIndexRoute: typeof AuthSlugDashDeploymentsIndexRoute
+interface AuthSlugDashServersServerIdDeploymentsRouteRouteChildren {
+  AuthSlugDashServersServerIdDeploymentsPreviewRoute: typeof AuthSlugDashServersServerIdDeploymentsPreviewRoute
+  AuthSlugDashServersServerIdDeploymentsProductionRoute: typeof AuthSlugDashServersServerIdDeploymentsProductionRoute
+  AuthSlugDashServersServerIdDeploymentsIndexRoute: typeof AuthSlugDashServersServerIdDeploymentsIndexRoute
 }
 
-const AuthSlugDashDeploymentsRouteChildren: AuthSlugDashDeploymentsRouteChildren =
+const AuthSlugDashServersServerIdDeploymentsRouteRouteChildren: AuthSlugDashServersServerIdDeploymentsRouteRouteChildren =
   {
-    AuthSlugDashDeploymentsPreviewRoute: AuthSlugDashDeploymentsPreviewRoute,
-    AuthSlugDashDeploymentsProductionRoute:
-      AuthSlugDashDeploymentsProductionRoute,
-    AuthSlugDashDeploymentsIndexRoute: AuthSlugDashDeploymentsIndexRoute,
+    AuthSlugDashServersServerIdDeploymentsPreviewRoute:
+      AuthSlugDashServersServerIdDeploymentsPreviewRoute,
+    AuthSlugDashServersServerIdDeploymentsProductionRoute:
+      AuthSlugDashServersServerIdDeploymentsProductionRoute,
+    AuthSlugDashServersServerIdDeploymentsIndexRoute:
+      AuthSlugDashServersServerIdDeploymentsIndexRoute,
   }
 
-const AuthSlugDashDeploymentsRouteWithChildren =
-  AuthSlugDashDeploymentsRoute._addFileChildren(
-    AuthSlugDashDeploymentsRouteChildren,
+const AuthSlugDashServersServerIdDeploymentsRouteRouteWithChildren =
+  AuthSlugDashServersServerIdDeploymentsRouteRoute._addFileChildren(
+    AuthSlugDashServersServerIdDeploymentsRouteRouteChildren,
+  )
+
+interface AuthSlugDashServersServerIdRouteRouteChildren {
+  AuthSlugDashServersServerIdDeploymentsRouteRoute: typeof AuthSlugDashServersServerIdDeploymentsRouteRouteWithChildren
+  AuthSlugDashServersServerIdAnalyticsRoute: typeof AuthSlugDashServersServerIdAnalyticsRoute
+  AuthSlugDashServersServerIdDeployRoute: typeof AuthSlugDashServersServerIdDeployRoute
+  AuthSlugDashServersServerIdReadmeRoute: typeof AuthSlugDashServersServerIdReadmeRoute
+  AuthSlugDashServersServerIdSettingsRoute: typeof AuthSlugDashServersServerIdSettingsRoute
+  AuthSlugDashServersServerIdIndexRoute: typeof AuthSlugDashServersServerIdIndexRoute
+}
+
+const AuthSlugDashServersServerIdRouteRouteChildren: AuthSlugDashServersServerIdRouteRouteChildren =
+  {
+    AuthSlugDashServersServerIdDeploymentsRouteRoute:
+      AuthSlugDashServersServerIdDeploymentsRouteRouteWithChildren,
+    AuthSlugDashServersServerIdAnalyticsRoute:
+      AuthSlugDashServersServerIdAnalyticsRoute,
+    AuthSlugDashServersServerIdDeployRoute:
+      AuthSlugDashServersServerIdDeployRoute,
+    AuthSlugDashServersServerIdReadmeRoute:
+      AuthSlugDashServersServerIdReadmeRoute,
+    AuthSlugDashServersServerIdSettingsRoute:
+      AuthSlugDashServersServerIdSettingsRoute,
+    AuthSlugDashServersServerIdIndexRoute:
+      AuthSlugDashServersServerIdIndexRoute,
+  }
+
+const AuthSlugDashServersServerIdRouteRouteWithChildren =
+  AuthSlugDashServersServerIdRouteRoute._addFileChildren(
+    AuthSlugDashServersServerIdRouteRouteChildren,
   )
 
 interface AuthSlugDashServersListRouteRouteChildren {
@@ -916,77 +972,10 @@ const AuthSlugDashServersListRouteRouteWithChildren =
     AuthSlugDashServersListRouteRouteChildren,
   )
 
-interface AuthSlugDashServersServerIdServerDeploymentsRouteChildren {
-  AuthSlugDashServersServerIdServerDeploymentsPreviewRoute: typeof AuthSlugDashServersServerIdServerDeploymentsPreviewRoute
-  AuthSlugDashServersServerIdServerDeploymentsProductionRoute: typeof AuthSlugDashServersServerIdServerDeploymentsProductionRoute
-  AuthSlugDashServersServerIdServerDeploymentsIndexRoute: typeof AuthSlugDashServersServerIdServerDeploymentsIndexRoute
-}
-
-const AuthSlugDashServersServerIdServerDeploymentsRouteChildren: AuthSlugDashServersServerIdServerDeploymentsRouteChildren =
-  {
-    AuthSlugDashServersServerIdServerDeploymentsPreviewRoute:
-      AuthSlugDashServersServerIdServerDeploymentsPreviewRoute,
-    AuthSlugDashServersServerIdServerDeploymentsProductionRoute:
-      AuthSlugDashServersServerIdServerDeploymentsProductionRoute,
-    AuthSlugDashServersServerIdServerDeploymentsIndexRoute:
-      AuthSlugDashServersServerIdServerDeploymentsIndexRoute,
-  }
-
-const AuthSlugDashServersServerIdServerDeploymentsRouteWithChildren =
-  AuthSlugDashServersServerIdServerDeploymentsRoute._addFileChildren(
-    AuthSlugDashServersServerIdServerDeploymentsRouteChildren,
-  )
-
-interface AuthSlugDashServersServerIdServerRouteRouteChildren {
-  AuthSlugDashServersServerIdServerAnalyticsRoute: typeof AuthSlugDashServersServerIdServerAnalyticsRoute
-  AuthSlugDashServersServerIdServerDeploymentsRoute: typeof AuthSlugDashServersServerIdServerDeploymentsRouteWithChildren
-  AuthSlugDashServersServerIdServerReadmeRoute: typeof AuthSlugDashServersServerIdServerReadmeRoute
-  AuthSlugDashServersServerIdServerSettingsRoute: typeof AuthSlugDashServersServerIdServerSettingsRoute
-  AuthSlugDashServersServerIdServerIndexRoute: typeof AuthSlugDashServersServerIdServerIndexRoute
-}
-
-const AuthSlugDashServersServerIdServerRouteRouteChildren: AuthSlugDashServersServerIdServerRouteRouteChildren =
-  {
-    AuthSlugDashServersServerIdServerAnalyticsRoute:
-      AuthSlugDashServersServerIdServerAnalyticsRoute,
-    AuthSlugDashServersServerIdServerDeploymentsRoute:
-      AuthSlugDashServersServerIdServerDeploymentsRouteWithChildren,
-    AuthSlugDashServersServerIdServerReadmeRoute:
-      AuthSlugDashServersServerIdServerReadmeRoute,
-    AuthSlugDashServersServerIdServerSettingsRoute:
-      AuthSlugDashServersServerIdServerSettingsRoute,
-    AuthSlugDashServersServerIdServerIndexRoute:
-      AuthSlugDashServersServerIdServerIndexRoute,
-  }
-
-const AuthSlugDashServersServerIdServerRouteRouteWithChildren =
-  AuthSlugDashServersServerIdServerRouteRoute._addFileChildren(
-    AuthSlugDashServersServerIdServerRouteRouteChildren,
-  )
-
-interface AuthSlugDashServersServerIdRouteChildren {
-  AuthSlugDashServersServerIdServerRouteRoute: typeof AuthSlugDashServersServerIdServerRouteRouteWithChildren
-  AuthSlugDashServersServerIdDeployRoute: typeof AuthSlugDashServersServerIdDeployRoute
-}
-
-const AuthSlugDashServersServerIdRouteChildren: AuthSlugDashServersServerIdRouteChildren =
-  {
-    AuthSlugDashServersServerIdServerRouteRoute:
-      AuthSlugDashServersServerIdServerRouteRouteWithChildren,
-    AuthSlugDashServersServerIdDeployRoute:
-      AuthSlugDashServersServerIdDeployRoute,
-  }
-
-const AuthSlugDashServersServerIdRouteWithChildren =
-  AuthSlugDashServersServerIdRoute._addFileChildren(
-    AuthSlugDashServersServerIdRouteChildren,
-  )
-
 interface AuthSlugDashServersRouteChildren {
   AuthSlugDashServersListRouteRoute: typeof AuthSlugDashServersListRouteRouteWithChildren
   AuthSlugDashServersImportRoute: typeof AuthSlugDashServersImportRoute
   AuthSlugDashServersNewRoute: typeof AuthSlugDashServersNewRoute
-  AuthSlugDashServersServerIdRoute: typeof AuthSlugDashServersServerIdRouteWithChildren
 }
 
 const AuthSlugDashServersRouteChildren: AuthSlugDashServersRouteChildren = {
@@ -994,57 +983,38 @@ const AuthSlugDashServersRouteChildren: AuthSlugDashServersRouteChildren = {
     AuthSlugDashServersListRouteRouteWithChildren,
   AuthSlugDashServersImportRoute: AuthSlugDashServersImportRoute,
   AuthSlugDashServersNewRoute: AuthSlugDashServersNewRoute,
-  AuthSlugDashServersServerIdRoute:
-    AuthSlugDashServersServerIdRouteWithChildren,
 }
 
 const AuthSlugDashServersRouteWithChildren =
   AuthSlugDashServersRoute._addFileChildren(AuthSlugDashServersRouteChildren)
 
 interface AuthSlugDashRouteRouteChildren {
+  AuthSlugDashDeploymentsRouteRoute: typeof AuthSlugDashDeploymentsRouteRouteWithChildren
   AuthSlugDashSettingsRouteRoute: typeof AuthSlugDashSettingsRouteRouteWithChildren
-  AuthSlugDashDeploymentsRoute: typeof AuthSlugDashDeploymentsRouteWithChildren
   AuthSlugDashIndexRoute: typeof AuthSlugDashIndexRoute
+  AuthSlugDashServersServerIdRouteRoute: typeof AuthSlugDashServersServerIdRouteRouteWithChildren
   AuthSlugDashServersRoute: typeof AuthSlugDashServersRouteWithChildren
 }
 
 const AuthSlugDashRouteRouteChildren: AuthSlugDashRouteRouteChildren = {
+  AuthSlugDashDeploymentsRouteRoute:
+    AuthSlugDashDeploymentsRouteRouteWithChildren,
   AuthSlugDashSettingsRouteRoute: AuthSlugDashSettingsRouteRouteWithChildren,
-  AuthSlugDashDeploymentsRoute: AuthSlugDashDeploymentsRouteWithChildren,
   AuthSlugDashIndexRoute: AuthSlugDashIndexRoute,
+  AuthSlugDashServersServerIdRouteRoute:
+    AuthSlugDashServersServerIdRouteRouteWithChildren,
   AuthSlugDashServersRoute: AuthSlugDashServersRouteWithChildren,
 }
 
 const AuthSlugDashRouteRouteWithChildren =
   AuthSlugDashRouteRoute._addFileChildren(AuthSlugDashRouteRouteChildren)
 
-interface AuthSlugDeploymentsDeploymentIdRouteRouteChildren {
-  AuthSlugDeploymentsDeploymentIdLogsRoute: typeof AuthSlugDeploymentsDeploymentIdLogsRoute
-  AuthSlugDeploymentsDeploymentIdIndexRoute: typeof AuthSlugDeploymentsDeploymentIdIndexRoute
-}
-
-const AuthSlugDeploymentsDeploymentIdRouteRouteChildren: AuthSlugDeploymentsDeploymentIdRouteRouteChildren =
-  {
-    AuthSlugDeploymentsDeploymentIdLogsRoute:
-      AuthSlugDeploymentsDeploymentIdLogsRoute,
-    AuthSlugDeploymentsDeploymentIdIndexRoute:
-      AuthSlugDeploymentsDeploymentIdIndexRoute,
-  }
-
-const AuthSlugDeploymentsDeploymentIdRouteRouteWithChildren =
-  AuthSlugDeploymentsDeploymentIdRouteRoute._addFileChildren(
-    AuthSlugDeploymentsDeploymentIdRouteRouteChildren,
-  )
-
 interface AuthSlugRouteRouteChildren {
   AuthSlugDashRouteRoute: typeof AuthSlugDashRouteRouteWithChildren
-  AuthSlugDeploymentsDeploymentIdRouteRoute: typeof AuthSlugDeploymentsDeploymentIdRouteRouteWithChildren
 }
 
 const AuthSlugRouteRouteChildren: AuthSlugRouteRouteChildren = {
   AuthSlugDashRouteRoute: AuthSlugDashRouteRouteWithChildren,
-  AuthSlugDeploymentsDeploymentIdRouteRoute:
-    AuthSlugDeploymentsDeploymentIdRouteRouteWithChildren,
 }
 
 const AuthSlugRouteRouteWithChildren = AuthSlugRouteRoute._addFileChildren(

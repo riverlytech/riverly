@@ -5,7 +5,7 @@ import { WithClient } from '@/components/commons/with-client'
 // import { DeploymentDetail } from '@/components/deployment/detail'
 import { orgDeployment } from '@/funcs'
 
-export const Route = createFileRoute('/_auth/$slug/deployments/$deploymentId/')(
+export const Route = createFileRoute('/_auth/$slug/_dash/deployments/$deploymentId/')(
   {
     loader: async ({ context: { membership }, params: { deploymentId } }) => {
       const deployment = await orgDeployment({

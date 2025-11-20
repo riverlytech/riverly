@@ -1,7 +1,7 @@
 import { Link, Outlet, createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute(
-  '/_auth/$slug/_dash/servers/$serverId/_server/deployments',
+  '/_auth/$slug/_dash/servers/$serverId/deployments',
 )({
   component: RouteComponent,
 })

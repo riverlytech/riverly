@@ -24,7 +24,7 @@ import {
   NavigationMenuList,
 } from '@/components/ui/navigation-menu'
 
-export const Route = createFileRoute('/_auth/$slug/deployments/$deploymentId')({
+export const Route = createFileRoute('/_auth/$slug/_dash/deployments/$deploymentId')({
   component: RouteComponent,
 })
 

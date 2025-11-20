@@ -4,7 +4,7 @@ import { DeploymentPreview } from '@/components/deployment/preview'
 import { serverDeploymentsFn } from '@/funcs'
 
 export const Route = createFileRoute(
-  '/_auth/$slug/_dash/servers/$serverId/_server/deployments/preview',
+  '/_auth/$slug/_dash/servers/$serverId/deployments/production',
 )({
   loader: async ({ context: { server, membership } }) => {
     const deployments = await serverDeploymentsFn({
@@ -12,7 +12,7 @@ export const Route = createFileRoute(
         organizationId: membership.org.id,
         serverId: server.serverId,
         limit: 100,
-        target: 'preview',
+        target: 'production',
       },
     })
     return { deployments }

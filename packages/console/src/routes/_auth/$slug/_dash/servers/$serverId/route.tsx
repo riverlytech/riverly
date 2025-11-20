@@ -10,7 +10,7 @@ import {
 import { getServerFromIDWithGitFn } from '@/funcs'
 
 export const Route = createFileRoute(
-  '/_auth/$slug/_dash/servers/$serverId/_server',
+  '/_auth/$slug/_dash/servers/$serverId',
 )({
   beforeLoad: async ({ params, context: { membership } }) => {
     const server = await getServerFromIDWithGitFn({

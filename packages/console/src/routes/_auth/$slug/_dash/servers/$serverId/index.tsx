@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export const Route = createFileRoute(
-  '/_auth/$slug/_dash/servers/$serverId/_server/',
+  '/_auth/$slug/_dash/servers/$serverId/',
 )({
   component: RouteComponent,
 })
