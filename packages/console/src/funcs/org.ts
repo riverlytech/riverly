@@ -12,8 +12,6 @@ import { auth } from '@/lib/auth'
 import { authMiddleware } from '@/lib/auth-middleware'
 import { CreateOrgForm, OrgNameForm, OrgSlugForm } from '@/validations'
 
-import z from "zod/v4"
-
 export const createNewOrg = createServerFn({ method: 'POST' })
   .inputValidator(CreateOrgForm)
   .middleware([authMiddleware])
@@ -72,7 +70,7 @@ export const updateOrgSlug = createServerFn({ method: 'POST' })
       auth(db, env).api.updateOrganization({
         body: {
           data: {
-            name: data.slug,
+            slug: data.slug,
           },
           organizationId: data.organizationId,
         },
