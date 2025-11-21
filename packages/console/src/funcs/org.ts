@@ -1,5 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
-import { setResponseStatus } from '@tanstack/react-start/server'
+import { getRequest, setResponseStatus } from '@tanstack/react-start/server'
+
 import { BetterAuthError } from 'better-auth'
 
 import { env } from '@riverly/config'
@@ -9,7 +10,9 @@ import { genId } from '@riverly/utils'
 
 import { auth } from '@/lib/auth'
 import { authMiddleware } from '@/lib/auth-middleware'
-import { CreateOrgForm } from '@/validations'
+import { CreateOrgForm, OrgNameForm, OrgSlugForm } from '@/validations'
+
+import z from "zod/v4"
 
 export const createNewOrg = createServerFn({ method: 'POST' })
   .inputValidator(CreateOrgForm)
@@ -28,6 +31,52 @@ export const createNewOrg = createServerFn({ method: 'POST' })
     const resp = await Database.transaction((db) =>
       auth(db, env).api.createOrganization({
         body,
+      }),
+    )
+    return resp
+  })
+
+
+export const updateOrgName = createServerFn({ method: 'POST' })
+  .inputValidator(OrgNameForm)
+  .middleware([authMiddleware])
+  .handler(async ({ data, context: { user: sessionUser } }) => {
+    if (!sessionUser) {
+      setResponseStatus(401)
+      throw new BetterAuthError('Unauthorized')
+    }
+    const resp = await Database.transaction((db) =>
+      auth(db, env).api.updateOrganization({
+        body: {
+          data: {
+            name: data.name,
+          },
+          organizationId: data.organizationId,
+        },
+        headers: getRequest().headers,
+      }),
+    )
+    return resp
+  })
+
+
+export const updateOrgSlug = createServerFn({ method: 'POST' })
+  .inputValidator(OrgSlugForm.extend({ organizationId: z.string() }))
+  .middleware([authMiddleware])
+  .handler(async ({ data, context: { user: sessionUser } }) => {
+    if (!sessionUser) {
+      setResponseStatus(401)
+      throw new BetterAuthError('Unauthorized')
+    }
+    const resp = await Database.transaction((db) =>
+      auth(db, env).api.updateOrganization({
+        body: {
+          data: {
+            name: data.slug,
+          },
+          organizationId: data.organizationId,
+        },
+        headers: getRequest().headers,
       }),
     )
     return resp

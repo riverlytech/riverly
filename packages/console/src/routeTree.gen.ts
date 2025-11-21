@@ -21,7 +21,6 @@ import { Route as ApiGithubReposRouteImport } from './routes/api/github.repos'
 import { Route as ApiGithubInstallsRouteImport } from './routes/api/github.installs'
 import { Route as ApiGithubCallbackRouteImport } from './routes/api/github.callback'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth.$'
-import { Route as AuthUsersUsernameRouteImport } from './routes/_auth/users.$username'
 import { Route as AuthSlugDashRouteRouteImport } from './routes/_auth/$slug/_dash/route'
 import { Route as AuthSlugDashIndexRouteImport } from './routes/_auth/$slug/_dash/index'
 import { Route as ApiServersServerIdReadmeRouteImport } from './routes/api/servers/$serverId.readme'
@@ -105,11 +104,6 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AuthUsersUsernameRoute = AuthUsersUsernameRouteImport.update({
-  id: '/users/$username',
-  path: '/users/$username',
-  getParentRoute: () => AuthRouteRoute,
 } as any)
 const AuthSlugDashRouteRoute = AuthSlugDashRouteRouteImport.update({
   id: '/_dash',
@@ -297,7 +291,6 @@ export interface FileRoutesByFullPath {
   '/$slug': typeof AuthSlugDashRouteRouteWithChildren
   '/github/installed': typeof GithubInstalledRoute
   '/': typeof AuthIndexRoute
-  '/users/$username': typeof AuthUsersUsernameRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/github/callback': typeof ApiGithubCallbackRoute
   '/api/github/installs': typeof ApiGithubInstallsRoute
@@ -338,7 +331,6 @@ export interface FileRoutesByTo {
   '/$slug': typeof AuthSlugDashIndexRoute
   '/github/installed': typeof GithubInstalledRoute
   '/': typeof AuthIndexRoute
-  '/users/$username': typeof AuthUsersUsernameRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/github/callback': typeof ApiGithubCallbackRoute
   '/api/github/installs': typeof ApiGithubInstallsRoute
@@ -375,7 +367,6 @@ export interface FileRoutesById {
   '/github/installed': typeof GithubInstalledRoute
   '/_auth/': typeof AuthIndexRoute
   '/_auth/$slug/_dash': typeof AuthSlugDashRouteRouteWithChildren
-  '/_auth/users/$username': typeof AuthUsersUsernameRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/github/callback': typeof ApiGithubCallbackRoute
   '/api/github/installs': typeof ApiGithubInstallsRoute
@@ -419,7 +410,6 @@ export interface FileRouteTypes {
     | '/$slug'
     | '/github/installed'
     | '/'
-    | '/users/$username'
     | '/api/auth/$'
     | '/api/github/callback'
     | '/api/github/installs'
@@ -460,7 +450,6 @@ export interface FileRouteTypes {
     | '/$slug'
     | '/github/installed'
     | '/'
-    | '/users/$username'
     | '/api/auth/$'
     | '/api/github/callback'
     | '/api/github/installs'
@@ -496,7 +485,6 @@ export interface FileRouteTypes {
     | '/github/installed'
     | '/_auth/'
     | '/_auth/$slug/_dash'
-    | '/_auth/users/$username'
     | '/api/auth/$'
     | '/api/github/callback'
     | '/api/github/installs'
@@ -617,13 +605,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/auth/$'
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_auth/users/$username': {
-      id: '/_auth/users/$username'
-      path: '/users/$username'
-      fullPath: '/users/$username'
-      preLoaderRoute: typeof AuthUsersUsernameRouteImport
-      parentRoute: typeof AuthRouteRoute
     }
     '/_auth/$slug/_dash': {
       id: '/_auth/$slug/_dash'
@@ -1024,13 +1005,11 @@ const AuthSlugRouteRouteWithChildren = AuthSlugRouteRoute._addFileChildren(
 interface AuthRouteRouteChildren {
   AuthSlugRouteRoute: typeof AuthSlugRouteRouteWithChildren
   AuthIndexRoute: typeof AuthIndexRoute
-  AuthUsersUsernameRoute: typeof AuthUsersUsernameRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthSlugRouteRoute: AuthSlugRouteRouteWithChildren,
   AuthIndexRoute: AuthIndexRoute,
-  AuthUsersUsernameRoute: AuthUsersUsernameRoute,
 }
 
 const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(

@@ -42,6 +42,22 @@ export const ProfileEditForm = z.object({
     .max(32, { message: 'Name must not be longer than 32 characters.' }),
 })
 
+export const OrgNameForm = z.object({
+  name: z
+    .string()
+    .min(2, { message: 'Name must be at least 2 characters.' })
+    .max(32, { message: 'Name must not be longer than 32 characters.' }),
+  organizationId: z.string(),
+})
+
+
+export const OrgSlugForm = z.object({
+  slug: z
+    .string()
+    .min(3, { message: 'Slug must be at least 3 characters.' })
+    .max(48, { message: 'Slug must not be longer than 48 characters.' }),
+})
+
 export const GitHubDeployForm = z.object({
   serverId: z.string(),
   repo: z.string(),

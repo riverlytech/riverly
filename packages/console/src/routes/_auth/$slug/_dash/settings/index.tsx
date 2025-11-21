@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-// import { ProfileForm } from '@/components/settings/profile-form'
+import { EditOrgNameForm, EditOrgSlugForm } from '@/components/organization/edit-org-form'
 import {
   Card,
   CardContent,
@@ -14,37 +14,30 @@ export const Route = createFileRoute('/_auth/$slug/_dash/settings/')({
 })
 
 function RouteComponent() {
+  const { membership } = Route.useRouteContext()
   return (
     <div className="flex flex-col space-y-4 w-full md:w-3/4">
       <Card className="shadow-none">
         <CardHeader>
-          <CardTitle>Name</CardTitle>
+          <CardTitle>Org Name</CardTitle>
           <CardDescription>
-            Update your name displayed on your profile and across the platform.
+            This is your org's visible name within Riverly. For example, the name of your company or department.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          ...profile form...
-          {/* <ProfileForm defaultName={workspace.name} /> */}
+          <EditOrgNameForm organizationId={membership.org.id} defaultName={membership.org.name} />
         </CardContent>
       </Card>
       <Card className="shadow-none">
         <CardHeader>
-          <CardTitle>Update other details</CardTitle>
+          <CardTitle>Org Slug</CardTitle>
           <CardDescription>
-            Your other profile details come from your GitHub profile.
-            <br />
-            To change them, visit:{' '}
-            <a
-              href="https://github.com/settings/profile"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline text-primary"
-            >
-              github.com/settings/profile
-            </a>
+            This is your org's URL namespace on Riverly. Within it, your team can inspect their servers, check out any recent activity, or configure settings to their liking.
           </CardDescription>
         </CardHeader>
+        <CardContent>
+          <EditOrgSlugForm defaultName={membership.org.slug} />
+        </CardContent>
       </Card>
     </div>
   )
