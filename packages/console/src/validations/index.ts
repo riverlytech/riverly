@@ -52,6 +52,7 @@ export const OrgNameForm = z.object({
 
 
 export const OrgSlugForm = z.object({
+  organizationId: z.string(),
   slug: z
     .string()
     .min(3, { message: 'Slug must be at least 3 characters.' })

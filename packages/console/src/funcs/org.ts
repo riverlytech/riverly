@@ -61,7 +61,7 @@ export const updateOrgName = createServerFn({ method: 'POST' })
 
 
 export const updateOrgSlug = createServerFn({ method: 'POST' })
-  .inputValidator(OrgSlugForm.extend({ organizationId: z.string() }))
+  .inputValidator(OrgSlugForm)
   .middleware([authMiddleware])
   .handler(async ({ data, context: { user: sessionUser } }) => {
     if (!sessionUser) {

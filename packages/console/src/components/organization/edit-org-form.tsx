@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { updateOrgName } from '@/funcs/org'
+import { updateOrgName, updateOrgSlug } from '@/funcs/org'
 import { OrgNameForm, OrgSlugForm } from '@/validations'
 
 import type z from 'zod/v4'
@@ -47,6 +47,19 @@ export function EditOrgNameForm({ organizationId, defaultName }: { organizationI
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="organizationId"
+          render={({ field }) => (
+            <FormItem>
+              <Input
+                className='hidden'
+                disabled={form.formState.isSubmitting}
+                {...field}
+              />
+            </FormItem>
+          )}
+        />
         <div className="flex justify-between items-center">
           <p className="text-sm text-muted-foreground">
             Please use 32 characters at maximum.
@@ -63,20 +76,33 @@ export function EditOrgNameForm({ organizationId, defaultName }: { organizationI
 
 type OrgSlugFormValues = z.infer<typeof OrgSlugForm>
 
-export function EditOrgSlugForm({ defaultName }: { defaultName: string }) {
+export function EditOrgSlugForm({ organizationId, defaultName }: { organizationId: string; defaultName: string }) {
   const form = useForm<OrgSlugFormValues>({
     resolver: zodResolver(OrgSlugForm),
-    defaultValues: { slug: defaultName },
+    defaultValues: { organizationId: organizationId, slug: defaultName },
     mode: 'onTouched',
   })
 
   async function onSubmit(values: OrgSlugFormValues) {
-    console.log('onSubmit', values)
+    await updateOrgSlug({ data: { organizationId: values.organizationId, slug: values.slug } })
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="organizationId"
+          render={({ field }) => (
+            <FormItem>
+              <Input
+                className='hidden'
+                disabled={form.formState.isSubmitting}
+                {...field}
+              />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="slug"

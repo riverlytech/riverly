@@ -36,7 +36,7 @@ function RouteComponent() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <EditOrgSlugForm defaultName={membership.org.slug} />
+          <EditOrgSlugForm organizationId={membership.org.id} defaultName={membership.org.slug} />
         </CardContent>
       </Card>
     </div>
