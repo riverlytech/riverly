@@ -46,15 +46,35 @@ export function GitHubSelectRepo({ organizationId, slug }: { organizationId: str
   } = useGitHubInstalls(organizationId)
   const { data, isLoading, isError, mutate } = useRepos(organizationId, selectedOwner)
 
+  const repositories = React.useMemo(
+    () =>
+      data?.repos.map((repo: GitHubRepo) => ({
+        value: repo.fullName,
+        label: repo.fullName,
+        id: repo.id,
+        private: repo.private,
+      })) || [],
+    [data?.repos],
+  )
+
+  const isInstalled = data?.isInstalled ?? false
+
   React.useEffect(() => {
-    if (installData?.installs && installData?.installs.length > 0) {
+    if (!selectedOwner && installData?.installs && installData.installs.length > 0) {
       setSelectedOwner(installData.installs[0].accountLogin)
     }
-  }, [installData?.installs])
+  }, [installData?.installs, selectedOwner])
+
+  React.useEffect(() => {
+    if (value && !repositories.some((repo) => repo.value === value)) {
+      setValue('')
+    }
+  }, [repositories, value])
 
   const handleImportClick = () => {
-    if (value) {
-      const [owner, name] = value.split('/')
+    const selectedRepo = repositories.find((repo) => repo.value === value)
+    if (selectedRepo) {
+      const [owner, name] = selectedRepo.value.split('/')
       navigate({
         to: '/$slug/servers/import',
         params: { slug },
@@ -84,29 +104,17 @@ export function GitHubSelectRepo({ organizationId, slug }: { organizationId: str
     mutate().then(() => { })
   }
 
-  const repositories =
-    data?.repos.map((repo: GitHubRepo) => ({
-      value: repo.fullName,
-      label: repo.fullName,
-      id: repo.id,
-      private: repo.private,
-    })) || []
-
-  const isInstalled = data?.isInstalled ?? false
-
   if (isLoading || isInstallsLoading) {
     return (
       <div className="p-4 border border-border/70 hover:border-border transition-colors">
-        <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2 flex-wrap">
             <GitHubIcon className="h-4 w-4" />
-            <Skeleton className="h-9 w-32" />
+            <Skeleton className="h-9 w-28 sm:w-32" />
           </div>
-          <div className="flex-1">
-            <Skeleton className="h-9 w-full" />
-          </div>
+          <Skeleton className="h-9 w-full" />
+          <Skeleton className="h-5 w-full sm:w-80" />
         </div>
-        <Skeleton className="h-5 w-80 mt-2" />
       </div>
     )
   }
@@ -114,8 +122,8 @@ export function GitHubSelectRepo({ organizationId, slug }: { organizationId: str
   if (isError || isInstallErr) {
     return (
       <div className="p-4 border border-destructive/50 hover:border-destructive/70 transition-colors bg-destructive/5">
-        <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2 flex-wrap">
             <GitHubIcon className="h-4 w-4" />
             {installData?.installs && installData.installs.length > 0 && (
               <Popover
@@ -173,21 +181,21 @@ export function GitHubSelectRepo({ organizationId, slug }: { organizationId: str
               </Popover>
             )}
           </div>
-          <div className="flex-1 flex items-center gap-2">
-            <AlertCircle className="h-4 w-4 text-destructive" />
-            <span className="text-sm text-destructive">
-              Failed to load repositories
-            </span>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex items-center gap-2 text-sm text-destructive">
+              <AlertCircle className="h-4 w-4 text-destructive" />
+              <span>Failed to load repositories</span>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full sm:w-auto"
+              onClick={handleRetry}
+            >
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Retry
+            </Button>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full sm:w-auto"
-            onClick={handleRetry}
-          >
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Retry
-          </Button>
         </div>
         <p className="text-sm mt-3 text-muted-foreground">
           There was an error loading your GitHub repositories. Please try again.
@@ -301,7 +309,7 @@ export function GitHubSelectRepo({ organizationId, slug }: { organizationId: str
             </PopoverTrigger>
             {isInstalled && (
               <PopoverContent
-                className="p-0 w-[--radix-popover-trigger-width] min-w-[400px] max-w-[600px]"
+                className="p-0 w-[--radix-popover-trigger-width] max-w-[90vw] sm:min-w-[400px] sm:max-w-[600px]"
                 align="start"
                 side="bottom"
               >
@@ -310,7 +318,7 @@ export function GitHubSelectRepo({ organizationId, slug }: { organizationId: str
                     placeholder="Search repositories..."
                     className="h-10 border-0 focus:ring-0"
                   />
-                  <CommandList className="max-h-[300px]">
+                  <CommandList className="max-h-[50vh] sm:max-h-[300px]">
                     <CommandEmpty className="py-6 text-center text-sm text-muted-foreground">
                       No repositories found.
                     </CommandEmpty>
