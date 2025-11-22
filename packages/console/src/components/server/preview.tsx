@@ -44,34 +44,41 @@ export function UserServerCard({
           )}
         </div>
         <CardContent className="flex flex-1 flex-col justify-center gap-2 p-0 min-w-0 h-full">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-base font-semibold text-zinc-900 dark:text-zinc-100 truncate">
-              {server.title}
-            </span>
-            {server.verified && (
-              <Badge
-                variant="secondary"
-                className="bg-emerald-600/90 text-white border-emerald-600/80"
-              >
-                <CheckCircle className="w-3 h-3" />
-                Verified
-              </Badge>
-            )}
-            <Badge variant="outline" className="text-[11px]">
-              {server.visibility === 'private' ? (
-                <>
-                  <Lock className="w-3 h-3" />
-                  Private
-                </>
-              ) : (
-                <>
-                  <Globe2 className="w-3 h-3" />
-                  Public
-                </>
+          <div className="flex items-center gap-2 w-full">
+            <div className="flex flex-wrap items-center gap-2 min-w-0">
+              <span className="text-base font-semibold text-zinc-900 dark:text-zinc-100 truncate">
+                {server.title}
+              </span>
+              {server.verified && (
+                <Badge
+                  variant="secondary"
+                  className="bg-emerald-600/90 text-white border-emerald-600/80"
+                >
+                  <CheckCircle className="w-3 h-3" />
+                  Verified
+                </Badge>
               )}
-            </Badge>
+              <Badge variant="outline" className="text-[11px]">
+                {server.visibility === 'private' ? (
+                  <>
+                    <Lock className="w-3 h-3" />
+                    Private
+                  </>
+                ) : (
+                  <>
+                    <Globe2 className="w-3 h-3" />
+                    Public
+                  </>
+                )}
+              </Badge>
+            </div>
+            {server.org?.name && (
+              <span className="ml-auto text-xs text-zinc-500 dark:text-zinc-400 truncate max-w-[40%] text-right">
+                {server.org.name}
+              </span>
+            )}
           </div>
-          <p className="text-sm text-zinc-600 dark:text-zinc-300 line-clamp-2 leading-snug">
+          <p className="text-sm text-zinc-600 dark:text-zinc-300 line-clamp-2 leading-snug break-words">
             {server.description || 'No description provided yet.'}
           </p>
           <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400">
