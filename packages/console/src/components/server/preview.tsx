@@ -1,10 +1,10 @@
 import { Link } from '@tanstack/react-router'
-import { CheckCircle, Rocket } from 'lucide-react'
+import { CheckCircle, Globe2, Lock, Rocket, ShieldCheck } from 'lucide-react'
 
 import type { Server } from '@riverly/riverly'
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
 
 export function UserServerCard({
   slug,
@@ -15,9 +15,20 @@ export function UserServerCard({
 }) {
   const image = server.image || `https://avatar.vercel.sh/${server.serverId}`
   return (
-    <Card className="gap-2 group focus:outline-none p-0 rounded-sm  flex min-h-20 bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors duration-150 shadow-none group-focus:ring-2 group-focus:ring-zinc-400">
-      <CardContent className="flex flex-col lg:flex-row gap-3 p-2 w-full h-full">
-        <div className="w-20 h-20 min-w-20 min-h-20 overflow-hidden bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center border border-zinc-200 dark:border-zinc-700 self-start">
+    <Link
+      to="/$slug/servers/$serverId"
+      params={{
+        slug,
+        serverId: server.serverId,
+      }}
+      className="group block focus:outline-none"
+    >
+      <Card className="relative overflow-hidden gap-3 flex-row items-stretch p-3 md:p-4 rounded-md min-h-[96px] bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors duration-150 shadow-none group-focus:ring-2 group-focus:ring-zinc-400">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 bg-gradient-to-r from-sky-500/10 via-emerald-500/5 to-transparent transition-opacity"
+        />
+        <div className="relative w-20 h-20 min-w-20 min-h-20 overflow-hidden bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center border border-zinc-200 dark:border-zinc-700 rounded-sm">
           <img
             src={image}
             alt={server.title}
@@ -26,48 +37,51 @@ export function UserServerCard({
             className="object-cover w-20 h-20"
             draggable={false}
           />
+          {server.verified && (
+            <span className="absolute -bottom-1 -right-1 rounded-full bg-emerald-600 text-white p-1 shadow-sm">
+              <ShieldCheck className="w-3 h-3" />
+            </span>
+          )}
         </div>
-        <div className="min-w-0 flex flex-col gap-3">
-          <div className="flex items-center gap-1">
-            <CheckCircle className="w-3 h-3 text-zinc-400 dark:text-zinc-500" />
-            <span className="text-sm text-zinc-500 dark:text-zinc-400 font-medium truncate">
-              {'server.username'}
+        <CardContent className="flex flex-1 flex-col justify-center gap-2 p-0 min-w-0 h-full">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-base font-semibold text-zinc-900 dark:text-zinc-100 truncate">
+              {server.title}
             </span>
-            <span className="text-sm text-zinc-400 dark:text-zinc-600">/</span>
-            <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">
-              {'server.name'}
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" asChild>
-              <Link
-                to="/$slug/servers/$serverId"
-                params={{
-                  slug,
-                  serverId: server.serverId,
-                }}
+            {server.verified && (
+              <Badge
+                variant="secondary"
+                className="bg-emerald-600/90 text-white border-emerald-600/80"
               >
-                View MCP Server
-              </Link>
-            </Button>
+                <CheckCircle className="w-3 h-3" />
+                Verified
+              </Badge>
+            )}
+            <Badge variant="outline" className="text-[11px]">
+              {server.visibility === 'private' ? (
+                <>
+                  <Lock className="w-3 h-3" />
+                  Private
+                </>
+              ) : (
+                <>
+                  <Globe2 className="w-3 h-3" />
+                  Public
+                </>
+              )}
+            </Badge>
           </div>
-        </div>
-        <div className="flex-1 mt-4 lg:mt-0">
-          {/* <ServerMetricPreview /> */}
-        </div>
-      </CardContent>
-      <CardFooter className="flex flex-wrap items-center gap-4 py-2 font-mono">
-        {/* <div className="flex items-center gap-1 text-xs">*/}
-        {/*  <GitCommitHorizontal className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />*/}
-        {/*  <span className="font-mono text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950 px-1.5 py-0.5 rounded">*/}
-        {/*    {"unknown"}*/}
-        {/*  </span>*/}
-        {/* </div>*/}
-        <div className="flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
-          <Rocket className="w-3 h-3" />
-          {server.usageCount} Runs
-        </div>
-      </CardFooter>
-    </Card>
+          <p className="text-sm text-zinc-600 dark:text-zinc-300 line-clamp-2 leading-snug">
+            {server.description || 'No description provided yet.'}
+          </p>
+          <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400">
+            <span className="flex items-center gap-1">
+              <Rocket className="w-3 h-3" />
+              {server.usageCount} Runs
+            </span>
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
   )
 }
