@@ -24,6 +24,7 @@ export const Route = createFileRoute('/_auth/$slug/_dash/settings/github')({
 })
 
 function RouteComponent() {
+  const { membership } = Route.useRouteContext()
   const { installation } = Route.useLoaderData()
   return (
     <div className="flex flex-col space-y-4 w-full md:w-3/4">
@@ -53,7 +54,7 @@ function RouteComponent() {
                   </span>
                 </div>
                 <a
-                  href={`${import.meta.env.VITE_GITHUB_APP_INSTALL_URL}`}
+                  href={`${import.meta.env.VITE_GITHUB_APP_INSTALL_URL}?state=${membership.org.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:text-blue-800 text-sm transition-colors"
@@ -73,7 +74,7 @@ function RouteComponent() {
                 className="gap-2 w-full sm:w-auto"
               >
                 <a
-                  href={`${import.meta.env.VITE_GITHUB_APP_INSTALL_URL}`}
+                  href={`${import.meta.env.VITE_GITHUB_APP_INSTALL_URL}?state=${membership.org.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

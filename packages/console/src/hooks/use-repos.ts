@@ -7,11 +7,13 @@ const fetcher = (
 ): Promise<{ repos: Array<GitHubRepo>; isInstalled: boolean }> =>
   fetch(...args).then((res) => res.json())
 
-export function useRepos(owner?: string) {
-  const url = owner
-    ? `/api/github/repos?owner=${encodeURIComponent(owner)}`
-    : `/api/github/repos`
+export function useRepos(organizationId: string, owner?: string) {
+  const q = new URLSearchParams({
+    ...(owner && { owner }),
+    ...(organizationId && { organizationId }),
+  });
 
+  const url = owner && `/api/github/repos${q.size ? `?${q}` : ""}`
   const { data, error, isLoading, mutate } = useSWR(url, fetcher)
 
   return {

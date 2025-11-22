@@ -2,9 +2,8 @@ import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
 
 import { env } from '@riverly/config'
-import type { UserTable } from '@riverly/db'
 import { Database } from '@riverly/db'
-import { GitHub, toSession } from '@riverly/riverly'
+import { Organization, GitHub } from '@riverly/riverly'
 import { GitHubInstallationSetupValue } from '@riverly/ty'
 
 import { auth } from '@/lib/auth'
@@ -35,20 +34,33 @@ export const Route = createFileRoute('/api/github/callback')({
         const { searchParams } = url
         const installationId = searchParams.get('installation_id')
         const setupAction = searchParams.get('setup_action')
+        const state = searchParams.get('state')
+
         const parsedParams = {
           installationId: installationId ? Number(installationId) : undefined,
           setupAction: setupAction ?? undefined,
         }
 
+        if (!state) {
+          return new Response("Forbidden", { status: 403 });
+        }
+
         try {
-          const sessionUser = toSession(session.user as UserTable)
+          const membership = await Organization.orgMembershipFromID({
+            organizationId: state,
+            userId: session.user.id,
+          })
+          if (!membership) {
+            return new Response("Forbidden", { status: 403 });
+          }
+
           const validatedParams = callbackSearchSchema.parse(parsedParams)
           const installationDetails = await GitHub.installationDetails(
             validatedParams.installationId,
           )
 
           await GitHub.upsertApp({
-            organizationId: sessionUser.userId,
+            organizationId: membership.org.id,
             githubAppId: env.GITHUB_APP_ID,
             githubInstallationId: validatedParams.installationId,
             setupAction: validatedParams.setupAction,
@@ -56,7 +68,6 @@ export const Route = createFileRoute('/api/github/callback')({
             accountType: installationDetails.accountType,
             accountLogin: installationDetails.accountLogin,
           })
-
           return Response.redirect(new URL('/github/installed', request.url))
         } catch (err) {
           console.error(err)

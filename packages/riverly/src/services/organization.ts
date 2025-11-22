@@ -105,6 +105,51 @@ export namespace Organization {
     }
   );
 
+  export const orgMembershipFromID = fn(
+    z.object({ organizationId: z.string(), userId: z.string() }),
+    async (filters) => {
+      return await Database.use(async (db) => {
+        return db
+          .select({
+            id: members.id,
+            role: members.role,
+            org: {
+              id: organizations.id,
+              name: organizations.name,
+              slug: organizations.slug,
+              logo: organizations.logo,
+              createdAt: organizations.createdAt,
+              metadata: organizations.metadata,
+            },
+            user: {
+              id: users.id,
+              name: users.name,
+              email: users.email,
+              emailVerified: users.emailVerified,
+              image: users.image,
+              username: users.username,
+              createdAt: users.createdAt,
+              defaultOrgId: users.defaultOrgId,
+            },
+          })
+          .from(members)
+          .innerJoin(
+            organizations,
+            eq(members.organizationId, organizations.id)
+          )
+          .innerJoin(users, eq(members.userId, users.id))
+          .where(
+            and(
+              eq(organizations.id, filters.organizationId),
+              eq(members.userId, filters.userId)
+            )
+          )
+          .execute()
+          .then((row) => row[0] ?? null);
+      });
+    }
+  );
+
   export const orgMembership = fn(
     z.object({ slug: z.string(), userId: z.string() }),
     async (filters) => {

@@ -91,7 +91,7 @@ function RouteComponent() {
                     </div>
 
                     <div className="space-y-4 mb-6">
-                      <GitHubSelectRepo slug={membership.org.slug} />
+                      <GitHubSelectRepo organizationId={membership.org.id} slug={membership.org.slug} />
 
                       {/* <div className="flex flex-col space-y-2">
                         {tryForFreeServers.map((server) => {

@@ -52,12 +52,12 @@ export const Route = createFileRoute(
   component: RouteComponent,
 })
 
-export function WebRequireGitConnection() {
+export function WebRequireGitConnection({ organizationId }: { organizationId: string }) {
   const router = useRouter()
 
   const handleInstallClick = () => {
     const popup = window.open(
-      `${import.meta.env.VITE_GITHUB_APP_INSTALL_URL}`,
+      `${import.meta.env.VITE_GITHUB_APP_INSTALL_URL}?state=${organizationId}`,
       'Installing riverlytech',
       'width=800,height=700,scrollbars=yes,resizable=yes,centerscreen=yes',
     )
@@ -159,7 +159,7 @@ function RouteComponent() {
             </CardContent>
           </Card>
         ) : (
-          <WebRequireGitConnection />
+          <WebRequireGitConnection organizationId={membership.org.id} />
         )}
       </div>
     </div>

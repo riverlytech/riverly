@@ -7,12 +7,16 @@ const fetcher = (
 ): Promise<{ installs: GitHub.OrgInstalls }> =>
   fetch(...args).then((res) => res.json())
 
-export function useGitHubInstalls() {
+export function useGitHubInstalls(organizationId: string) {
+  const q = new URLSearchParams({
+    ...(organizationId && { organizationId }),
+  });
+  const url = `/api/github/installs${q.size ? `?${q}` : ""}`;
+
   const { data, error, isLoading, mutate } = useSWR(
-    `/api/github/installs`,
+    url,
     fetcher,
   )
-
   return {
     data: data,
     isLoading,
