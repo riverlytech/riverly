@@ -9,15 +9,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { orgGitHubInstallationFn } from '@/funcs'
+import { orgGitHubInstallationsFn } from '@/funcs'
 
 export const Route = createFileRoute('/_auth/$slug/_dash/settings/github')({
   loader: async ({ context: { membership } }) => {
-    const installation = await orgGitHubInstallationFn({
+    const installations = await orgGitHubInstallationsFn({
       data: { organizationId: membership.org.id },
     })
     return {
-      installation,
+      installations,
     }
   },
   component: RouteComponent,
@@ -25,7 +25,10 @@ export const Route = createFileRoute('/_auth/$slug/_dash/settings/github')({
 
 function RouteComponent() {
   const { membership } = Route.useRouteContext()
-  const { installation } = Route.useLoaderData()
+  const { installations } = Route.useLoaderData()
+  const totalInstallations = installations?.length ?? 0
+  const limitedInstallations = installations?.slice(0, 3) ?? []
+
   return (
     <div className="flex flex-col space-y-4 w-full md:w-3/4">
       <Card className="shadow-none">
@@ -36,16 +39,23 @@ function RouteComponent() {
             features.
           </CardDescription>
         </CardHeader>
-        <CardContent className="font-thin">
+        <CardContent>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-2">
               <GitHubIcon className="h-4 w-4" />
-              <span className="text-sm font-medium font-mono">
-                {'workspace.username'}
-              </span>
+              {limitedInstallations.length ? (
+                <span className="text-sm">
+                  {limitedInstallations
+                    .map((install) => install.accountLogin)
+                    .join(', ')}
+                  {totalInstallations > 3 ? ` +${totalInstallations - 3} more` : ''}
+                </span>
+              ) : (
+                <span className="text-sm">No GitHub accounts connected</span>
+              )}
             </div>
 
-            {installation ? (
+            {installations && installations.length > 0 ? (
               <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                 <div className="flex items-center gap-2">
                   <div className="h-2 w-2 bg-green-500 rounded-full"></div>

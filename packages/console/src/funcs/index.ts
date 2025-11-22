@@ -229,7 +229,7 @@ export const updateProfileNameFn = createServerFn({ method: 'POST' })
     })
   })
 
-export const orgGitHubInstallationFn = createServerFn({ method: 'GET' })
+export const orgGitHubInstallationsFn = createServerFn({ method: 'GET' })
   .inputValidator((data: { organizationId: string }) => data)
   .middleware([authMiddleware])
   .handler(async ({ data, context: { user: sessionUser } }) => {
@@ -237,10 +237,9 @@ export const orgGitHubInstallationFn = createServerFn({ method: 'GET' })
       setResponseStatus(401)
       throw new BetterAuthError('Unauthorized')
     }
-    const response = await GitHub.orgInstallation({
+    const response = await GitHub.orgInstalls({
       organizationId: data.organizationId,
       githubAppId: env.GITHUB_APP_ID,
-      account: sessionUser.username,
     })
     return response
   })
