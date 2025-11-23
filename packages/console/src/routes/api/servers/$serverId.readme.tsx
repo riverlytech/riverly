@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { env } from '@riverly/config'
 import { Database } from '@riverly/db'
-import { Server, Organization } from '@riverly/riverly'
+import { Server, Organization, GitHub } from '@riverly/riverly'
 import { ServerVisibilityEnum } from '@riverly/ty'
 
 import { auth } from '@/lib/auth'
@@ -12,7 +12,6 @@ export const Route = createFileRoute('/api/servers/$serverId/readme')({
   server: {
     handlers: {
       GET: async ({ request, params }) => {
-        console.log('********** MAKE API REQUEST ************')
         const session = (await Database.transaction((db) =>
           auth(db, env).api.getSession({
             headers: request.headers,
@@ -50,14 +49,41 @@ export const Route = createFileRoute('/api/servers/$serverId/readme')({
           )
         }
 
-        console.log('------------------ server', server)
+        // Prefer fetching README directly from the connected GitHub app so both
+        // public and private repos work.
+        if (server.githubOwner && server.githubRepo) {
+          const installation = await GitHub.orgInstallation({
+            organizationId: orgId,
+            githubAppId: env.GITHUB_APP_ID,
+            account: server.githubOwner,
+          })
 
+          if (!installation) {
+            return new Response('GitHub installation not found', {
+              status: 404,
+            })
+          }
+
+          const readmeContent = await GitHub.repoReadmeContent({
+            githubInstallationId: installation.githubInstallationId,
+            owner: server.githubOwner,
+            repo: server.githubRepo,
+          })
+
+          if (readmeContent) {
+            return new Response(readmeContent, {
+              headers: {
+                'Content-Type': 'text/plain; charset=utf-8',
+              },
+            })
+          }
+        }
+
+        // Fallback to previously stored README locations if available.
         const readmeUrl =
           server.visibility === ServerVisibilityEnum.PUBLIC
             ? server.readme?.gitDownloadUrl
             : server.readme?.s3Url
-
-        console.log('readmeUrl', readmeUrl)
 
         if (!readmeUrl) {
           return new Response(null, { status: 404 })
@@ -69,7 +95,7 @@ export const Route = createFileRoute('/api/servers/$serverId/readme')({
         const text = await res.text()
         return new Response(text, {
           headers: {
-            'Content-Type': 'text/plain',
+            'Content-Type': 'text/plain; charset=utf-8',
           },
         })
       },

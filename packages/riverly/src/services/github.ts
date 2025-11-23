@@ -235,6 +235,35 @@ export namespace GitHub {
     }
   );
 
+  export const repoReadmeContent = fn(
+    z.object({
+      githubInstallationId: z.number(),
+      owner: z.string(),
+      repo: z.string(),
+    }),
+    async (readme) => {
+      const octokit = await getGhApp().getInstallationOctokit(
+        readme.githubInstallationId
+      );
+      try {
+        const { data } = await octokit.rest.repos.getReadme({
+          owner: readme.owner,
+          repo: readme.repo,
+          mediaType: {
+            format: "raw",
+          },
+        });
+        if (typeof data === "string") return data;
+        // Fallback if Octokit returns the encoded payload instead of raw text
+        const content = (data as { content?: string }).content;
+        if (!content) return null;
+        return Buffer.from(content, "base64").toString("utf-8");
+      } catch (error) {
+        return null;
+      }
+    }
+  );
+
   export const repoLatestCommitHash = fn(
     z.object({
       githubInstallationId: z.number(),
