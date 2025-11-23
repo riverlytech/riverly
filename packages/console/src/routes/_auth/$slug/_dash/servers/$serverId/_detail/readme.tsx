@@ -2,15 +2,13 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { processMarkdown } from '@/components/utils/markdown'
 
+import { serverReadmeFn } from '@/funcs/server'
+
 export const Route = createFileRoute(
   '/_auth/$slug/_dash/servers/$serverId/_detail/readme',
 )({
-  loader: async ({ params }) => {
-    const res = await fetch(`/api/servers/${params.serverId}/readme`)
-    if (!res.ok || res.status < 200 || res.status >= 300) {
-      throw new Error(`Failed to fetch README: ${res.status} ${res.statusText}`)
-    }
-    const markdown = await res.text()
+  loader: async ({ params, context: { membership } }) => {
+    const markdown = await serverReadmeFn({ data: { serverId: params.serverId, organizationId: membership.org.id } })
     const html = await processMarkdown(markdown)
     return { html }
   },
