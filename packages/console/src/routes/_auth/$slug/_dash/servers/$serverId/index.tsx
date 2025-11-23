@@ -124,16 +124,7 @@ function RouteComponent() {
                 </AvatarFallback>
               </Avatar>
               <div className="text-3xl">
-                ...
-                {/* <Link
-                  to="/users/$username"
-                  params={{ username: server.username }}
-                  className="text-muted-foreground underline decoration-1 hover:decoration-2 underline-offset-4"
-                >
-                  {server.username}
-                </Link> */}
-                {/* <span className="mx-1 text-muted-foreground">/</span> */}
-                {/* <span className="text-primary">{server.name}</span> */}
+                {server.title}
               </div>
             </div>
 
@@ -272,28 +263,12 @@ function RouteComponent() {
                   </div>
                 </div>
               </Tabs>
-              {/* {!isReady ? (
-                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-6 bg-gradient-to-b from-background/40 via-background/70 to-background">
-                  <Button
-                    asChild
-                    className="rounded-2xl px-14 py-7 text-lg font-semibold font-mono tracking-tight"
-                  >
-                    <Link
-                      to="/$username/servers/$owner/$name/deploy"
-                      params={{ username, owner, name }}
-                    >
-                      Deploy
-                    </Link>
-                  </Button>
-                </div>
-              ) : null} */}
             </div>
           </div>
           <div className="w-full lg:w-1/3">
             {/* <ExplorePlatform className="lg:sticky lg:top-24" /> */}
           </div>
         </div>
-        {/* {session && server && <ServerViewedTrack serverId={server.serverId} />} */}
       </div>
     </div>
   )
