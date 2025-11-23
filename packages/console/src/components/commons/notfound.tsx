@@ -21,7 +21,7 @@ export function NotFound() {
 
 export function ServerNotFound() {
   return (
-    <div className="flex flex-col py-8 px-8">
+    <div className="flex flex-col p-8">
       <h1 className="text-8xl font-bold text-muted-foreground/20">404.</h1>
       <div className="font-mono text-xl text-muted-foreground">
         Opops! Not Found

@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardContent } from '@/components/ui/card'
 
 export const Route = createFileRoute(
-  '/_auth/$slug/_dash/servers/$serverId/settings',
+  '/_auth/$slug/_dash/servers/$serverId/_detail/settings',
 )({
   component: RouteComponent,
 })
