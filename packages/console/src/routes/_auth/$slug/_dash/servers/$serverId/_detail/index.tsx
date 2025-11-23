@@ -113,33 +113,34 @@ function RouteComponent() {
   return (
     <div className="py-8 px-2 sm:px-4">
       <div className="flex flex-col max-w-7xl mx-auto space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
           {/* column 1, and 2 - full width on mobile, 2/3 on larger screens */}
-          <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-14 w-14">
+          <div className="col-span-1 lg:col-span-2 space-y-3 min-w-0">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 min-w-0">
+              <Avatar className="h-14 w-14 shrink-0">
                 <AvatarImage src={image} alt={server.title} />
                 <AvatarFallback className="text-xl">
                   {server.title[0]}
                 </AvatarFallback>
               </Avatar>
-              <div className="text-3xl">
+              <div className="text-2xl sm:text-3xl font-semibold leading-tight break-words">
                 {server.title}
               </div>
             </div>
 
-            <p className="py-2 text-wrap max-w-2xl line-clamp-3">
+            <p className="text-base text-muted-foreground leading-relaxed break-words sm:max-w-3xl">
               {server.description}
             </p>
 
-            <div className="flex flex-wrap gap-4 text-sm font-thin font-mono">
+            <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
               <div className="flex items-center gap-1.5 capitalize">
                 <Globe className="w-4 h-4" />
                 {formattedVisibility}
               </div>
               <div className="flex items-center gap-1.5">
                 <Rocket className="w-4 h-4" />
-                <span className="font-mono">{server.usageCount}</span>Runs
+                <span className="font-mono">{server.usageCount}</span>
+                <span>Runs</span>
               </div>
             </div>
           </div>

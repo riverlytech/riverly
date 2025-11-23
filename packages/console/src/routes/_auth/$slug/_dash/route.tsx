@@ -18,7 +18,7 @@ function RouteComponent() {
     <SidebarProvider>
       <AppSidebar slug={membership.org.slug} />
       <SidebarInset>
-        <header className="flex h-14 shrink-0 items-center">
+        <header className="flex h-12 shrink-0 items-center">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator
