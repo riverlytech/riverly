@@ -1,14 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 import { processMarkdown } from '@/components/utils/markdown'
-
 import { serverReadmeFn } from '@/funcs/server'
 
 export const Route = createFileRoute(
   '/_auth/$slug/_dash/servers/$serverId/_detail/readme',
 )({
   loader: async ({ params, context: { membership } }) => {
-    const markdown = await serverReadmeFn({ data: { serverId: params.serverId, organizationId: membership.org.id } })
+    const markdown = await serverReadmeFn({
+      data: { serverId: params.serverId, organizationId: membership.org.id },
+    })
     const html = await processMarkdown(markdown)
     return { html }
   },

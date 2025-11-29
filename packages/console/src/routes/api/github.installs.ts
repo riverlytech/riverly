@@ -29,7 +29,10 @@ export const Route = createFileRoute('/api/github/installs')({
           userId: session.user.id,
         })
         if (!membership) {
-          return Response.json({ isInstalled: false, repos: [] }, { status: 403 })
+          return Response.json(
+            { isInstalled: false, repos: [] },
+            { status: 403 },
+          )
         }
 
         const installs = await GitHub.orgInstalls({

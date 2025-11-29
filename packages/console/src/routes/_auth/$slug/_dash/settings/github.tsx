@@ -48,7 +48,9 @@ function RouteComponent() {
                   {limitedInstallations
                     .map((install) => install.accountLogin)
                     .join(', ')}
-                  {totalInstallations > 3 ? ` +${totalInstallations - 3} more` : ''}
+                  {totalInstallations > 3
+                    ? ` +${totalInstallations - 3} more`
+                    : ''}
                 </span>
               ) : (
                 <span className="text-sm">No GitHub accounts connected</span>

@@ -2,9 +2,7 @@ import { pgTable, primaryKey, timestamp, varchar } from "drizzle-orm/pg-core";
 import { serverTable } from "./server";
 
 export const collectionTable = pgTable("collection", {
-  collectionId: varchar("collection_id", { length: 255 })
-    .primaryKey()
-    .notNull(),
+  collectionId: varchar("collection_id", { length: 255 }).primaryKey().notNull(),
   title: varchar("title", { length: 255 }).notNull(),
   name: varchar("name", { length: 255 }).unique().notNull(),
   description: varchar("description", { length: 511 }),
@@ -29,5 +27,5 @@ export const serverCollectionTable = pgTable(
       name: "server_id_collection_id_pk",
       columns: [table.serverId, table.collectionId],
     }),
-  ]
+  ],
 );

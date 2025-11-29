@@ -41,7 +41,7 @@ export const GitHubSourceBuilder = z.object({
               value: z.string(),
               secret: z.boolean().optional().default(false),
             })
-            .required()
+            .required(),
         )
         .default([]),
       inputs: z.record(z.string(), z.any()).optional(),
@@ -68,7 +68,6 @@ export const GitHubSourceDeployer = GitHubSourceBuilder.extend({
 
 export type GitHubSourceDeployer = z.infer<typeof GitHubSourceDeployer>;
 
-
 export const DeploymentEvent = z.object({
   id: z.string().nullable(),
   buildId: z.string(),
@@ -77,7 +76,6 @@ export const DeploymentEvent = z.object({
   metadata: z.record(z.string(), z.any()).optional(),
   message: z.string().optional(),
   resourceIds: z.record(z.string(), z.string()).optional(),
-})
+});
 
 export type DeploymentEvent = z.infer<typeof DeploymentEvent>;
-

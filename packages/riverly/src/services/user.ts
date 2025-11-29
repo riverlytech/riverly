@@ -20,7 +20,7 @@ export namespace User {
         .where(eq(users.username, username))
         .execute()
         .then((rows) => rows[0] ?? null);
-    })
+    }),
   );
 
   export const fromID = fn(z.string(), async (id) =>
@@ -31,19 +31,17 @@ export namespace User {
         .where(eq(users.id, id))
         .execute()
         .then((rows) => rows[0] ?? null);
-    })
+    }),
   );
 
-  export const update = fn(
-    UpdateUser.extend({ id: z.string() }),
-    async (updates) =>
-      Database.transaction(async (tx) => {
-        const { id, ...values } = updates;
-        return tx
-          .update(users)
-          .set({ ...values })
-          .where(eq(users.id, updates.id))
-          .execute();
-      })
+  export const update = fn(UpdateUser.extend({ id: z.string() }), async (updates) =>
+    Database.transaction(async (tx) => {
+      const { id, ...values } = updates;
+      return tx
+        .update(users)
+        .set({ ...values })
+        .where(eq(users.id, updates.id))
+        .execute();
+    }),
   );
 }

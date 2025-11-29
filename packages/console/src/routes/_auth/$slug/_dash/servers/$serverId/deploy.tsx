@@ -52,7 +52,11 @@ export const Route = createFileRoute(
   component: RouteComponent,
 })
 
-export function WebRequireGitConnection({ organizationId }: { organizationId: string }) {
+export function WebRequireGitConnection({
+  organizationId,
+}: {
+  organizationId: string
+}) {
   const router = useRouter()
 
   const handleInstallClick = () => {

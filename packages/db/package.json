@@ -4,7 +4,11 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "lint": "bunx eslint .",
+    "lint": "eslint .",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "typecheck": "tsc --noEmit --pretty false",
+    "check": "prettier --write . && eslint --fix .",
     "db:push": "bun drizzle-kit push",
     "db:generate": "bun drizzle-kit generate",
     "db:migrate": "bun drizzle-kit migrate",

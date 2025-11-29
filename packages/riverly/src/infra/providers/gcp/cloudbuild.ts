@@ -13,7 +13,7 @@ const CloudBuildTriggerError = NamedError.create(
   "CloudBuildTriggerError",
   z.object({
     message: z.string(),
-  })
+  }),
 );
 
 export type CloudBuildLogStreamOptions = {
@@ -56,249 +56,241 @@ export const CloudBuildBuild = Builder.define("gcp_cloudbuild_build", {
   },
 });
 
-export const CloudBuildBuildDeploy = Deployer.define(
-  "gcp_cloudbuild_build_deploy",
-  async () => ({
-    parameters: GitHubSourceDeployer,
-    async deploy(params, ctx): Promise<Deployer.Result> {
+export const CloudBuildBuildDeploy = Deployer.define("gcp_cloudbuild_build_deploy", async () => ({
+  parameters: GitHubSourceDeployer,
+  async deploy(params, ctx): Promise<Deployer.Result> {
+    console.info(
+      {
+        deploymentId: params.deployment.deploymentId,
+        buildId: params.build.buildId,
+        target: params.deployment.target,
+      },
+      "Starting GCP Cloud Build deploy...",
+    );
+
+    const gcpConfig = gcpConfigSchema.parse({});
+    const gcpBuildConfig = gcpCloudBuildConfigSchema.parse({});
+
+    const imageName = buildArtifactPath(gcpConfig, params);
+    const repoUrl = `https://github.com/${params.githubOrg}/${params.githubRepo}.git`;
+    // const callbackBaseUrl = resolveCallbackBaseUrl();
+    // const callbackUrl = `${callbackBaseUrl}/__/v1/deployments/callback`;
+    // const deploymentLogDrainUrl = `${callbackBaseUrl}/__/v1/deployments/log`;
+    const serviceName = buildServiceName(params.deployment.deploymentId);
+    const dockerBuildTimeoutSeconds = parseDurationSeconds(gcpBuildConfig.dockerBuildTimeout);
+
+    // const jwt = await issueM2MServiceToken(params.user.userId);
+
+    // undo till here
+    const buildDefinition: protos.google.devtools.cloudbuild.v1.IBuild = {
+      tags: [
+        `deployment-id-${params.deployment.deploymentId.toLowerCase()}` as const,
+        `build-id-${params.build.buildId.toLowerCase()}` as const,
+        `org-id-${params.org.organizationId.toLowerCase()}` as const,
+        `deployment-target-${params.deployment.target.toLowerCase()}` as const,
+        `ty-build-deploy` as const,
+      ],
+      timeout: { seconds: gcpBuildConfig.maxTimeoutSeconds },
+      images: [imageName],
+      substitutions: {
+        // _DEPLOYMENT_ID: params.deployment.deploymentId,
+        // _BUILD_ID: params.build.buildId,
+        _REPO_URL: repoUrl,
+        _BRANCH: params.githubRef,
+        _IMAGE_NAME: imageName,
+        _GITHUB_APP_ID: params.githubAppId.toString(),
+        _GITHUB_INSTALLATION_ID: params.githubInstallationId.toString(),
+        // _SERVICE_JWT: jwt,
+        // _CALLBACK_URL: callbackUrl,
+        // _LOG_DRAIN_URL: deploymentLogDrainUrl,
+        // _EVENT_TYPE: DeployEventActionEnum.BUILD_N_DEPLOY,
+        _SERVICE_NAME: serviceName,
+        _REGION: gcpConfig.GCP_REGION,
+      },
+      options: {
+        logging: "CLOUD_LOGGING_ONLY",
+      },
+      steps: [
+        {
+          name: "gcr.io/cloud-builders/gcloud",
+          id: "FETCH_SECRET",
+          entrypoint: "bash",
+          args: ["-c", fetchSecretScript(gcpConfig)],
+        },
+        {
+          name: "gcr.io/a0run-001/cbuilder-gcloud",
+          id: "GENERATE_GITHUB_TOKEN",
+          entrypoint: "cbuilder",
+          env: [
+            "_GITHUB_APP_ID=$_GITHUB_APP_ID",
+            "_GITHUB_INSTALLATION_ID=$_GITHUB_INSTALLATION_ID",
+          ],
+          args: [
+            "github",
+            "--app",
+            "$_GITHUB_APP_ID",
+            "--install",
+            "$_GITHUB_INSTALLATION_ID",
+            "--pem",
+            "/workspace/gh.pem",
+            "--o",
+            "/workspace/github-auth-token.txt",
+          ],
+        },
+        {
+          name: "gcr.io/cloud-builders/git",
+          id: "PUBLIC_CLONE_REPOSITORY",
+          entrypoint: "bash",
+          timeout: { seconds: 300 },
+          args: ["-c", cloneRepoScript()],
+        },
+        {
+          name: "gcr.io/cloud-builders/docker",
+          id: "PUBLIC_BUILD_IMAGE",
+          env: ["DOCKER_BUILDKIT=1"],
+          timeout: {
+            seconds: dockerBuildTimeoutSeconds,
+          },
+          args: ["build", "-t", "$_IMAGE_NAME", "/workspace/source"],
+        },
+        {
+          name: "gcr.io/cloud-builders/docker",
+          id: "PUSH_IMAGE",
+          timeout: { seconds: 600 },
+          args: ["push", "$_IMAGE_NAME"],
+        },
+        {
+          name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim",
+          id: "DEPLOY_CLOUD_RUN",
+          entrypoint: "gcloud",
+          timeout: { seconds: 300 },
+          args: [
+            "run",
+            "deploy",
+            "$_SERVICE_NAME",
+            "--image",
+            "$_IMAGE_NAME",
+            "--region",
+            "$_REGION",
+            "--platform",
+            "managed",
+            "--allow-unauthenticated",
+            "--max-instances",
+            "1",
+            "--memory",
+            "512Mi",
+          ],
+        },
+        // {
+        //   name: "gcr.io/cloud-builders/gcloud",
+        //   id: "Get Image Digest",
+        //   entrypoint: "bash",
+        //   args: ["-c", getImageDigestScript()],
+        // },
+        // {
+        //   name: "gcr.io/a0run-001/cbuilder-gcloud",
+        //   id: "Send Callback",
+        //   entrypoint: "bash",
+        //   args: ["-c", sendCallbackScript()],
+        // },
+      ],
+    };
+
+    if (ctx.dryRun) {
       console.info(
         {
-          deploymentId: params.deployment.deploymentId,
-          buildId: params.build.buildId,
-          target: params.deployment.target,
+          imageName,
+          repoUrl,
+          substitutions: buildDefinition.substitutions,
         },
-        "Starting GCP Cloud Build deploy..."
+        "[DRY RUN]: skipping Cloud Build submission",
       );
-
-      const gcpConfig = gcpConfigSchema.parse({});
-      const gcpBuildConfig = gcpCloudBuildConfigSchema.parse({});
-
-      const imageName = buildArtifactPath(gcpConfig, params);
-      const repoUrl = `https://github.com/${params.githubOrg}/${params.githubRepo}.git`;
-      // const callbackBaseUrl = resolveCallbackBaseUrl();
-      // const callbackUrl = `${callbackBaseUrl}/__/v1/deployments/callback`;
-      // const deploymentLogDrainUrl = `${callbackBaseUrl}/__/v1/deployments/log`;
-      const serviceName = buildServiceName(params.deployment.deploymentId);
-      const dockerBuildTimeoutSeconds = parseDurationSeconds(
-        gcpBuildConfig.dockerBuildTimeout
-      );
-
-      // const jwt = await issueM2MServiceToken(params.user.userId);
-
-      // undo till here
-      const buildDefinition: protos.google.devtools.cloudbuild.v1.IBuild = {
-        tags: [
-          `deployment-id-${params.deployment.deploymentId.toLowerCase()}` as const,
-          `build-id-${params.build.buildId.toLowerCase()}` as const,
-          `org-id-${params.org.organizationId.toLowerCase()}` as const,
-          `deployment-target-${params.deployment.target.toLowerCase()}` as const,
-          `ty-build-deploy` as const,
-        ],
-        timeout: { seconds: gcpBuildConfig.maxTimeoutSeconds },
-        images: [imageName],
-        substitutions: {
-          // _DEPLOYMENT_ID: params.deployment.deploymentId,
-          // _BUILD_ID: params.build.buildId,
-          _REPO_URL: repoUrl,
-          _BRANCH: params.githubRef,
-          _IMAGE_NAME: imageName,
-          _GITHUB_APP_ID: params.githubAppId.toString(),
-          _GITHUB_INSTALLATION_ID: params.githubInstallationId.toString(),
-          // _SERVICE_JWT: jwt,
-          // _CALLBACK_URL: callbackUrl,
-          // _LOG_DRAIN_URL: deploymentLogDrainUrl,
-          // _EVENT_TYPE: DeployEventActionEnum.BUILD_N_DEPLOY,
-          _SERVICE_NAME: serviceName,
-          _REGION: gcpConfig.GCP_REGION,
+      return {
+        status: "dry_run" as const,
+        message: "Dry run enabled; Cloud Build job not submitted.",
+        metadata: {
+          imageName,
+          buildDefinition,
         },
-        options: {
-          logging: "CLOUD_LOGGING_ONLY",
-        },
-        steps: [
-          {
-            name: "gcr.io/cloud-builders/gcloud",
-            id: "FETCH_SECRET",
-            entrypoint: "bash",
-            args: ["-c", fetchSecretScript(gcpConfig)],
-          },
-          {
-            name: "gcr.io/a0run-001/cbuilder-gcloud",
-            id: "GENERATE_GITHUB_TOKEN",
-            entrypoint: "cbuilder",
-            env: [
-              "_GITHUB_APP_ID=$_GITHUB_APP_ID",
-              "_GITHUB_INSTALLATION_ID=$_GITHUB_INSTALLATION_ID",
-            ],
-            args: [
-              "github",
-              "--app",
-              "$_GITHUB_APP_ID",
-              "--install",
-              "$_GITHUB_INSTALLATION_ID",
-              "--pem",
-              "/workspace/gh.pem",
-              "--o",
-              "/workspace/github-auth-token.txt",
-            ],
-          },
-          {
-            name: "gcr.io/cloud-builders/git",
-            id: "PUBLIC_CLONE_REPOSITORY",
-            entrypoint: "bash",
-            timeout: { seconds: 300 },
-            args: ["-c", cloneRepoScript()],
-          },
-          {
-            name: "gcr.io/cloud-builders/docker",
-            id: "PUBLIC_BUILD_IMAGE",
-            env: ["DOCKER_BUILDKIT=1"],
-            timeout: {
-              seconds: dockerBuildTimeoutSeconds,
-            },
-            args: ["build", "-t", "$_IMAGE_NAME", "/workspace/source"],
-          },
-          {
-            name: "gcr.io/cloud-builders/docker",
-            id: "PUSH_IMAGE",
-            timeout: { seconds: 600 },
-            args: ["push", "$_IMAGE_NAME"],
-          },
-          {
-            name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim",
-            id: "DEPLOY_CLOUD_RUN",
-            entrypoint: "gcloud",
-            timeout: { seconds: 300 },
-            args: [
-              "run",
-              "deploy",
-              "$_SERVICE_NAME",
-              "--image",
-              "$_IMAGE_NAME",
-              "--region",
-              "$_REGION",
-              "--platform",
-              "managed",
-              "--allow-unauthenticated",
-              "--max-instances",
-              "1",
-              "--memory",
-              "512Mi",
-            ],
-          },
-          // {
-          //   name: "gcr.io/cloud-builders/gcloud",
-          //   id: "Get Image Digest",
-          //   entrypoint: "bash",
-          //   args: ["-c", getImageDigestScript()],
-          // },
-          // {
-          //   name: "gcr.io/a0run-001/cbuilder-gcloud",
-          //   id: "Send Callback",
-          //   entrypoint: "bash",
-          //   args: ["-c", sendCallbackScript()],
-          // },
-        ],
       };
+    }
 
-      if (ctx.dryRun) {
-        console.info(
-          {
-            imageName,
-            repoUrl,
-            substitutions: buildDefinition.substitutions,
-          },
-          "[DRY RUN]: skipping Cloud Build submission"
-        );
-        return {
-          status: "dry_run" as const,
-          message: "Dry run enabled; Cloud Build job not submitted.",
-          metadata: {
-            imageName,
-            buildDefinition,
-          },
-        };
-      }
+    // Fixes issue with Bun container image running in Cloud Run
+    // grpc requires some additional libs at runtime,
+    // which caused runtime error being thrown when invoking.
+    // Requires testing with different images which can work with grpc.
+    //
+    // For now, we can just use REST. to be fixed some other day.
+    const isBunRuntime =
+      typeof globalThis !== "undefined" &&
+      typeof (globalThis as { Bun?: unknown }).Bun !== "undefined";
+    const shouldUseRestTransport = isBunRuntime || gcpConfig.GCP_USE_REST_CLOUDBUILD === "1";
+    const cloudBuildClientOptions: ConstructorParameters<typeof CloudBuildClient>[0] = {
+      projectId: gcpConfig.GCP_PROJECT_ID,
+      ...(shouldUseRestTransport ? { fallback: true } : {}),
+    };
 
-      // Fixes issue with Bun container image running in Cloud Run
-      // grpc requires some additional libs at runtime,
-      // which caused runtime error being thrown when invoking.
-      // Requires testing with different images which can work with grpc.
-      //
-      // For now, we can just use REST. to be fixed some other day.
-      const isBunRuntime =
-        typeof globalThis !== "undefined" &&
-        typeof (globalThis as { Bun?: unknown }).Bun !== "undefined";
-      const shouldUseRestTransport =
-        isBunRuntime || gcpConfig.GCP_USE_REST_CLOUDBUILD === "1";
-      const cloudBuildClientOptions: ConstructorParameters<
-        typeof CloudBuildClient
-      >[0] = {
+    if (shouldUseRestTransport) {
+      console.info(
+        "Cloud Build client configured to use REST transport (fallback) for Bun/Cloud Run runtime.",
+      );
+    }
+
+    const cloudBuildClient = new CloudBuildClient(cloudBuildClientOptions);
+
+    try {
+      const [operation] = await cloudBuildClient.createBuild({
         projectId: gcpConfig.GCP_PROJECT_ID,
-        ...(shouldUseRestTransport ? { fallback: true } : {}),
-      };
+        build: buildDefinition,
+      });
 
-      if (shouldUseRestTransport) {
-        console.info(
-          "Cloud Build client configured to use REST transport (fallback) for Bun/Cloud Run runtime."
-        );
-      }
+      const operationName = operation.name ?? operation.latestResponse?.name;
+      const metadata = operation.latestResponse?.metadata as
+        | protos.google.devtools.cloudbuild.v1.IBuildOperationMetadata
+        | undefined;
 
-      const cloudBuildClient = new CloudBuildClient(cloudBuildClientOptions);
+      const cbBuildID = normalizeBuildIdCandidate(
+        metadata?.build?.id,
+        metadata?.build?.name,
+        operationName,
+      );
 
-      try {
-        const [operation] = await cloudBuildClient.createBuild({
-          projectId: gcpConfig.GCP_PROJECT_ID,
-          build: buildDefinition,
-        });
+      const cbBuildStatus = normalizeBuildStatus(metadata?.build?.status);
 
-        const operationName = operation.name ?? operation.latestResponse?.name;
-        const metadata = operation.latestResponse?.metadata as
-          | protos.google.devtools.cloudbuild.v1.IBuildOperationMetadata
-          | undefined;
-
-        const cbBuildID = normalizeBuildIdCandidate(
-          metadata?.build?.id,
-          metadata?.build?.name,
-          operationName
-        );
-
-        const cbBuildStatus = normalizeBuildStatus(metadata?.build?.status);
-
-        if (!operationName) {
-          return {
-            status: DeploymentStatusEnum.ERROR,
-            message: "Failed with `no operation result`",
-          };
-        }
-
-        console.info(
-          { operationName, cbBuildStatus: cbBuildStatus, cbBuildID: cbBuildID },
-          "Submitted Cloud Build; not monitoring (fire-and-forget)."
-        );
-
+      if (!operationName) {
         return {
-          status: DeploymentStatusEnum.PLACED,
-          message: `Cloud Build submitted. Operation: ${operationName}, initial status: ${cbBuildStatus}`,
-          resourceIds: {
-            operationName,
-            ...(cbBuildID ? { cbBuildID: cbBuildID } : {}),
-          },
-          metadata: {
-            imageName,
-            buildStatus: cbBuildStatus,
-            ...(cbBuildID ? { cbBuildID: cbBuildID } : {}),
-          },
+          status: DeploymentStatusEnum.ERROR,
+          message: "Failed with `no operation result`",
         };
-      } catch (error: any) {
-        const err = toError(error);
-        console.error(err, "Failed to submit GCP Cloud Build deployment");
-        throw new CloudBuildTriggerError({ message: err.message });
-      } finally {
-        await cloudBuildClient.close().catch(() => undefined);
       }
-    },
-  })
-);
+
+      console.info(
+        { operationName, cbBuildStatus: cbBuildStatus, cbBuildID: cbBuildID },
+        "Submitted Cloud Build; not monitoring (fire-and-forget).",
+      );
+
+      return {
+        status: DeploymentStatusEnum.PLACED,
+        message: `Cloud Build submitted. Operation: ${operationName}, initial status: ${cbBuildStatus}`,
+        resourceIds: {
+          operationName,
+          ...(cbBuildID ? { cbBuildID: cbBuildID } : {}),
+        },
+        metadata: {
+          imageName,
+          buildStatus: cbBuildStatus,
+          ...(cbBuildID ? { cbBuildID: cbBuildID } : {}),
+        },
+      };
+    } catch (error: any) {
+      const err = toError(error);
+      console.error(err, "Failed to submit GCP Cloud Build deployment");
+      throw new CloudBuildTriggerError({ message: err.message });
+    } finally {
+      await cloudBuildClient.close().catch(() => undefined);
+    }
+  },
+}));
 
 function fetchSecretScript(gcpConfig: z.infer<typeof gcpConfigSchema>): string {
   return [
@@ -361,9 +353,7 @@ function cloneRepoScript(): string {
 //   ].join("\n");
 // }
 
-function normalizeBuildIdCandidate(
-  ...candidates: Array<string | null | undefined>
-): string | null {
+function normalizeBuildIdCandidate(...candidates: Array<string | null | undefined>): string | null {
   for (const candidate of candidates) {
     const normalized = normalizeBuildId(candidate);
     if (normalized) return normalized;
@@ -387,9 +377,7 @@ function normalizeBuildId(raw?: string | null): string | null {
   if (looksLikeBase64(segment)) {
     try {
       const normalizedSegment = segment.replace(/-/g, "+").replace(/_/g, "/");
-      const decoded = Buffer.from(normalizedSegment, "base64")
-        .toString("utf8")
-        .trim();
+      const decoded = Buffer.from(normalizedSegment, "base64").toString("utf8").trim();
       if (decoded && decoded !== segment && isPrintableAscii(decoded)) {
         const normalizedDecoded = normalizeBuildId(decoded);
         if (normalizedDecoded) return normalizedDecoded;
@@ -403,9 +391,7 @@ function normalizeBuildId(raw?: string | null): string | null {
 }
 
 function looksLikeUuid(value: string): boolean {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-    value
-  );
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
 }
 
 function looksLikeBase64(value: string): boolean {
@@ -417,9 +403,7 @@ function isPrintableAscii(value: string): boolean {
   return /^[\x20-\x7E]+$/.test(value);
 }
 
-function normalizeEntryData(
-  data: unknown
-): Record<string, unknown> | string | undefined {
+function normalizeEntryData(data: unknown): Record<string, unknown> | string | undefined {
   if (data === undefined || data === null) return undefined;
   if (typeof data === "string") return data;
   if (Array.isArray(data)) return { data };
@@ -474,7 +458,7 @@ function normalizeBuildStatus(
   status?:
     | protos.google.devtools.cloudbuild.v1.Build.Status
     | keyof typeof protos.google.devtools.cloudbuild.v1.Build.Status
-    | null
+    | null,
 ): CloudBuildStatus {
   if (status === null || status === undefined) {
     return CloudBuildStatusEnum.STATUS_UNKNOWN;
@@ -501,7 +485,7 @@ function normalizeBuildStatus(
 
 function buildArtifactPath(
   config: z.infer<typeof gcpConfigSchema>,
-  params: z.infer<typeof GitHubSourceDeployer>
+  params: z.infer<typeof GitHubSourceDeployer>,
 ): string {
   const regionPrefix = `${config.GCP_REGION}-docker.pkg.dev`;
   const repository = "a0dotrun-paas-images";

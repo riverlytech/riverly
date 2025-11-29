@@ -1,14 +1,18 @@
 import { Link, Outlet, createFileRoute } from '@tanstack/react-router'
 import { Menu } from 'lucide-react'
 
+import { Button } from '@/components/ui/button'
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
 } from '@/components/ui/navigation-menu'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Button } from '@/components/ui/button'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 
 export const Route = createFileRoute(
   '/_auth/$slug/_dash/servers/$serverId/_detail',

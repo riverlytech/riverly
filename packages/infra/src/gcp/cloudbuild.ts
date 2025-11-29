@@ -1,7 +1,7 @@
-import type { IGitHubDeployer } from "./deployer.ts";
-import type { GitHubSourceDeployer, DeploymentEvent } from "../ty.ts";
-import type { GCPConfig, GCPBuildConfig } from "./config.ts";
-import { gcpConfigSchema } from "./config.ts";
+import type { IGitHubDeployer } from "./deployer";
+import type { GitHubSourceDeployer, DeploymentEvent } from "../ty";
+import type { GCPConfig, GCPBuildConfig } from "./config";
+import { gcpConfigSchema } from "./config";
 import { CloudBuildClient, protos } from "@google-cloud/cloudbuild";
 import { NamedError } from "@riverly/utils";
 import z from "zod/v4";
@@ -13,7 +13,7 @@ const CloudBuildTriggerError = NamedError.create(
   "CloudBuildTriggerError",
   z.object({
     message: z.string(),
-  })
+  }),
 );
 
 export class CloudBuildGitHubDeployer implements IGitHubDeployer {
@@ -22,7 +22,12 @@ export class CloudBuildGitHubDeployer implements IGitHubDeployer {
   dryRun: boolean;
   logBuildSpec: boolean;
 
-  constructor(gcpConfig: GCPConfig, cloudBuildConfig: GCPBuildConfig, dryRun = true, logBuildSpec = true) {
+  constructor(
+    gcpConfig: GCPConfig,
+    cloudBuildConfig: GCPBuildConfig,
+    dryRun = true,
+    logBuildSpec = true,
+  ) {
     this.gcpConfig = gcpConfig;
     this.gcpBuildConfig = cloudBuildConfig;
     this.dryRun = dryRun;
@@ -36,7 +41,7 @@ export class CloudBuildGitHubDeployer implements IGitHubDeployer {
         buildId: params.build.buildId,
         target: params.deployment.target,
       },
-      "Starting GCP Cloud Build deploy..."
+      "Starting GCP Cloud Build deploy...",
     );
 
     //
@@ -44,9 +49,7 @@ export class CloudBuildGitHubDeployer implements IGitHubDeployer {
     const imageName = buildArtifactPath(this.gcpConfig, params);
     const repoUrl = `https://github.com/${params.githubOrg}/${params.githubRepo}.git`;
     const serviceName = buildServiceName(params.deployment.deploymentId);
-    const dockerBuildTimeoutSeconds = parseDurationSeconds(
-      this.gcpBuildConfig.dockerBuildTimeout
-    );
+    const dockerBuildTimeoutSeconds = parseDurationSeconds(this.gcpBuildConfig.dockerBuildTimeout);
 
     const buildDefinition: protos.google.devtools.cloudbuild.v1.IBuild = {
       tags: [
@@ -151,7 +154,7 @@ export class CloudBuildGitHubDeployer implements IGitHubDeployer {
           repoUrl,
           substitutions: buildDefinition.substitutions,
         },
-        "[DRY RUN]: skipping Cloud Build submission"
+        "[DRY RUN]: skipping Cloud Build submission",
       );
       return {
         id: null,
@@ -159,19 +162,16 @@ export class CloudBuildGitHubDeployer implements IGitHubDeployer {
         deploymentId: params.deployment.deploymentId,
         status: DeploymentStatusEnum.ABORTED,
         metadata: {},
-      }
+      };
     }
 
     if (this.logBuildSpec) {
-      console.debug(
-        {
-          imageName,
-          repoUrl,
-          substitutions: buildDefinition.substitutions,
-        },
-      )
+      console.debug({
+        imageName,
+        repoUrl,
+        substitutions: buildDefinition.substitutions,
+      });
     }
-
 
     // Fixes issue with Bun container image running in Cloud Run
     // grpc requires some additional libs at runtime,
@@ -182,18 +182,15 @@ export class CloudBuildGitHubDeployer implements IGitHubDeployer {
     const isBunRuntime =
       typeof globalThis !== "undefined" &&
       typeof (globalThis as { Bun?: unknown }).Bun !== "undefined";
-    const shouldUseRestTransport =
-      isBunRuntime || this.gcpConfig.GCP_USE_REST_CLOUDBUILD === "1";
-    const cloudBuildClientOptions: ConstructorParameters<
-      typeof CloudBuildClient
-    >[0] = {
+    const shouldUseRestTransport = isBunRuntime || this.gcpConfig.GCP_USE_REST_CLOUDBUILD === "1";
+    const cloudBuildClientOptions: ConstructorParameters<typeof CloudBuildClient>[0] = {
       projectId: this.gcpConfig.GCP_PROJECT_ID,
       ...(shouldUseRestTransport ? { fallback: true } : {}),
     };
 
     if (shouldUseRestTransport) {
       console.info(
-        "Cloud Build client configured to use REST transport (fallback) for Bun/Cloud Run runtime."
+        "Cloud Build client configured to use REST transport (fallback) for Bun/Cloud Run runtime.",
       );
     }
 
@@ -213,7 +210,7 @@ export class CloudBuildGitHubDeployer implements IGitHubDeployer {
       const cbBuildID = normalizeBuildIdCandidate(
         metadata?.build?.id,
         metadata?.build?.name,
-        operationName
+        operationName,
       );
 
       const cbBuildStatus = normalizeBuildStatus(metadata?.build?.status);
@@ -230,7 +227,7 @@ export class CloudBuildGitHubDeployer implements IGitHubDeployer {
 
       console.info(
         { operationName, cbBuildStatus: cbBuildStatus, cbBuildID: cbBuildID },
-        "Submitted Cloud Build; not monitoring (fire-and-forget)."
+        "Submitted Cloud Build; not monitoring (fire-and-forget).",
       );
 
       return {
@@ -259,7 +256,6 @@ export class CloudBuildGitHubDeployer implements IGitHubDeployer {
   }
 }
 
-
 export type CloudBuildLogStreamOptions = {
   buildId: string;
   stepName?: string;
@@ -269,22 +265,20 @@ export type CloudBuildLogStreamOptions = {
 
 export type CloudBuildLogEvent =
   | {
-    type: "log";
-    message: string;
-    stepName?: string;
-    severity?: string;
-    timestamp?: Date;
-    logId?: string;
-  }
+      type: "log";
+      message: string;
+      stepName?: string;
+      severity?: string;
+      timestamp?: Date;
+      logId?: string;
+    }
   | {
-    type: "status";
-    status: CloudBuildStatus;
-  }
+      type: "status";
+      status: CloudBuildStatus;
+    }
   | {
-    type: "timeout";
-  };
-
-
+      type: "timeout";
+    };
 
 function fetchSecretScript(gcpConfig: z.infer<typeof gcpConfigSchema>): string {
   return [
@@ -347,9 +341,7 @@ function cloneRepoScript(): string {
 //   ].join("\n");
 // }
 
-function normalizeBuildIdCandidate(
-  ...candidates: Array<string | null | undefined>
-): string | null {
+function normalizeBuildIdCandidate(...candidates: Array<string | null | undefined>): string | null {
   for (const candidate of candidates) {
     const normalized = normalizeBuildId(candidate);
     if (normalized) return normalized;
@@ -373,9 +365,7 @@ function normalizeBuildId(raw?: string | null): string | null {
   if (looksLikeBase64(segment)) {
     try {
       const normalizedSegment = segment.replace(/-/g, "+").replace(/_/g, "/");
-      const decoded = Buffer.from(normalizedSegment, "base64")
-        .toString("utf8")
-        .trim();
+      const decoded = Buffer.from(normalizedSegment, "base64").toString("utf8").trim();
       if (decoded && decoded !== segment && isPrintableAscii(decoded)) {
         const normalizedDecoded = normalizeBuildId(decoded);
         if (normalizedDecoded) return normalizedDecoded;
@@ -389,9 +379,7 @@ function normalizeBuildId(raw?: string | null): string | null {
 }
 
 function looksLikeUuid(value: string): boolean {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-    value
-  );
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
 }
 
 function looksLikeBase64(value: string): boolean {
@@ -403,9 +391,7 @@ function isPrintableAscii(value: string): boolean {
   return /^[\x20-\x7E]+$/.test(value);
 }
 
-function normalizeEntryData(
-  data: unknown
-): Record<string, unknown> | string | undefined {
+function normalizeEntryData(data: unknown): Record<string, unknown> | string | undefined {
   if (data === undefined || data === null) return undefined;
   if (typeof data === "string") return data;
   if (Array.isArray(data)) return { data };
@@ -460,7 +446,7 @@ function normalizeBuildStatus(
   status?:
     | protos.google.devtools.cloudbuild.v1.Build.Status
     | keyof typeof protos.google.devtools.cloudbuild.v1.Build.Status
-    | null
+    | null,
 ): CloudBuildStatus {
   if (status === null || status === undefined) {
     return CloudBuildStatusEnum.STATUS_UNKNOWN;
@@ -487,7 +473,7 @@ function normalizeBuildStatus(
 
 function buildArtifactPath(
   config: z.infer<typeof gcpConfigSchema>,
-  params: z.infer<typeof GitHubSourceDeployer>
+  params: z.infer<typeof GitHubSourceDeployer>,
 ): string {
   const regionPrefix = `${config.GCP_REGION}-docker.pkg.dev`;
   const repository = "a0dotrun-paas-images";
@@ -512,4 +498,3 @@ function toError(error: unknown): Error {
   if (error instanceof Error) return error;
   return new Error(String(error));
 }
-

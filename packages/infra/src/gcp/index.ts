@@ -1,4 +1,3 @@
 export * from "./cloudbuild";
-export * from "./config"
-export * from "./ty"
-
+export * from "./config";
+export * from "./ty";

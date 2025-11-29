@@ -14,9 +14,7 @@ function getGhApp() {
   if (!ghApp) {
     ghApp = new GhApp({
       appId: env.GITHUB_APP_ID,
-      privateKey: Buffer.from(env.GITHUB_PRIVATE_KEY_BASE64, "base64").toString(
-        "utf8"
-      ),
+      privateKey: Buffer.from(env.GITHUB_PRIVATE_KEY_BASE64, "base64").toString("utf8"),
     });
   }
   return ghApp;
@@ -24,9 +22,7 @@ function getGhApp() {
 
 export namespace GitHub {
   export async function installationDetails(githubInstallationId: number) {
-    function isUserOrOrg(
-      account: any
-    ): account is { login: string; id: number; type: string } {
+    function isUserOrOrg(account: any): account is { login: string; id: number; type: string } {
       return account && typeof account.login === "string";
     }
 
@@ -36,9 +32,7 @@ export namespace GitHub {
 
     return {
       accountId: response.data.target_id,
-      accountLogin: isUserOrOrg(response.data.account)
-        ? response.data.account.login
-        : nanoid(), // API nuances!
+      accountLogin: isUserOrOrg(response.data.account) ? response.data.account.login : nanoid(), // API nuances!
       accountType: response.data.target_type,
     };
   }
@@ -58,12 +52,7 @@ export namespace GitHub {
         // Delete by primary key first (handles any existing installation with same ID)
         await tx
           .delete(gitHubInstallationTable)
-          .where(
-            eq(
-              gitHubInstallationTable.githubInstallationId,
-              gh.githubInstallationId
-            )
-          );
+          .where(eq(gitHubInstallationTable.githubInstallationId, gh.githubInstallationId));
 
         // Then delete any existing installation for this user+account combination
         // This handles uninstall/reinstall scenarios where installationId changes
@@ -75,9 +64,9 @@ export namespace GitHub {
               eq(gitHubInstallationTable.organizationId, gh.organizationId),
               or(
                 eq(gitHubInstallationTable.accountLogin, gh.accountLogin),
-                eq(gitHubInstallationTable.accountId, gh.accountId)
-              )
-            )
+                eq(gitHubInstallationTable.accountId, gh.accountId),
+              ),
+            ),
           );
 
         // Then insert the new/updated installation
@@ -96,7 +85,7 @@ export namespace GitHub {
           })
           .execute()
           .then((row) => row[0]?.id);
-      })
+      }),
   );
 
   export const orgInstallation = fn(
@@ -121,13 +110,13 @@ export namespace GitHub {
             and(
               eq(gitHubInstallationTable.githubAppId, filter.githubAppId),
               eq(gitHubInstallationTable.organizationId, filter.organizationId),
-              eq(gitHubInstallationTable.accountLogin, filter.account)
-            )
+              eq(gitHubInstallationTable.accountLogin, filter.account),
+            ),
           )
           .execute()
           .then((rows) => rows[0] ?? null);
       });
-    }
+    },
   );
 
   export const orgInstalls = fn(
@@ -147,24 +136,20 @@ export namespace GitHub {
           .where(
             and(
               eq(gitHubInstallationTable.githubAppId, filter.githubAppId),
-              eq(gitHubInstallationTable.organizationId, filter.organizationId)
-            )
+              eq(gitHubInstallationTable.organizationId, filter.organizationId),
+            ),
           )
           .orderBy(asc(gitHubInstallationTable.createdAt))
-          .limit(25)
-      )
+          .limit(25),
+      ),
   );
 
   export const repos = fn(z.number(), async (githubInstallationId) => {
-    const octokit =
-      await getGhApp().getInstallationOctokit(githubInstallationId);
-    const repos = await octokit.paginate(
-      octokit.rest.apps.listReposAccessibleToInstallation,
-      {
-        installation_id: githubInstallationId,
-        per_page: 100,
-      }
-    );
+    const octokit = await getGhApp().getInstallationOctokit(githubInstallationId);
+    const repos = await octokit.paginate(octokit.rest.apps.listReposAccessibleToInstallation, {
+      installation_id: githubInstallationId,
+      per_page: 100,
+    });
     return repos.map((r) => ({
       id: r.id,
       name: r.name,
@@ -186,9 +171,7 @@ export namespace GitHub {
     }),
     async (q) => {
       try {
-        const octokit = await getGhApp().getInstallationOctokit(
-          q.githubInstallationId
-        );
+        const octokit = await getGhApp().getInstallationOctokit(q.githubInstallationId);
         const { data } = await octokit.rest.repos.get({
           owner: q.owner,
           repo: q.repo,
@@ -209,7 +192,7 @@ export namespace GitHub {
       } catch (error) {
         return null;
       }
-    }
+    },
   );
 
   export const repoReadme = fn(
@@ -219,9 +202,7 @@ export namespace GitHub {
       name: z.string(),
     }),
     async (repo) => {
-      const octokit = await getGhApp().getInstallationOctokit(
-        repo.githubInstallationId
-      );
+      const octokit = await getGhApp().getInstallationOctokit(repo.githubInstallationId);
       const { data } = await octokit.rest.repos.getReadme({
         owner: repo.username,
         repo: repo.name,
@@ -232,7 +213,7 @@ export namespace GitHub {
         gitUrl: data.git_url ?? undefined,
         gitDownloadUrl: data.download_url ?? undefined,
       } as ServerReadme;
-    }
+    },
   );
 
   export const repoReadmeContent = fn(
@@ -242,9 +223,7 @@ export namespace GitHub {
       repo: z.string(),
     }),
     async (readme) => {
-      const octokit = await getGhApp().getInstallationOctokit(
-        readme.githubInstallationId
-      );
+      const octokit = await getGhApp().getInstallationOctokit(readme.githubInstallationId);
       try {
         const { data } = await octokit.rest.repos.getReadme({
           owner: readme.owner,
@@ -261,7 +240,7 @@ export namespace GitHub {
       } catch (error) {
         return null;
       }
-    }
+    },
   );
 
   export const repoLatestCommitHash = fn(
@@ -272,9 +251,7 @@ export namespace GitHub {
       branch: z.string(),
     }),
     async (r) => {
-      const octokit = await getGhApp().getInstallationOctokit(
-        r.githubInstallationId
-      );
+      const octokit = await getGhApp().getInstallationOctokit(r.githubInstallationId);
 
       const { data } = await octokit.rest.git.getRef({
         owner: r.owner,
@@ -282,7 +259,7 @@ export namespace GitHub {
         ref: `heads/${r.branch}`,
       });
       return data.object.sha;
-    }
+    },
   );
 
   export type OrgInstalls = Awaited<ReturnType<typeof orgInstalls>>;

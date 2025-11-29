@@ -1,12 +1,4 @@
-import {
-  boolean,
-  jsonb,
-  pgTable,
-  text,
-  timestamp,
-  unique,
-  varchar,
-} from "drizzle-orm/pg-core";
+import { boolean, jsonb, pgTable, text, timestamp, unique, varchar } from "drizzle-orm/pg-core";
 import { createSchemaFactory } from "drizzle-zod";
 import { ulid } from "ulid";
 import z from "zod/v4";
@@ -50,9 +42,7 @@ export const serverBuildTable = pgTable("server_build", {
     .references(() => organizations.id)
     .notNull(),
   // build trigger type
-  triggerType: varchar("trigger_type", { length: 64 })
-    .$type<TriggerType>()
-    .notNull(),
+  triggerType: varchar("trigger_type", { length: 64 }).$type<TriggerType>().notNull(),
   // image artifact registry repo path
   // the path of image stored in our registry
   imageRef: varchar("image_ref", { length: 511 }),
@@ -66,9 +56,7 @@ export const serverBuildTable = pgTable("server_build", {
   gitHubRef: varchar("github_ref", { length: 255 }),
   commitHash: varchar("commit_hash", { length: 511 }),
   // current status of the build, follows the deployment
-  status: varchar("status", { length: 64 })
-    .$type<DeploymentStatusType>()
-    .notNull(),
+  status: varchar("status", { length: 64 }).$type<DeploymentStatusType>().notNull(),
   // config snapshot
   configRevision: varchar("config_revision", { length: 128 }).notNull(), // from server config `revision` at t-time
   envs: jsonb("envs").$type<EnvsType>().notNull().default([]),
@@ -149,12 +137,8 @@ export const serverDeploymentTable = pgTable("server_deployment", {
   installId: varchar("install_id", { length: 255 })
     .references(() => serverInstallTable.id)
     .notNull(),
-  status: varchar("status", { length: 64 })
-    .$type<DeploymentStatusType>()
-    .notNull(),
-  target: varchar("target", { length: 64 })
-    .$type<DeploymentTargetType>()
-    .notNull(),
+  status: varchar("status", { length: 64 }).$type<DeploymentStatusType>().notNull(),
+  target: varchar("target", { length: 64 }).$type<DeploymentTargetType>().notNull(),
   publicId: varchar("public_id", { length: 255 })
     .unique()
     .$defaultFn(() => ulid().toLowerCase()),
@@ -162,24 +146,18 @@ export const serverDeploymentTable = pgTable("server_deployment", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const InsertServerDeployment = createInsertSchema(
-  serverDeploymentTable,
-  {
-    buildId: z.string(),
-    serverId: z.string(),
-    organizationId: z.string(),
-    installId: z.string(),
-    status: DeploymentStatus,
-    target: deploymentTargetSchema,
-  }
-);
+export const InsertServerDeployment = createInsertSchema(serverDeploymentTable, {
+  buildId: z.string(),
+  serverId: z.string(),
+  organizationId: z.string(),
+  installId: z.string(),
+  status: DeploymentStatus,
+  target: deploymentTargetSchema,
+});
 
-export const UpdateServerDeployment = createUpdateSchema(
-  serverDeploymentTable,
-  {
-    status: DeploymentStatus,
-  }
-).pick({
+export const UpdateServerDeployment = createUpdateSchema(serverDeploymentTable, {
+  status: DeploymentStatus,
+}).pick({
   status: true,
 });
 
@@ -216,12 +194,7 @@ export const serverRevisionTable = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
-  (table) => [
-    unique("server_revision_server_id_version_key").on(
-      table.serverId,
-      table.version
-    ),
-  ]
+  (table) => [unique("server_revision_server_id_version_key").on(table.serverId, table.version)],
 );
 
 export type ServerRevisionTable = typeof serverRevisionTable.$inferSelect;
@@ -261,15 +234,12 @@ export const serverDeploymentLogTable = pgTable("server_deployment_log", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const InsertDeploymentLog = createInsertSchema(
-  serverDeploymentLogTable,
-  {
-    organizationId: z.string(),
-    deploymentId: z.string(),
-    timestamp: z.coerce.date(),
-    message: z.string().default(""),
-    level: z.string(),
-  }
-);
+export const InsertDeploymentLog = createInsertSchema(serverDeploymentLogTable, {
+  organizationId: z.string(),
+  deploymentId: z.string(),
+  timestamp: z.coerce.date(),
+  message: z.string().default(""),
+  level: z.string(),
+});
 
 export const SelectDeployment = createSelectSchema(serverDeploymentLogTable);

@@ -41,7 +41,7 @@ export const GitHubSourceBuilder = z.object({
               value: z.string(),
               secret: z.boolean().optional().default(false),
             })
-            .required()
+            .required(),
         )
         .default([]),
       inputs: z.record(z.string(), z.any()).optional(),

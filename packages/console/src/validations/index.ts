@@ -50,7 +50,6 @@ export const OrgNameForm = z.object({
   organizationId: z.string(),
 })
 
-
 export const OrgSlugForm = z.object({
   organizationId: z.string(),
   slug: z

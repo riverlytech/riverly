@@ -69,12 +69,8 @@ export namespace Database {
    * Pool configuration (env-driven, safe defaults)
    * ------------------------------------------- */
   const poolMax = Number.parseInt(process.env.PGPOOL_MAX ?? "5");
-  const idleTimeoutMillis = Number.parseInt(
-    process.env.PGPOOL_IDLE_TIMEOUT ?? "30000"
-  );
-  const connectionTimeoutMillis = Number.parseInt(
-    process.env.PGPOOL_CONNECT_TIMEOUT ?? "5000"
-  );
+  const idleTimeoutMillis = Number.parseInt(process.env.PGPOOL_IDLE_TIMEOUT ?? "30000");
+  const connectionTimeoutMillis = Number.parseInt(process.env.PGPOOL_CONNECT_TIMEOUT ?? "5000");
   const useSSL = Number.parseInt(process.env.PGPOOL_SSL ?? "0") === 1;
 
   /* ---------------------------------------------
@@ -120,7 +116,7 @@ export namespace Database {
         console.log("[DB] Closing connection pool...");
         await pool.end();
       }
-    }
+    },
   );
 
   export type TxOrDb = Transaction | ReturnType<typeof client>;
@@ -140,9 +136,7 @@ export namespace Database {
     } catch (err) {
       if (err instanceof Context.NotFound) {
         const effects: (() => void | Promise<void>)[] = [];
-        return TransactionContext.provide({ effects, tx: client() }, () =>
-          client()
-        );
+        return TransactionContext.provide({ effects, tx: client() }, () => client());
       }
       throw err;
     }
@@ -155,9 +149,8 @@ export namespace Database {
     } catch (err) {
       if (err instanceof Context.NotFound) {
         const effects: (() => void | Promise<void>)[] = [];
-        const result = await TransactionContext.provide(
-          { effects, tx: client() },
-          () => callback(client())
+        const result = await TransactionContext.provide({ effects, tx: client() }, () =>
+          callback(client()),
         );
         await Promise.all(effects.map((x) => x()));
         return result;
@@ -166,9 +159,7 @@ export namespace Database {
     }
   }
 
-  export async function fn<Input, T>(
-    callback: (input: Input, trx: TxOrDb) => Promise<T>
-  ) {
+  export async function fn<Input, T>(callback: (input: Input, trx: TxOrDb) => Promise<T>) {
     return (input: Input) => use(async (tx) => callback(input, tx));
   }
 
@@ -183,7 +174,7 @@ export namespace Database {
 
   export async function transaction<T>(
     callback: (tx: TxOrDb) => Promise<T>,
-    config?: PgTransactionConfig
+    config?: PgTransactionConfig,
   ) {
     try {
       const { tx } = TransactionContext.use();
@@ -192,9 +183,7 @@ export namespace Database {
       if (err instanceof Context.NotFound) {
         const effects: (() => void | Promise<void>)[] = [];
         const result = await client().transaction(async (tx) => {
-          return TransactionContext.provide({ tx, effects }, () =>
-            callback(tx)
-          );
+          return TransactionContext.provide({ tx, effects }, () => callback(tx));
         }, config);
         await Promise.all(effects.map((x) => x()));
         return result;

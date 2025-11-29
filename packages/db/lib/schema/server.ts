@@ -40,9 +40,7 @@ export const serverTable = pgTable("server", {
   image: text("image"),
   verified: boolean("is_claimed").default(false).notNull(),
   usageCount: integer("usage_count").default(0).notNull(),
-  visibility: varchar("visibility", { length: 64 })
-    .$type<ServerVisibility>()
-    .notNull(),
+  visibility: varchar("visibility", { length: 64 }).$type<ServerVisibility>().notNull(),
   // repository
   githubRepo: varchar("github_repo", { length: 255 }),
   githubOwner: varchar("github_owner", { length: 255 }),
@@ -50,9 +48,7 @@ export const serverTable = pgTable("server", {
   branch: varchar("branch", { length: 255 }),
   // runtime
   mode: varchar("mode", { length: 64 }).$type<ServerMode>().notNull(),
-  transport: varchar("transport", { length: 64 })
-    .$type<ServerTransport>()
-    .notNull(),
+  transport: varchar("transport", { length: 64 }).$type<ServerTransport>().notNull(),
   // ownership
   organizationId: text("organization_id")
     .references(() => organizations.id)
@@ -197,9 +193,6 @@ export const serverInstallTable = pgTable(
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
   (table) => [
-    unique("server_install_organization_id_server_id_key").on(
-      table.organizationId,
-      table.serverId
-    ),
-  ]
+    unique("server_install_organization_id_server_id_key").on(table.organizationId, table.serverId),
+  ],
 );

@@ -42,7 +42,7 @@ export const Route = createFileRoute('/api/github/callback')({
         }
 
         if (!state) {
-          return new Response("Forbidden", { status: 403 });
+          return new Response('Forbidden', { status: 403 })
         }
 
         try {
@@ -51,7 +51,7 @@ export const Route = createFileRoute('/api/github/callback')({
             userId: session.user.id,
           })
           if (!membership) {
-            return new Response("Forbidden", { status: 403 });
+            return new Response('Forbidden', { status: 403 })
           }
 
           const validatedParams = callbackSearchSchema.parse(parsedParams)

@@ -31,7 +31,13 @@ import { useGitHubInstalls } from '@/hooks/use-github-installs'
 import { useRepos } from '@/hooks/use-repos'
 import { cn } from '@/lib/utils'
 
-export function GitHubSelectRepo({ organizationId, slug }: { organizationId: string; slug: string }) {
+export function GitHubSelectRepo({
+  organizationId,
+  slug,
+}: {
+  organizationId: string
+  slug: string
+}) {
   const navigate = useNavigate()
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState('')
@@ -44,7 +50,10 @@ export function GitHubSelectRepo({ organizationId, slug }: { organizationId: str
     isLoading: isInstallsLoading,
     isError: isInstallErr,
   } = useGitHubInstalls(organizationId)
-  const { data, isLoading, isError, mutate } = useRepos(organizationId, selectedOwner)
+  const { data, isLoading, isError, mutate } = useRepos(
+    organizationId,
+    selectedOwner,
+  )
 
   const repositories = React.useMemo(
     () =>
@@ -60,7 +69,11 @@ export function GitHubSelectRepo({ organizationId, slug }: { organizationId: str
   const isInstalled = data?.isInstalled ?? false
 
   React.useEffect(() => {
-    if (!selectedOwner && installData?.installs && installData.installs.length > 0) {
+    if (
+      !selectedOwner &&
+      installData?.installs &&
+      installData.installs.length > 0
+    ) {
       setSelectedOwner(installData.installs[0].accountLogin)
     }
   }, [installData?.installs, selectedOwner])
@@ -95,13 +108,13 @@ export function GitHubSelectRepo({ organizationId, slug }: { organizationId: str
       if (popup?.closed) {
         clearInterval(checkClosed)
         // Trigger a data refresh when popup is closed
-        mutate().then(() => { })
+        mutate().then(() => {})
       }
     }, 1000)
   }
 
   const handleRetry = () => {
-    mutate().then(() => { })
+    mutate().then(() => {})
   }
 
   if (isLoading || isInstallsLoading) {

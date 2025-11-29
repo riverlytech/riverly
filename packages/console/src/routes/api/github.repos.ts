@@ -22,7 +22,10 @@ export const Route = createFileRoute('/api/github/repos')({
         const organizationId = searchParams.get('organizationId')
         const owner = searchParams.get('owner')
         if (!organizationId || !owner) {
-          return Response.json({ isInstalled: false, repos: [] }, { status: 400 })
+          return Response.json(
+            { isInstalled: false, repos: [] },
+            { status: 400 },
+          )
         }
 
         const membership = await Organization.orgMembershipFromID({
@@ -30,7 +33,10 @@ export const Route = createFileRoute('/api/github/repos')({
           userId: session.user.id,
         })
         if (!membership) {
-          return Response.json({ isInstalled: false, repos: [] }, { status: 403 })
+          return Response.json(
+            { isInstalled: false, repos: [] },
+            { status: 403 },
+          )
         }
 
         const ghAppInstall = await GitHub.orgInstallation({

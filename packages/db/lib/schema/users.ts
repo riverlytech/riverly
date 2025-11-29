@@ -1,20 +1,12 @@
-import {
-  boolean,
-  pgTable,
-  text,
-  timestamp,
-  varchar,
-  unique,
-} from "drizzle-orm/pg-core";
+import { boolean, pgTable, text, timestamp, varchar, unique } from "drizzle-orm/pg-core";
 import { createSchemaFactory } from "drizzle-zod";
 import z from "zod/v4";
 
 import { genId } from "@riverly/utils";
 
-const { createSelectSchema, createUpdateSchema, createInsertSchema } =
-  createSchemaFactory({
-    zodInstance: z,
-  });
+const { createSelectSchema, createUpdateSchema, createInsertSchema } = createSchemaFactory({
+  zodInstance: z,
+});
 
 export const users = pgTable("user", {
   id: varchar("id", { length: 255 }).primaryKey().notNull(),
@@ -126,12 +118,7 @@ export const members = pgTable(
     role: text("role").default("member").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
-  (table) => [
-    unique("member_organization_id_user_id_key").on(
-      table.organizationId,
-      table.userId
-    ),
-  ]
+  (table) => [unique("member_organization_id_user_id_key").on(table.organizationId, table.userId)],
 );
 
 export const SelectMember = createSelectSchema(members);

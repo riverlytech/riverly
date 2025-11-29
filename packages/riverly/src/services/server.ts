@@ -22,7 +22,7 @@ export const ServerAddError = NamedError.create(
   "ServerAddError",
   z.object({
     message: z.string(),
-  })
+  }),
 );
 
 export const GitHubError = NamedError.create(
@@ -30,7 +30,7 @@ export const GitHubError = NamedError.create(
   z.object({
     message: z.string(),
     githubAppId: z.number().optional(),
-  })
+  }),
 );
 
 export namespace Server {
@@ -60,15 +60,12 @@ export namespace Server {
             readme: serverTable.readme,
           })
           .from(serverTable)
-          .innerJoin(
-            organizations,
-            eq(organizations.id, serverTable.organizationId)
-          )
+          .innerJoin(organizations, eq(organizations.id, serverTable.organizationId))
           .where(
             and(
               eq(serverTable.organizationId, filter.organizationId),
-              eq(serverTable.id, filter.serverId)
-            )
+              eq(serverTable.id, filter.serverId),
+            ),
           )
           .execute()
           .then((row) => row[0] ?? null);
@@ -83,7 +80,7 @@ export namespace Server {
         else return null;
       }
       return result;
-    }
+    },
   );
 
   export const fromIDWithGit = fn(
@@ -115,15 +112,12 @@ export namespace Server {
             readme: serverTable.readme,
           })
           .from(serverTable)
-          .innerJoin(
-            organizations,
-            eq(organizations.id, serverTable.organizationId)
-          )
+          .innerJoin(organizations, eq(organizations.id, serverTable.organizationId))
           .where(
             and(
               eq(serverTable.organizationId, filter.organizationId),
-              eq(serverTable.id, filter.serverId)
-            )
+              eq(serverTable.id, filter.serverId),
+            ),
           )
           .execute()
           .then((row) => row[0] ?? null);
@@ -138,7 +132,7 @@ export namespace Server {
         else return null;
       }
       return result;
-    }
+    },
   );
 
   export const publicServer = fn(
@@ -167,20 +161,17 @@ export namespace Server {
             readme: serverTable.readme,
           })
           .from(serverTable)
-          .innerJoin(
-            organizations,
-            eq(organizations.id, serverTable.organizationId)
-          )
+          .innerJoin(organizations, eq(organizations.id, serverTable.organizationId))
           .where(
             and(
               eq(serverTable.organizationId, filter.organizationId),
               eq(serverTable.id, filter.serverId),
-              eq(serverTable.visibility, ServerVisibilityEnum.PUBLIC)
-            )
+              eq(serverTable.visibility, ServerVisibilityEnum.PUBLIC),
+            ),
           )
           .execute()
-          .then((row) => row[0] ?? null)
-      )
+          .then((row) => row[0] ?? null),
+      ),
   );
 
   export const ownedServer = fn(
@@ -196,22 +187,18 @@ export namespace Server {
           .where(
             and(
               eq(serverTable.organizationId, filter.organizationId),
-              eq(serverTable.id, filter.serverId)
-            )
+              eq(serverTable.id, filter.serverId),
+            ),
           )
           .execute()
-          .then((row) => row[0] ?? null)
-      )
+          .then((row) => row[0] ?? null),
+      ),
   );
 
   export const orgServers = fn(
     z.object({
       organizationId: z.string(),
-      visibility: z.enum([
-        ServerVisibilityEnum.PRIVATE,
-        ServerVisibilityEnum.PUBLIC,
-        "both",
-      ]),
+      visibility: z.enum([ServerVisibilityEnum.PRIVATE, ServerVisibilityEnum.PUBLIC, "both"]),
       limit: z.number().default(100),
     }),
     async (filter) => {
@@ -219,7 +206,7 @@ export namespace Server {
         filter.visibility === "both"
           ? or(
               eq(serverTable.visibility, ServerVisibilityEnum.PUBLIC),
-              eq(serverTable.visibility, ServerVisibilityEnum.PRIVATE)
+              eq(serverTable.visibility, ServerVisibilityEnum.PRIVATE),
             )
           : eq(serverTable.visibility, filter.visibility as ServerVisibility);
 
@@ -243,25 +230,18 @@ export namespace Server {
             readme: serverTable.readme,
           })
           .from(serverTable)
-          .innerJoin(
-            organizations,
-            eq(serverTable.organizationId, organizations.id)
-          )
+          .innerJoin(organizations, eq(serverTable.organizationId, organizations.id))
           .where(and(eq(organizations.id, filter.organizationId), condition))
           .orderBy(desc(serverTable.usageCount))
-          .limit(filter.limit)
+          .limit(filter.limit),
       );
-    }
+    },
   );
 
   export const orgInstalledServers = fn(
     z.object({
       organizationId: z.string(),
-      visibility: z.enum([
-        ServerVisibilityEnum.PRIVATE,
-        ServerVisibilityEnum.PUBLIC,
-        "both",
-      ]),
+      visibility: z.enum([ServerVisibilityEnum.PRIVATE, ServerVisibilityEnum.PUBLIC, "both"]),
       limit: z.number(),
     }),
     async (filter) => {
@@ -269,7 +249,7 @@ export namespace Server {
         filter.visibility === "both"
           ? or(
               eq(serverTable.visibility, ServerVisibilityEnum.PUBLIC),
-              eq(serverTable.visibility, ServerVisibilityEnum.PRIVATE)
+              eq(serverTable.visibility, ServerVisibilityEnum.PRIVATE),
             )
           : eq(serverTable.visibility, filter.visibility as ServerVisibility);
       return await Database.use((db) =>
@@ -292,38 +272,25 @@ export namespace Server {
             readme: serverTable.readme,
           })
           .from(serverInstallTable)
-          .innerJoin(
-            serverTable,
-            eq(serverInstallTable.serverId, serverTable.id)
-          )
-          .innerJoin(
-            organizations,
-            eq(serverInstallTable.organizationId, organizations.id)
-          )
-          .where(
-            and(
-              eq(serverInstallTable.organizationId, filter.organizationId),
-              condition
-            )
-          )
+          .innerJoin(serverTable, eq(serverInstallTable.serverId, serverTable.id))
+          .innerJoin(organizations, eq(serverInstallTable.organizationId, organizations.id))
+          .where(and(eq(serverInstallTable.organizationId, filter.organizationId), condition))
           .orderBy(desc(serverTable.usageCount), desc(serverTable.createdAt))
-          .limit(filter.limit)
+          .limit(filter.limit),
       );
-    }
+    },
   );
 
   export const addNew = fn(AddServer, async (server) => {
     return await Database.transaction(async (tx) => {
       const parsed = CreateServer.safeParse(server);
-      if (!parsed.success)
-        throw new ServerAddError({ message: parsed.error.message });
+      if (!parsed.success) throw new ServerAddError({ message: parsed.error.message });
 
       const [newServer] = await tx
         .insert(serverTable)
         .values({ ...parsed.data })
         .returning();
-      if (!newServer)
-        throw new ServerAddError({ message: "Failed to insert new server" });
+      if (!newServer) throw new ServerAddError({ message: "Failed to insert new server" });
 
       await tx.insert(serverInstallTable).values({
         serverId: newServer.id,
@@ -398,10 +365,7 @@ export namespace Server {
           });
         }
 
-        const [newServer] = await tx
-          .insert(serverTable)
-          .values(parsed.data)
-          .returning();
+        const [newServer] = await tx.insert(serverTable).values(parsed.data).returning();
         if (!newServer) {
           throw new GitHubError({
             message: "Failed to insert GitHub import server",
@@ -414,7 +378,7 @@ export namespace Server {
         });
         return newServer;
       });
-    }
+    },
   );
 
   export function generateConfigHash(config: Record<string, any>): string {
@@ -429,7 +393,7 @@ export namespace Server {
         .from(serverConfigTable)
         .where(eq(serverConfigTable.id, serverId))
         .execute()
-        .then((row) => row[0] ?? null)
+        .then((row) => row[0] ?? null),
     );
   });
 

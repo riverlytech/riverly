@@ -28,7 +28,7 @@ export const EnvsSchema = z.array(
     name: z.string(),
     value: z.string(),
     secret: z.boolean().optional().default(false),
-  })
+  }),
 );
 export type Envs = z.infer<typeof EnvsSchema>;
 

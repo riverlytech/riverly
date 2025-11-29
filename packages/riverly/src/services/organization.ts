@@ -8,14 +8,14 @@ export const CreateOrgError = NamedError.create(
   "CreateOrgError",
   z.object({
     message: z.string(),
-  })
+  }),
 );
 
 export const CreateOrgMembershipError = NamedError.create(
   "CreateOrgMembershipError",
   z.object({
     message: z.string(),
-  })
+  }),
 );
 
 export namespace Organization {
@@ -27,7 +27,7 @@ export namespace Organization {
         .where(eq(organizations.id, id))
         .execute()
         .then((rows) => rows[0]);
-    })
+    }),
   );
 
   export const insert = fn(InsertOrganization, async (values) =>
@@ -36,7 +36,7 @@ export namespace Organization {
         .insert(organizations)
         .values({ ...values })
         .execute();
-    })
+    }),
   );
 
   export const createDefaultOrg = fn(
@@ -51,8 +51,7 @@ export namespace Organization {
           .execute()
           .then((row) => row[0]);
 
-        if (!createdOrg)
-          throw new CreateOrgError({ message: "Failed to create org" });
+        if (!createdOrg) throw new CreateOrgError({ message: "Failed to create org" });
 
         const [membership] = await tx
           .insert(members)
@@ -78,7 +77,7 @@ export namespace Organization {
           organizationId: createdOrg.id,
           memberId: membership.id,
         };
-      })
+      }),
   );
 
   export const memberOrgs = fn(
@@ -93,16 +92,13 @@ export namespace Organization {
             role: members.role,
           })
           .from(members)
-          .innerJoin(
-            organizations,
-            eq(members.organizationId, organizations.id)
-          )
+          .innerJoin(organizations, eq(members.organizationId, organizations.id))
           .where(eq(members.userId, filters.userId))
           .orderBy(desc(organizations.createdAt))
           .limit(filters.limit);
         return items;
       });
-    }
+    },
   );
 
   export const orgMembershipFromID = fn(
@@ -133,21 +129,15 @@ export namespace Organization {
             },
           })
           .from(members)
-          .innerJoin(
-            organizations,
-            eq(members.organizationId, organizations.id)
-          )
+          .innerJoin(organizations, eq(members.organizationId, organizations.id))
           .innerJoin(users, eq(members.userId, users.id))
           .where(
-            and(
-              eq(organizations.id, filters.organizationId),
-              eq(members.userId, filters.userId)
-            )
+            and(eq(organizations.id, filters.organizationId), eq(members.userId, filters.userId)),
           )
           .execute()
           .then((row) => row[0] ?? null);
       });
-    }
+    },
   );
 
   export const orgMembership = fn(
@@ -178,20 +168,12 @@ export namespace Organization {
             },
           })
           .from(members)
-          .innerJoin(
-            organizations,
-            eq(members.organizationId, organizations.id)
-          )
+          .innerJoin(organizations, eq(members.organizationId, organizations.id))
           .innerJoin(users, eq(members.userId, users.id))
-          .where(
-            and(
-              eq(organizations.slug, filters.slug),
-              eq(members.userId, filters.userId)
-            )
-          )
+          .where(and(eq(organizations.slug, filters.slug), eq(members.userId, filters.userId)))
           .execute()
           .then((row) => row[0] ?? null);
       });
-    }
+    },
   );
 }

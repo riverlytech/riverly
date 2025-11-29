@@ -1,6 +1,5 @@
 import { createServerFn } from '@tanstack/react-start'
 import { getRequest, setResponseStatus } from '@tanstack/react-start/server'
-
 import { BetterAuthError } from 'better-auth'
 
 import { env } from '@riverly/config'
@@ -34,7 +33,6 @@ export const createNewOrg = createServerFn({ method: 'POST' })
     return resp
   })
 
-
 export const updateOrgName = createServerFn({ method: 'POST' })
   .inputValidator(OrgNameForm)
   .middleware([authMiddleware])
@@ -56,7 +54,6 @@ export const updateOrgName = createServerFn({ method: 'POST' })
     )
     return resp
   })
-
 
 export const updateOrgSlug = createServerFn({ method: 'POST' })
   .inputValidator(OrgSlugForm)

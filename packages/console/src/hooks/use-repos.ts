@@ -11,9 +11,9 @@ export function useRepos(organizationId: string, owner?: string) {
   const q = new URLSearchParams({
     ...(owner && { owner }),
     ...(organizationId && { organizationId }),
-  });
+  })
 
-  const url = owner && `/api/github/repos${q.size ? `?${q}` : ""}`
+  const url = owner && `/api/github/repos${q.size ? `?${q}` : ''}`
   const { data, error, isLoading, mutate } = useSWR(url, fetcher)
 
   return {

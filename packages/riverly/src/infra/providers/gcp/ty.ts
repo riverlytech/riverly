@@ -19,9 +19,7 @@ export const CloudBuildStatus = z.enum(Object.values(CloudBuildStatusEnum));
 
 export type CloudBuildStatus = z.infer<typeof CloudBuildStatus>;
 
-export function toDeploymentStatusEnum(
-  status: CloudBuildStatus
-): DeploymentStatusType {
+export function toDeploymentStatusEnum(status: CloudBuildStatus): DeploymentStatusType {
   switch (status) {
     case CloudBuildStatusEnum.STATUS_UNKNOWN:
     case CloudBuildStatusEnum.QUEUED:

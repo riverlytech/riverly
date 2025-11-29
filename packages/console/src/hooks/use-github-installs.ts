@@ -10,13 +10,10 @@ const fetcher = (
 export function useGitHubInstalls(organizationId: string) {
   const q = new URLSearchParams({
     ...(organizationId && { organizationId }),
-  });
-  const url = `/api/github/installs${q.size ? `?${q}` : ""}`;
+  })
+  const url = `/api/github/installs${q.size ? `?${q}` : ''}`
 
-  const { data, error, isLoading, mutate } = useSWR(
-    url,
-    fetcher,
-  )
+  const { data, error, isLoading, mutate } = useSWR(url, fetcher)
   return {
     data: data,
     isLoading,

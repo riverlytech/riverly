@@ -2,11 +2,9 @@ import { fn } from "@riverly/utils";
 import { SelectUser } from "@riverly/db";
 
 export function parseRepoUrl(
-  repoUrl: string
+  repoUrl: string,
 ): [Error | null, { owner: string; repo: string } | null] {
-  const normalizedUrl = repoUrl.startsWith("http")
-    ? repoUrl
-    : `https://github.com/${repoUrl}`;
+  const normalizedUrl = repoUrl.startsWith("http") ? repoUrl : `https://github.com/${repoUrl}`;
 
   const url = new URL(normalizedUrl);
   const parts = url.pathname.split("/").filter(Boolean);
@@ -14,7 +12,7 @@ export function parseRepoUrl(
   if (parts.length !== 2) {
     return [
       new Error(
-        "Repository URL must include only organization and repo name, e.g., https://github.com/org/repo"
+        "Repository URL must include only organization and repo name, e.g., https://github.com/org/repo",
       ),
       null,
     ];

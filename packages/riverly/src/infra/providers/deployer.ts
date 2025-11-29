@@ -19,26 +19,17 @@ export namespace Deployer {
     metadata?: M;
   };
 
-  export interface Info<
-    Parameters extends z.ZodType = z.ZodType,
-    M extends Metadata = Metadata
-  > {
+  export interface Info<Parameters extends z.ZodType = z.ZodType, M extends Metadata = Metadata> {
     id: string;
     init: () => Promise<{
       parameters: Parameters;
-      deploy(
-        args: z.infer<Parameters>,
-        ctx: Context<M>,
-        metadata?: M
-      ): Promise<Result<M>>;
+      deploy(args: z.infer<Parameters>, ctx: Context<M>, metadata?: M): Promise<Result<M>>;
     }>;
   }
 
   export function define<Parameters extends z.ZodType, Result extends Metadata>(
     id: string,
-    init:
-      | Info<Parameters, Result>["init"]
-      | Awaited<ReturnType<Info<Parameters, Result>["init"]>>
+    init: Info<Parameters, Result>["init"] | Awaited<ReturnType<Info<Parameters, Result>["init"]>>,
   ): Info<Parameters, Result> {
     return {
       id,
