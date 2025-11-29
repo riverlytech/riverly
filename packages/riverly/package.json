@@ -7,24 +7,20 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./auth": "./src/lib/auth.ts",
-    "./infra": "./src/infra/index.ts",
-    "./infra/providers/gcp": "./src/infra/providers/gcp/index.ts"
+    "./auth": "./src/lib/auth.ts"
   },
   "dependencies": {
     "@riverly/config": "workspace:*",
     "@riverly/ty": "workspace:*",
     "@riverly/db": "workspace:*",
     "@riverly/utils": "workspace:*",
-    "@google-cloud/cloudbuild": "^5.3.0",
-    "@google-cloud/logging": "^11.2.0",
+    "@riverly/infra": "workspace:*",
     "@octokit/rest": "catalog:",
     "better-auth": "catalog:",
     "drizzle-kit": "catalog:",
     "drizzle-orm": "catalog:",
     "drizzle-zod": "catalog:",
     "pg": "catalog:",
-    "google-gax": "^5.0.6",
     "jose": "catalog:",
     "octokit": "catalog:",
     "tsx": "^4.20.6",

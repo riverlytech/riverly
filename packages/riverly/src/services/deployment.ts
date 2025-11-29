@@ -24,19 +24,10 @@ import {
   DeploymentTarget,
   DeployWithGitHubRequest,
 } from "@riverly/ty";
-import { GitHubSourceDeployer } from "../infra";
 import { fn, NamedError } from "@riverly/utils";
 
-// import { getResonateClient } from "../lib/rsc";
-// const rsc = getResonateClient();
-
-// Local invocation, later can be moved to workers
-import {
-  CloudBuildBuildDeploy,
-  type CloudBuildLogEvent,
-  type CloudBuildLogStreamOptions,
-} from "../infra/providers/gcp";
-//
+import { GitHubSourceDeployer } from "@riverly/infra";
+import { CloudBuildGitHubDeployer, useDefualtGCPConfig, useDefualtGCPBuildConfig } from "@riverly/infra/gcp";
 
 export const ServerInstallError = NamedError.create(
   "ServerInstallError",
@@ -89,13 +80,13 @@ export namespace ServerDeployment {
       const condition =
         filter.target === "all"
           ? or(
-              eq(serverDeploymentTable.target, DeploymentTarget.PREVIEW),
-              eq(serverDeploymentTable.target, DeploymentTarget.PRODUCTION)
-            )
+            eq(serverDeploymentTable.target, DeploymentTarget.PREVIEW),
+            eq(serverDeploymentTable.target, DeploymentTarget.PRODUCTION)
+          )
           : eq(
-              serverDeploymentTable.target,
-              filter.target as DeploymentTargetType
-            );
+            serverDeploymentTable.target,
+            filter.target as DeploymentTargetType
+          );
 
       return await Database.use((db) =>
         db
@@ -188,13 +179,13 @@ export namespace ServerDeployment {
       const condition =
         filter.target === "all"
           ? or(
-              eq(serverDeploymentTable.target, DeploymentTarget.PREVIEW),
-              eq(serverDeploymentTable.target, DeploymentTarget.PRODUCTION)
-            )
+            eq(serverDeploymentTable.target, DeploymentTarget.PREVIEW),
+            eq(serverDeploymentTable.target, DeploymentTarget.PRODUCTION)
+          )
           : eq(
-              serverDeploymentTable.target,
-              filter.target as DeploymentTargetType
-            );
+            serverDeploymentTable.target,
+            filter.target as DeploymentTargetType
+          );
 
       return await Database.use((db) =>
         db
@@ -383,17 +374,25 @@ export namespace ServerDeployment {
 
         //
         // GCP infra invoker, can be later moved to workers
-        const { data: args } = requestParsed;
-        const deploymentId = args.deployment.deploymentId;
-        const deployer = (await CloudBuildBuildDeploy.init()) as Awaited<
-          ReturnType<typeof CloudBuildBuildDeploy.init>
-        > & {
-          streamLogs?: (
-            options: CloudBuildLogStreamOptions
-          ) => AsyncGenerator<CloudBuildLogEvent>;
-        };
-        console.info(`[Deployment: ${deploymentId}] Starting build...`);
-        const result = await deployer.deploy(args, {});
+        // const { data: args } = requestParsed;
+        // const deploymentId = args.deployment.deploymentId;
+        // const deployer = (await CloudBuildBuildDeploy.init()) as Awaited<
+        //   ReturnType<typeof CloudBuildBuildDeploy.init>
+        // > & {
+        //   streamLogs?: (
+        //     options: CloudBuildLogStreamOptions
+        //   ) => AsyncGenerator<CloudBuildLogEvent>;
+        // };
+        // console.info(`[Deployment: ${deploymentId}] Starting build...`);
+
+        const params = requestParsed.data;
+        const deploymentId = params.deployment.deploymentId;
+
+        const gcpConfig = useDefualtGCPConfig();
+        const gcpBuildConfig = useDefualtGCPBuildConfig();
+        const deployer = new CloudBuildGitHubDeployer(gcpConfig, gcpBuildConfig);
+
+        const result = await deployer.deploy(params);
         const cbBuildID =
           (typeof result.resourceIds?.cbBuildID === "string"
             ? result.resourceIds.cbBuildID
@@ -414,7 +413,6 @@ export namespace ServerDeployment {
         console.info(
           `[Deployment: ${deploymentId}] Scheduled build N Deploy...`
         );
-        //
 
         // await rsc.beginRpc(
         //   deployment.deploymentId,
