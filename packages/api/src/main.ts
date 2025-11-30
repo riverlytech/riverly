@@ -7,8 +7,8 @@ import type { SessionUser } from "@riverly/ty";
 import { verifyBetterAuthToken, type MembershipCtx } from "./middlewares/middlewares";
 import authRoutes from "./routes/auth";
 import deploymentRoutes from "./routes/deployments";
-import serverRoutes from "./routes/servers";
 import meRoutes from "./routes/me";
+import serverRoutes from "./routes/servers";
 import v1internalRoutes from "./routes/v1internal";
 
 declare module "hono" {
@@ -31,16 +31,12 @@ app.get("/", (c) => {
   return c.text("Ok");
 });
 
-app.get(
-  "/v1/user",
-  bearerAuth({ verifyToken: verifyBetterAuthToken }),
-  async (c) => {
-    const sessionUser = c.get("user");
-    // modify this route for fetching authenticated user,
-    // perhaps to a DB call to fetch more details.
-    return c.json(sessionUser);
-  },
-);
+app.get("/v1/user", bearerAuth({ verifyToken: verifyBetterAuthToken }), async (c) => {
+  const sessionUser = c.get("user");
+  // modify this route for fetching authenticated user,
+  // perhaps to a DB call to fetch more details.
+  return c.json(sessionUser);
+});
 
 app.route("/v1/auth", authRoutes);
 app.route("/v1/me", meRoutes);
@@ -67,4 +63,3 @@ Bun.serve({
 });
 
 console.info(`API listening on http://0.0.0.0:${port}`);
-

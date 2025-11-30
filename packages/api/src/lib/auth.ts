@@ -7,10 +7,7 @@ import { Database } from "@riverly/db";
 import { users, sessions, accounts, verifications, jwks } from "@riverly/db";
 import { authConfig } from "@riverly/riverly/auth";
 
-export const auth = (
-  db: Database.TxOrDb,
-  env: Env
-): ReturnType<typeof betterAuth> => {
+export const auth = (db: Database.TxOrDb, env: Env): ReturnType<typeof betterAuth> => {
   return betterAuth({
     appName: "Riverly",
     ...authConfig,

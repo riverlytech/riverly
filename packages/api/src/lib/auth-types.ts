@@ -73,9 +73,7 @@ export type AuthUserFieldExtras = MapFields<AdditionalFields>;
  * The built-in Better Auth session type (when a session exists).
  * `getSession()` can return `null`, so we wrap it in `NonNullable` here.
  */
-type BaseSession = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof auth>["api"]["getSession"]>>
->;
+type BaseSession = NonNullable<Awaited<ReturnType<ReturnType<typeof auth>["api"]["getSession"]>>>;
 
 // type JWTVerified = NonNullable<Awaited<ReturnType<typeof jwtVerify>>>;
 
@@ -85,9 +83,7 @@ type BaseSession = NonNullable<
  *  - Built-in: id, name, email, image, etc.
  *  - Custom: username
  */
-export type JWTVerifiedUser = BaseSession["user"] &
-  AuthUserFieldExtras &
-  JWTClaims;
+export type JWTVerifiedUser = BaseSession["user"] & AuthUserFieldExtras & JWTClaims;
 
 /**
  * Final session type that you can use for:

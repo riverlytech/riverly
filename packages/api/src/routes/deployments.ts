@@ -42,15 +42,13 @@ const DeploymentRequest = z
     if (count === 0) {
       ctx.addIssue({
         code: "custom",
-        message:
-          "You must provide exactly one of: `repo`, `artifact` or `revisionId`.",
+        message: "You must provide exactly one of: `repo`, `artifact` or `revisionId`.",
         path: [], // global error
       });
     } else if (count > 1) {
       ctx.addIssue({
         code: "custom",
-        message:
-          "Only one of `repo`, `artifact` or `revisionId` can be provided at a time.",
+        message: "Only one of `repo`, `artifact` or `revisionId` can be provided at a time.",
         path: [], // global error
       });
     }
@@ -263,8 +261,7 @@ app.post(
             200,
           );
           return;
-        }
-        else if (body.artifact) {
+        } else if (body.artifact) {
           return c.json(
             {
               error: {
@@ -324,4 +321,3 @@ app.post(
 );
 
 export default app;
-

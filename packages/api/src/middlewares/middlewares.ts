@@ -1,14 +1,12 @@
-import { createMiddleware } from 'hono/factory'
+import { createMiddleware } from "hono/factory";
 import { jwtVerify, createRemoteJWKSet } from "jose";
 
 import { env } from "@riverly/config";
+import { Organization } from "@riverly/riverly";
+import { MemberRole } from "@riverly/ty";
 
 import type { JWTVerifiedUser } from "../lib/auth-types";
 import type { Context } from "hono";
-import { MemberRole } from "@riverly/ty";
-
-
-import { Organization } from "@riverly/riverly";
 
 export async function verifyBetterAuthToken(token: string, c: Context) {
   try {
@@ -39,22 +37,25 @@ export async function verifyBetterAuthToken(token: string, c: Context) {
 }
 
 export const orgMembership = createMiddleware(async (c, next) => {
-  const user = c.get('user')
+  const user = c.get("user");
   if (!user) {
-    c.json({ error: 'Unauthorized' }, 401)
+    c.json({ error: "Unauthorized" }, 401);
     return;
   }
 
-  const url = new URL(c.req.url)
-  const orgId = url.searchParams.get('orgId') ?? user.defaultOrgId
+  const url = new URL(c.req.url);
+  const orgId = url.searchParams.get("orgId") ?? user.defaultOrgId;
   if (!orgId) {
-    c.json({ error: 'User not linked to any Organization' }, 403);
+    c.json({ error: "User not linked to any Organization" }, 403);
     return;
   }
 
-  const membership = await Organization.orgMembershipFromID({ organizationId: orgId, userId: user.userId })
+  const membership = await Organization.orgMembershipFromID({
+    organizationId: orgId,
+    userId: user.userId,
+  });
   if (!membership) {
-    c.json({ error: 'User not linked to any Organization' }, 403);
+    c.json({ error: "User not linked to any Organization" }, 403);
     return;
   }
 
@@ -65,9 +66,9 @@ export const orgMembership = createMiddleware(async (c, next) => {
     orgSlug: membership.org.slug,
     orgName: membership.org.name,
     metadata: membership.org.metadata,
-  }
-  c.set('membership', membershipCtx)
-  await next()
+  };
+  c.set("membership", membershipCtx);
+  await next();
 });
 
 export type MembershipCtx = {
@@ -78,4 +79,3 @@ export type MembershipCtx = {
   orgName: string;
   metadata: string | null;
 };
-

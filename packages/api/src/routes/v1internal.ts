@@ -1,21 +1,19 @@
 import { Hono } from "hono";
 import { basicAuth } from "hono/basic-auth";
 
-import { ServerDeployment } from "@riverly/riverly";
 import {
   type CloudBuildStatus,
   CloudBuildStatusEnum,
   toDeploymentStatusEnum,
   isTerminalStatus,
 } from "@riverly/infra/gcp";
+import { ServerDeployment } from "@riverly/riverly";
 import { DeploymentStatusEnum } from "@riverly/ty";
 
 const app = new Hono();
 
-const internalWebhookUsername =
-  process.env.INTERNAL_WEBHOOK_USERNAME || "riverlybot";
-const internalWebhookPassword =
-  process.env.INTERNAL_WEBHOOK_PASSWORD || "VeryS3Cure";
+const internalWebhookUsername = process.env.INTERNAL_WEBHOOK_USERNAME || "riverlybot";
+const internalWebhookPassword = process.env.INTERNAL_WEBHOOK_PASSWORD || "VeryS3Cure";
 
 app.get("/", (c) => {
   return c.text("Ok");
@@ -32,8 +30,7 @@ app.post(
     const eventId = (body?.context.eventId as string) || null;
     const cbBuildID = (body?.attributes?.buildId as string) || null;
     const cbStatus =
-      (body?.attributes?.status as CloudBuildStatus) ||
-      CloudBuildStatusEnum.STATUS_UNKNOWN;
+      (body?.attributes?.status as CloudBuildStatus) || CloudBuildStatusEnum.STATUS_UNKNOWN;
 
     const tags: string[] = body?.build?.tags || [];
 
@@ -49,8 +46,7 @@ app.post(
     const deploymentTag = tags.find((tag) => tag.startsWith("deployment-id-"));
     const buildTag = tags.find((tag) => tag.startsWith("build-id-"));
     const eventType = tags.find(
-      (tag) =>
-        tag === "event-build-n-deploy" || tag === "event-deploy" || tag === "event-build",
+      (tag) => tag === "event-build-n-deploy" || tag === "event-deploy" || tag === "event-build",
     );
     if (!deploymentTag || !buildTag || !eventType) {
       console.warn(
@@ -64,9 +60,7 @@ app.post(
     const status = toDeploymentStatusEnum(cbStatus);
     if (eventType === "event-build-n-deploy") {
       const isTerminal = isTerminalStatus(cbStatus);
-      console.info(
-        `Updating DeploymentID: ${deploymentId} BuildID: ${buildId} Status: ${status}`,
-      );
+      console.info(`Updating DeploymentID: ${deploymentId} BuildID: ${buildId} Status: ${status}`);
 
       let finalImageRef: string | null = null;
       let imageDigest: string | null = null;

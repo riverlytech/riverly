@@ -51,7 +51,7 @@ app.post(
       description: body.description,
       repoUrl: body.repoUrl,
       visibility: body.visibility,
-    }
+    };
 
     if (body.repoUrl) {
       const result = await Server.importFromGitHub({
@@ -82,4 +82,3 @@ app.post(
 );
 
 export default app;
-

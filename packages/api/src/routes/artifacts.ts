@@ -83,14 +83,11 @@ app.post(
     const absolutePath = `${sessionUser.userId}/servers/${ownedServer.id}:${body.version}.${body.suffix}`;
     const expires = Date.now() + 60 * 60 * 1000;
 
-    const [url] = await storage
-      .bucket(artifactBucket)
-      .file(absolutePath)
-      .getSignedUrl({
-        action: "write",
-        contentType: "application/octet-stream",
-        expires,
-      });
+    const [url] = await storage.bucket(artifactBucket).file(absolutePath).getSignedUrl({
+      action: "write",
+      contentType: "application/octet-stream",
+      expires,
+    });
 
     return c.json({
       uploadUrl: url,
@@ -101,4 +98,3 @@ app.post(
 );
 
 export default app;
-
