@@ -5,6 +5,7 @@ import { env } from "@riverly/config";
 
 import type { JWTVerifiedUser } from "../lib/auth-types";
 import type { Context } from "hono";
+import { MemberRole } from "@riverly/ty";
 
 
 import { Organization } from "@riverly/riverly";
@@ -59,10 +60,10 @@ export const orgMembership = createMiddleware(async (c, next) => {
 
   const membershipCtx = {
     memberId: membership.id,
-    role: membership.role,
+    role: membership.role as MemberRole,
     orgId: membership.org.id,
     orgSlug: membership.org.slug,
-    name: membership.org.name,
+    orgName: membership.org.name,
     metadata: membership.org.metadata,
   }
   c.set('membership', membershipCtx)
@@ -71,10 +72,10 @@ export const orgMembership = createMiddleware(async (c, next) => {
 
 export type MembershipCtx = {
   memberId: string;
-  role: string;
+  role: MemberRole;
   orgId: string;
   orgSlug: string;
-  name: string;
+  orgName: string;
   metadata: string | null;
 };
 

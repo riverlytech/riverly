@@ -5,7 +5,7 @@ import z from "zod/v4";
 
 import { env } from "@riverly/config";
 import type { ServerConfigTable } from "@riverly/db";
-import { parseAbsName, parseRepoUrl } from "@riverly/riverly";
+import { parseRepoUrl } from "@riverly/riverly";
 import { GitHub, Server, ServerDeployment } from "@riverly/riverly";
 import { EnvsSchema, type Nothing, ServerConfigSchema } from "@riverly/ty";
 import { DeploymentTarget, TriggerTypeValue } from "@riverly/ty";
@@ -13,17 +13,13 @@ import { DeployWithGitHubRequest } from "@riverly/ty";
 import { toAsyncErrorValue } from "@riverly/utils";
 
 import { ErrorCodeEnum } from "./errors";
-import { verifyBetterAuthToken } from "../middlewares/middlewares";
+import { verifyBetterAuthToken, orgMembership } from "../middlewares/middlewares";
 
 const app = new Hono();
 
 const DeploymentRequest = z
   .object({
-    name: z
-      .string()
-      .describe(
-        "Absolute or name of the server as `username/name` or `name` format",
-      ),
+    serverId: z.string(),
     repo: z.string().optional(),
     artifact: z.string().optional(),
     revisionId: z.string().optional(),
@@ -65,7 +61,7 @@ app.post(
   bearerAuth({ verifyToken: verifyBetterAuthToken }),
   zValidator("json", DeploymentRequest, (result, c) => {
     if (!result.success) {
-      return c.json(
+      c.json(
         {
           error: {
             message: result.error,
@@ -74,62 +70,67 @@ app.post(
         },
         400,
       );
+      return;
     }
   }),
+  orgMembership,
   async (c) => {
-    const session = c.get("user");
+    const sessionUser = c.get("user");
+    const membership = c.get("membership");
     const body = c.req.valid("json");
 
-    const [partUsername, partName] = parseAbsName(session.username, body.name);
-    const isOwner = partUsername === session.username;
-
     try {
-      // Check if the owner is the one deploying the server
-      // owner must own the server.
-      if (isOwner) {
-        const server = await Server.ownedServer({
-          username: session.username,
-          name: partName,
-        });
-        if (!server) {
-          return c.json(
-            {
-              error: {
-                message: "Server not found or does not allow deployment",
-                code: ErrorCodeEnum.NOT_FOUND,
-              },
+      // fetch server details
+      // server must exist for owned server deployments and public server deployments
+      const server = await Server.fromID({
+        callerOrgId: membership.orgId,
+        serverId: body.serverId,
+      });
+      if (!server) {
+        c.json(
+          {
+            error: {
+              message: "Server not found or does not allow deployment",
+              code: ErrorCodeEnum.NOT_FOUND,
             },
-            404,
-          );
-        }
-
-        let serverConfig: MCPServerConfigTable | Nothing = null;
-
-        // Upsert server config if provided
+          },
+          404,
+        );
+        return;
+      }
+      //
+      // checks if server belongs to the same organization as the member
+      // then deploys server as owner
+      // Public server deployments require the `revisionId` for deployments
+      const isOwner = membership.orgId === server.org.organizationId;
+      if (isOwner) {
+        let serverConfig: ServerConfigTable | Nothing = null;
+        //
+        // upserts server config if provided
         // this overrides the current config
-        // The assumption is that user is providing it and intends to updated the current config
+        //
+        // The assumption is that user is providing it and intends to update the current config
         // User should be able to update it via server settings if required
-        // and omit from the api if doesn't want this mutation.
+        // and omit from the API if doesn't want the mutation.
         //
         // Note: Updating the server config from settings should also trigger re-deployment if existing
         // deployment exists. Here we just do upsert and create new deployment.
         if (body.config) {
           const upsert = {
-            serverId: server.serverId,
-            userId: session.userId,
+            id: server.serverId,
             envs: body.config.envs,
             config: body.config.inputs,
             rootDir: body.config.rootDir,
           };
           serverConfig = await Server.upsertConfig(upsert);
         }
-
-        // Fetch current server config if not available
+        //
+        // fetch current server config if not available
         // server config must exist for deployment required by the deployment spec
         if (!serverConfig) {
           serverConfig = await Server.config(server.serverId);
           if (!serverConfig) {
-            return c.json(
+            c.json(
               {
                 error: {
                   message: "Error fetching server config",
@@ -138,6 +139,7 @@ app.post(
               },
               400,
             );
+            return;
           }
         }
 
@@ -149,29 +151,31 @@ app.post(
         // least `revisionId`
         // revisionId is when you want to do a re-deployment without build
         //
-
         // Do deployment for the connected GitHub repository
         if (body.repo) {
           const [parseErr, repo] = parseRepoUrl(body.repo);
           if (parseErr || !repo) {
-            return c.json(
+            c.json(
               {
                 error: {
-                  message: "GitHub repo not found",
+                  message: "GitHub repo not found or is invalid",
                   code: ErrorCodeEnum.NOT_FOUND,
                 },
               },
               404,
             );
+            return;
           }
-
-          const ghInstallation = await GitHub.userInstallation({
-            userId: session.userId,
+          //
+          // checks if the org has connected GitHub app
+          // for the connected GitHub account
+          const ghInstallation = await GitHub.orgInstallation({
+            organizationId: membership.orgId,
             githubAppId: env.GITHUB_APP_ID,
             account: repo.owner,
           });
           if (!ghInstallation) {
-            return c.json(
+            c.json(
               {
                 error: {
                   message: "GitHub app is not connected",
@@ -180,9 +184,10 @@ app.post(
               },
               403,
             );
+            return;
           }
-
-          // Fetch GitHub repo details to make sure it exists and have access
+          //
+          // Fetch GitHub repo details to make sure it exists and we still have access
           // Some other details like commit hash is pulled for tracking
           const [repoErr, repoDetails] = await toAsyncErrorValue(() =>
             GitHub.repoDetail({
@@ -192,7 +197,7 @@ app.post(
             }),
           );
           if (repoErr || !repoDetails) {
-            return c.json(
+            c.json(
               {
                 error: {
                   message: "GitHub repo not found or not allowed",
@@ -201,6 +206,7 @@ app.post(
               },
               404,
             );
+            return;
           }
           const [commitErr, commitHash] = await toAsyncErrorValue(() =>
             GitHub.repoLatestCommitHash({
@@ -212,18 +218,23 @@ app.post(
           );
           const hash = commitErr || !commitHash ? "unknown" : commitHash;
 
+          //
+          // make new deployment request
+          // for GitHub connected source deployment
           const newRequest: z.infer<typeof DeployWithGitHubRequest> = {
-            user: {
-              userId: session.userId,
-              username: session.username,
-              githubId: session.githubId,
-              isStaff: session.isStaff,
-              isBlocked: session.isBlocked,
+            org: {
+              organizationId: membership.orgId,
+              name: membership.orgName,
+            },
+            member: {
+              memberId: membership.memberId,
+              role: membership.role,
+              userId: sessionUser.userId,
+              username: sessionUser.username,
             },
             server: {
               serverId: server.serverId,
-              username: server.username,
-              name: server.name,
+              title: server.title,
             },
             serverConfig: {
               envs: serverConfig.envs,
@@ -234,26 +245,25 @@ app.post(
             },
             target: body.target,
             triggerType: TriggerTypeValue.MANUAL,
-            githubAppId: ghInstallation.githubAppId,
-            githubInstallationId: ghInstallation.githubInstallationId,
             githubRepo: repoDetails.name,
             githubOwner: repoDetails.owner.login,
             githubRef: repoDetails.defaultBranch,
             commitHash: hash,
+            githubAppId: ghInstallation.githubAppId,
+            githubInstallationId: ghInstallation.githubInstallationId,
           };
 
-          const { deploymentId, buildId, revisionId } =
-            await ServerDeployment.triggerGitHubBuildDeploy(newRequest);
-          return c.json(
+          const trigger = await ServerDeployment.triggerGitHubBuildDeploy(newRequest);
+          c.json(
             {
-              deploymentId,
-              buildId,
-              revisionId,
+              deploymentId: trigger.deploymentId,
+              buildId: trigger.buildId,
+              revisionId: trigger.revisionId,
             },
             200,
           );
+          return;
         }
-        // TODO: Requires implementation
         else if (body.artifact) {
           return c.json(
             {
@@ -286,7 +296,6 @@ app.post(
           );
         }
       } else {
-        // TODO: requires implementation
         if (!body.revisionId) {
           return c.json(
             {
@@ -315,3 +324,4 @@ app.post(
 );
 
 export default app;
+

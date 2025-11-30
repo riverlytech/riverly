@@ -36,7 +36,7 @@ export const GitHubError = NamedError.create(
 export namespace Server {
   export const fromID = fn(
     z.object({
-      organizationId: z.string(),
+      callerOrgId: z.string(),
       serverId: z.string(),
     }),
     async (filter) => {
@@ -62,21 +62,18 @@ export namespace Server {
           .from(serverTable)
           .innerJoin(organizations, eq(organizations.id, serverTable.organizationId))
           .where(
-            and(
-              eq(serverTable.organizationId, filter.organizationId),
-              eq(serverTable.id, filter.serverId),
-            ),
+            eq(serverTable.id, filter.serverId),
           )
           .execute()
           .then((row) => row[0] ?? null);
         return r;
       });
-      if (!result) return result;
+      if (!result) return null
       //
       // check for visibility, if private then check ownership,
       // if public return server
       if (result.visibility === ServerVisibilityEnum.PRIVATE) {
-        if (filter.organizationId === result.org.organizationId) return result;
+        if (filter.callerOrgId === result.org.organizationId) return result;
         else return null;
       }
       return result;
