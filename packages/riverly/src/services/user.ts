@@ -34,7 +34,7 @@ export namespace User {
     }),
   );
 
-  export const fromIDWithDefualtOrg = fn(z.string(), async (id) =>
+  export const fromIDWithDefaultOrg = fn(z.string(), async (id) =>
     Database.transaction(async (tx) => {
       return tx
         .select({

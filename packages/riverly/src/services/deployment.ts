@@ -361,7 +361,7 @@ export namespace ServerDeployment {
 
       const gcpConfig = useDefualtGCPConfig();
       const gcpBuildConfig = useDefualtGCPBuildConfig();
-      const deployer = new CloudBuildGitHubDeployer(gcpConfig, gcpBuildConfig);
+      const deployer = new CloudBuildGitHubDeployer(gcpConfig, gcpBuildConfig, false);
 
       const result = await deployer.deploy(params);
       const cbBuildID =

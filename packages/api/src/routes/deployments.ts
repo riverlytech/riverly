@@ -59,7 +59,7 @@ app.post(
   bearerAuth({ verifyToken: verifyBetterAuthToken }),
   zValidator("json", DeploymentRequest, (result, c) => {
     if (!result.success) {
-      c.json(
+      return c.json(
         {
           error: {
             message: result.error,
@@ -68,7 +68,6 @@ app.post(
         },
         400,
       );
-      return;
     }
   }),
   orgMembership,
@@ -85,7 +84,7 @@ app.post(
         serverId: body.serverId,
       });
       if (!server) {
-        c.json(
+        return c.json(
           {
             error: {
               message: "Server not found or does not allow deployment",
@@ -94,7 +93,6 @@ app.post(
           },
           404,
         );
-        return;
       }
       //
       // checks if server belongs to the same organization as the member
@@ -128,7 +126,7 @@ app.post(
         if (!serverConfig) {
           serverConfig = await Server.config(server.serverId);
           if (!serverConfig) {
-            c.json(
+            return c.json(
               {
                 error: {
                   message: "Error fetching server config",
@@ -137,14 +135,13 @@ app.post(
               },
               400,
             );
-            return;
           }
         }
 
         //
-        // Order matters:
+        // Ordering:
         //
-        // Treat `repo` with highest priority,
+        // `repo` has highest priority,
         // next `artifact`, artifact involves uploading sources to storage,
         // least `revisionId`
         // revisionId is when you want to do a re-deployment without build
@@ -153,7 +150,7 @@ app.post(
         if (body.repo) {
           const [parseErr, repo] = parseRepoUrl(body.repo);
           if (parseErr || !repo) {
-            c.json(
+            return c.json(
               {
                 error: {
                   message: "GitHub repo not found or is invalid",
@@ -162,7 +159,6 @@ app.post(
               },
               404,
             );
-            return;
           }
           //
           // checks if the org has connected GitHub app
@@ -173,7 +169,7 @@ app.post(
             account: repo.owner,
           });
           if (!ghInstallation) {
-            c.json(
+            return c.json(
               {
                 error: {
                   message: "GitHub app is not connected",
@@ -182,7 +178,6 @@ app.post(
               },
               403,
             );
-            return;
           }
           //
           // Fetch GitHub repo details to make sure it exists and we still have access
@@ -195,7 +190,7 @@ app.post(
             }),
           );
           if (repoErr || !repoDetails) {
-            c.json(
+            return c.json(
               {
                 error: {
                   message: "GitHub repo not found or not allowed",
@@ -204,7 +199,6 @@ app.post(
               },
               404,
             );
-            return;
           }
           const [commitErr, commitHash] = await toAsyncErrorValue(() =>
             GitHub.repoLatestCommitHash({
@@ -252,7 +246,7 @@ app.post(
           };
 
           const trigger = await ServerDeployment.triggerGitHubBuildDeploy(newRequest);
-          c.json(
+          return c.json(
             {
               deploymentId: trigger.deploymentId,
               buildId: trigger.buildId,
@@ -260,7 +254,6 @@ app.post(
             },
             200,
           );
-          return;
         } else if (body.artifact) {
           return c.json(
             {
@@ -304,6 +297,16 @@ app.post(
             404,
           );
         }
+
+        return c.json(
+          {
+            error: {
+              message: "Public deployment using an existing revision is not implemented yet",
+              code: ErrorCodeEnum.BAD_REQUEST,
+            },
+          },
+          400,
+        );
       }
     } catch (err) {
       console.error(err, "Unexpected error on deployment");

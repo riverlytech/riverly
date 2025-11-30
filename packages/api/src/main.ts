@@ -1,10 +1,9 @@
 import "dotenv/config";
 import { Hono } from "hono";
-import { bearerAuth } from "hono/bearer-auth";
 
 import type { SessionUser } from "@riverly/ty";
 
-import { verifyBetterAuthToken, type MembershipCtx } from "./middlewares/middlewares";
+import { type MembershipCtx } from "./middlewares/middlewares";
 import authRoutes from "./routes/auth";
 import deploymentRoutes from "./routes/deployments";
 import meRoutes from "./routes/me";
@@ -20,23 +19,7 @@ declare module "hono" {
 
 const app = new Hono({ strict: false });
 
-app.use(async (c, next) => {
-  const start = Date.now();
-  await next();
-  const end = Date.now();
-  c.res.headers.set("X-Response-Time", `${end - start}`);
-});
-
-app.get("/", (c) => {
-  return c.text("Ok");
-});
-
-app.get("/v1/user", bearerAuth({ verifyToken: verifyBetterAuthToken }), async (c) => {
-  const sessionUser = c.get("user");
-  // modify this route for fetching authenticated user,
-  // perhaps to a DB call to fetch more details.
-  return c.json(sessionUser);
-});
+app.get("/", (c) => c.text("Ok"));
 
 app.route("/v1/auth", authRoutes);
 app.route("/v1/me", meRoutes);

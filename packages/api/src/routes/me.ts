@@ -9,7 +9,7 @@ const app = new Hono();
 
 app.get("/", bearerAuth({ verifyToken: verifyBetterAuthToken }), async (c) => {
   const sessionUser = c.get("user");
-  const user = await User.fromIDWithDefualtOrg(sessionUser.userId);
+  const user = await User.fromIDWithDefaultOrg(sessionUser.userId);
   return c.json({ ...user });
 });
 

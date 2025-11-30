@@ -39,15 +39,13 @@ export async function verifyBetterAuthToken(token: string, c: Context) {
 export const orgMembership = createMiddleware(async (c, next) => {
   const user = c.get("user");
   if (!user) {
-    c.json({ error: "Unauthorized" }, 401);
-    return;
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   const url = new URL(c.req.url);
   const orgId = url.searchParams.get("orgId") ?? user.defaultOrgId;
   if (!orgId) {
-    c.json({ error: "User not linked to any Organization" }, 403);
-    return;
+    return c.json({ error: "User not linked to any Organization" }, 403);
   }
 
   const membership = await Organization.orgMembershipFromID({
@@ -55,8 +53,7 @@ export const orgMembership = createMiddleware(async (c, next) => {
     userId: user.userId,
   });
   if (!membership) {
-    c.json({ error: "User not linked to any Organization" }, 403);
-    return;
+    return c.json({ error: "User not linked to any Organization" }, 403);
   }
 
   const membershipCtx = {

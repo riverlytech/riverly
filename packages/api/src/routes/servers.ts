@@ -28,7 +28,7 @@ app.post(
   bearerAuth({ verifyToken: verifyBetterAuthToken }),
   zValidator("json", AddServerRequest, (result, c) => {
     if (!result.success) {
-      c.json(
+      return c.json(
         {
           error: {
             message: result.error,
@@ -37,7 +37,6 @@ app.post(
         },
         400,
       );
-      return;
     }
   }),
   orgMembership,

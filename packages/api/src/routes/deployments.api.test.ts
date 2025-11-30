@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it, jest } from "@jest/globals";
 import request from "supertest";
 
-const API_BASE_URL = process.env.API_BASE_URL ?? "https://api.riverly.tech";
+const API_BASE_URL = process.env.API_BASE_URL ?? "http://localhost:5000";
 const AUTH_TOKEN = process.env.TEST_JWT_TOKEN;
 
 // Allow extra time because deployments can take longer to settle.
@@ -13,18 +13,32 @@ if (!AUTH_TOKEN) {
 
 const apiClient = () => request(API_BASE_URL);
 
+// const postDeployment = async (body: Record<string, unknown>, token: string | null = AUTH_TOKEN) => {
+//   const req = apiClient().post("/v1/deployment").send(body);
+//   if (token) {
+//     req.set("Authorization", `Bearer ${token}`);
+//   }
+//   const res = await req;
+//   return { status: res.status, json: res.body };
+// };
+
 const postDeployment = async (body: Record<string, unknown>, token: string | null = AUTH_TOKEN) => {
-  const req = apiClient().post("/v1/deployment").send(body);
+  const req = apiClient()
+    .post("/v1/deployment")
+    .query({ orgId: "sl95qcm2i6mcl51vcm0ao" }) // ← add query param here
+    .send(body);
+
   if (token) {
     req.set("Authorization", `Bearer ${token}`);
   }
+
   const res = await req;
   return { status: res.status, json: res.body };
 };
 
 describe("Deployment API validation", () => {
   const basePayload = {
-    name: "example-server",
+    serverId: "example-server",
     config: {},
   };
 
@@ -61,8 +75,8 @@ describe("Deployment API validation", () => {
   it("logs the response when attempting a GitHub repo deployment", async () => {
     const payload = {
       ...basePayload,
-      name: "sanchitrk/google-workspace",
-      repo: "https://github.com/sanchitrk/google-workspace",
+      serverId: "rzyysn0sgk6ey0ewvz30s",
+      repo: "https://github.com/sanchitrk/mcping",
     };
 
     const result = await postDeployment(payload);
