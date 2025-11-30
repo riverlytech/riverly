@@ -481,7 +481,7 @@ export namespace ServerDeployment {
               level: log.level,
             },
           })
-          .returning({ logId: serverDeploymentLogTable.logId })
+          .returning()
           .execute()
           .then((row) => row[0] ?? null),
       ),

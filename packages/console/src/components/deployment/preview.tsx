@@ -12,7 +12,8 @@
 // } from '@/components/utils'
 
 export function DeploymentPreview({ deployment }: { deployment: any }) {
-  return <div>{deployment}</div>
+  console.log(deployment)
+  return <div>{'deployment'}</div>
 }
 
 // export function DeploymentPreview2({

@@ -200,6 +200,7 @@
         "@google-cloud/cloudbuild": "^5.3.0",
         "@google-cloud/logging": "^11.2.0",
         "@riverly/ty": "workspace:*",
+        "@riverly/utils": "workspace:*",
         "google-gax": "^5.0.6",
         "zod": "catalog:",
       },

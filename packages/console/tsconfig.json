@@ -5,14 +5,14 @@
     "eslint.config.js",
     "prettier.config.js",
     "vite.config.js"
-, "src/routes/_auth/$slug/_dash/route.tsx.backup", "src/routes/.well-known.tsx"  ],
+  ],
 
   "compilerOptions": {
     "target": "ES2022",
     "jsx": "react-jsx",
     "module": "ESNext",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["bun", "vite/client"],
+    "types": ["@types/bun", "vite/client"],
 
     /* Bundler mode */
     "moduleResolution": "bundler",
