@@ -4,7 +4,7 @@ import { bearerAuth } from "hono/bearer-auth";
 import z from "zod/v4";
 
 import { env } from "@riverly/config";
-import type { MCPServerConfigTable } from "@riverly/db";
+import type { ServerConfigTable } from "@riverly/db";
 import { parseAbsName, parseRepoUrl } from "@riverly/riverly";
 import { GitHub, Server, ServerDeployment } from "@riverly/riverly";
 import { EnvsSchema, type Nothing, ServerConfigSchema } from "@riverly/ty";

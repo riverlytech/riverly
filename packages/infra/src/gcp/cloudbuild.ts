@@ -52,12 +52,15 @@ export class CloudBuildGitHubDeployer implements IGitHubDeployer {
     const dockerBuildTimeoutSeconds = parseDurationSeconds(this.gcpBuildConfig.dockerBuildTimeout);
 
     const buildDefinition: protos.google.devtools.cloudbuild.v1.IBuild = {
+      // Note: These tags are used later to filter events
+      // modifying them here shall break the filtering.
+      // Make sure to keep track of them
       tags: [
         `deployment-id-${params.deployment.deploymentId.toLowerCase()}` as const,
         `build-id-${params.build.buildId.toLowerCase()}` as const,
         `org-id-${params.org.organizationId.toLowerCase()}` as const,
         `deployment-target-${params.deployment.target.toLowerCase()}` as const,
-        `build-n-deploy` as const,
+        `event-build-n-deploy` as const,
       ],
       timeout: { seconds: this.gcpBuildConfig.maxTimeoutSeconds },
       images: [imageName],
@@ -265,20 +268,20 @@ export type CloudBuildLogStreamOptions = {
 
 export type CloudBuildLogEvent =
   | {
-      type: "log";
-      message: string;
-      stepName?: string;
-      severity?: string;
-      timestamp?: Date;
-      logId?: string;
-    }
+    type: "log";
+    message: string;
+    stepName?: string;
+    severity?: string;
+    timestamp?: Date;
+    logId?: string;
+  }
   | {
-      type: "status";
-      status: CloudBuildStatus;
-    }
+    type: "status";
+    status: CloudBuildStatus;
+  }
   | {
-      type: "timeout";
-    };
+    type: "timeout";
+  };
 
 function fetchSecretScript(gcpConfig: z.infer<typeof gcpConfigSchema>): string {
   return [

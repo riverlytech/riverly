@@ -205,9 +205,9 @@ export namespace Server {
       const condition =
         filter.visibility === "both"
           ? or(
-              eq(serverTable.visibility, ServerVisibilityEnum.PUBLIC),
-              eq(serverTable.visibility, ServerVisibilityEnum.PRIVATE),
-            )
+            eq(serverTable.visibility, ServerVisibilityEnum.PUBLIC),
+            eq(serverTable.visibility, ServerVisibilityEnum.PRIVATE),
+          )
           : eq(serverTable.visibility, filter.visibility as ServerVisibility);
 
       return await Database.use((db) =>
@@ -248,9 +248,9 @@ export namespace Server {
       const condition =
         filter.visibility === "both"
           ? or(
-              eq(serverTable.visibility, ServerVisibilityEnum.PUBLIC),
-              eq(serverTable.visibility, ServerVisibilityEnum.PRIVATE),
-            )
+            eq(serverTable.visibility, ServerVisibilityEnum.PUBLIC),
+            eq(serverTable.visibility, ServerVisibilityEnum.PRIVATE),
+          )
           : eq(serverTable.visibility, filter.visibility as ServerVisibility);
       return await Database.use((db) =>
         db

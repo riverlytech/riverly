@@ -8,19 +8,18 @@ import { AddServer } from "@riverly/db";
 import { Server } from "@riverly/riverly";
 
 import { ErrorCodeEnum } from "./errors";
-import { verifyBetterAuthToken } from "../middlewares/middlewares";
+import { verifyBetterAuthToken, orgMembership } from "../middlewares/middlewares";
 
 const app = new Hono();
 
 const AddServerRequest = AddServer.omit({
-  userId: true,
-  addedById: true,
-  username: true,
-  avatarUrl: true,
+  organizationId: true,
+  memberId: true,
+  image: true,
 })
   .required()
   .extend({
-    avatarUrl: z.url().optional(),
+    image: z.url().optional(),
     repoUrl: z.string().optional(),
   });
 
@@ -29,7 +28,7 @@ app.post(
   bearerAuth({ verifyToken: verifyBetterAuthToken }),
   zValidator("json", AddServerRequest, (result, c) => {
     if (!result.success) {
-      return c.json(
+      c.json(
         {
           error: {
             message: result.error,
@@ -38,21 +37,21 @@ app.post(
         },
         400,
       );
+      return;
     }
   }),
+  orgMembership,
   async (c) => {
     const body = c.req.valid("json");
-    const sessionUser = c.get("user");
-
+    const membership = c.get("membership");
     const baseRequest = {
-      name: body.name,
+      organizationId: membership.orgId,
+      memberId: membership.memberId,
       title: body.title,
       description: body.description,
-      userId: sessionUser.userId,
-      username: sessionUser.username,
+      repoUrl: body.repoUrl,
       visibility: body.visibility,
-      addedById: sessionUser.userId,
-    };
+    }
 
     if (body.repoUrl) {
       const result = await Server.importFromGitHub({
@@ -61,18 +60,20 @@ app.post(
         githubAppId: env.GITHUB_APP_ID,
       });
       return c.json({
-        serverId: result.serverId,
-        username: result.username,
-        name: result.name,
+        serverId: result.id,
+        title: result.title,
+        description: result.description,
+        visibility: result.visibility,
         createdAt: result.createdAt,
         updatedAt: result.updatedAt,
       });
     } else {
       const result = await Server.addNew({ ...baseRequest });
       return c.json({
-        serverId: result.serverId,
-        username: result.username,
-        name: result.name,
+        serverId: result.id,
+        title: result.title,
+        description: result.description,
+        visibility: result.visibility,
         createdAt: result.createdAt,
         updatedAt: result.updatedAt,
       });
@@ -81,3 +82,4 @@ app.post(
 );
 
 export default app;
+

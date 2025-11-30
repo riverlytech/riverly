@@ -7,7 +7,7 @@ import {
   CloudBuildStatusEnum,
   toDeploymentStatusEnum,
   isTerminalStatus,
-} from "@riverly/riverly/infra/providers/gcp";
+} from "@riverly/infra/gcp";
 import { DeploymentStatusEnum } from "@riverly/ty";
 
 const app = new Hono();
@@ -48,13 +48,13 @@ app.post(
 
     const deploymentTag = tags.find((tag) => tag.startsWith("deployment-id-"));
     const buildTag = tags.find((tag) => tag.startsWith("build-id-"));
-    const cbType = tags.find(
+    const eventType = tags.find(
       (tag) =>
-        tag === "ty-build-deploy" || tag === "ty-deploy" || tag === "ty-build",
+        tag === "event-build-n-deploy" || tag === "event-deploy" || tag === "event-build",
     );
-    if (!deploymentTag || !buildTag || !cbType) {
+    if (!deploymentTag || !buildTag || !eventType) {
       console.warn(
-        `Ignoring event has missing tag(s) 'deployment-id-*', 'build-id-*' or 'ty-*' is not set or not available`,
+        `Ignoring event has missing tag(s) 'deployment-id-*', 'build-id-*' or 'event-*' is not set or unavailable`,
       );
       return c.json({ ok: false }, 200);
     }
@@ -62,7 +62,7 @@ app.post(
     const deploymentId = deploymentTag.replace("deployment-id-", "");
     const buildId = buildTag.replace("build-id-", "");
     const status = toDeploymentStatusEnum(cbStatus);
-    if (cbType === "ty-build-deploy") {
+    if (eventType === "event-build-n-deploy") {
       const isTerminal = isTerminalStatus(cbStatus);
       console.info(
         `Updating DeploymentID: ${deploymentId} BuildID: ${buildId} Status: ${status}`,
@@ -94,8 +94,10 @@ app.post(
         buildId,
         deploymentId,
       });
-    } else if (cbType === "ty-build") {
-    } else if (cbType === "ty-deploy") {
+    } else if (eventType === "event-build") {
+      console.log("TODO: handle event-build");
+    } else if (eventType === "event-deploy") {
+      console.log("TODO: handle event-deploy");
     }
 
     return c.json(

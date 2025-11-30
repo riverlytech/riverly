@@ -30,6 +30,9 @@ import {
 } from "@riverly/ty";
 import { members, organizations } from "./users";
 
+
+// TODO: add support for external servers
+// - they'll have defn but no infra parts
 export const serverTable = pgTable("server", {
   id: varchar("id", { length: 255 })
     .primaryKey()

@@ -4,16 +4,17 @@ import { bearerAuth } from "hono/bearer-auth";
 
 import type { SessionUser } from "@riverly/ty";
 
-import { verifyBetterAuthToken } from "./middlewares/middlewares";
+import { verifyBetterAuthToken, type MembershipCtx } from "./middlewares/middlewares";
 import authRoutes from "./routes/auth";
 import deploymentRoutes from "./routes/deployments";
 import serverRoutes from "./routes/servers";
-import userRoutes from "./routes/users";
+import meRoutes from "./routes/me";
 import v1internalRoutes from "./routes/v1internal";
 
 declare module "hono" {
   interface ContextVariableMap {
     user: SessionUser;
+    membership: MembershipCtx;
   }
 }
 
@@ -42,8 +43,8 @@ app.get(
 );
 
 app.route("/v1/auth", authRoutes);
-app.route("/v1/server", serverRoutes);
-app.route("/v1/users", userRoutes);
+app.route("/v1/me", meRoutes);
+app.route("/v1/servers", serverRoutes);
 app.route("/v1/deployment", deploymentRoutes);
 app.route("/__/v1", v1internalRoutes);
 
@@ -66,3 +67,4 @@ Bun.serve({
 });
 
 console.info(`API listening on http://0.0.0.0:${port}`);
+
