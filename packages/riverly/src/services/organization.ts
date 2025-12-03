@@ -1,5 +1,5 @@
 import { Database } from "@riverly/db";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, sql } from "drizzle-orm";
 import { organizations, members, InsertOrganization, users } from "@riverly/db";
 import { fn, NamedError } from "@riverly/utils";
 import z from "zod/v4";
@@ -136,6 +136,25 @@ export namespace Organization {
           )
           .execute()
           .then((row) => row[0] ?? null);
+      });
+    },
+  );
+
+  export const isMember = fn(
+    z.object({ organizationId: z.string(), userId: z.string() }),
+    async (filters) => {
+      return await Database.use(async (db) => {
+        const result = await db
+          .select({ present: sql`1` }) // Select only a constant
+          .from(members)
+          .where(
+            and(
+              eq(members.organizationId, filters.organizationId),
+              eq(members.userId, filters.userId),
+            ),
+          )
+          .limit(1); // Stop scanning indices immediately after finding a match
+        return result.length > 0; // Returns boolean
       });
     },
   );

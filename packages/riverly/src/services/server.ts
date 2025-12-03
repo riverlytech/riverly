@@ -61,14 +61,12 @@ export namespace Server {
           })
           .from(serverTable)
           .innerJoin(organizations, eq(organizations.id, serverTable.organizationId))
-          .where(
-            eq(serverTable.id, filter.serverId),
-          )
+          .where(eq(serverTable.id, filter.serverId))
           .execute()
           .then((row) => row[0] ?? null);
         return r;
       });
-      if (!result) return null
+      if (!result) return null;
       //
       // check for visibility, if private then check ownership,
       // if public return server
@@ -202,9 +200,9 @@ export namespace Server {
       const condition =
         filter.visibility === "both"
           ? or(
-            eq(serverTable.visibility, ServerVisibilityEnum.PUBLIC),
-            eq(serverTable.visibility, ServerVisibilityEnum.PRIVATE),
-          )
+              eq(serverTable.visibility, ServerVisibilityEnum.PUBLIC),
+              eq(serverTable.visibility, ServerVisibilityEnum.PRIVATE),
+            )
           : eq(serverTable.visibility, filter.visibility as ServerVisibility);
 
       return await Database.use((db) =>
@@ -245,9 +243,9 @@ export namespace Server {
       const condition =
         filter.visibility === "both"
           ? or(
-            eq(serverTable.visibility, ServerVisibilityEnum.PUBLIC),
-            eq(serverTable.visibility, ServerVisibilityEnum.PRIVATE),
-          )
+              eq(serverTable.visibility, ServerVisibilityEnum.PUBLIC),
+              eq(serverTable.visibility, ServerVisibilityEnum.PRIVATE),
+            )
           : eq(serverTable.visibility, filter.visibility as ServerVisibility);
       return await Database.use((db) =>
         db
