@@ -8,6 +8,7 @@ import type { AuthContext } from "better-auth";
 import type { PredefinedApiKeyOptions } from ".";
 import { safeJSONParse } from "../utils";
 import { API_KEY_TABLE_NAME } from "..";
+import { Organization } from "../../../../services/organization";
 
 export function updateApiKey({
   opts,
@@ -19,7 +20,7 @@ export function updateApiKey({
   deleteAllExpiredApiKeys(ctx: AuthContext, byPassLastCheckTime?: boolean): void;
 }) {
   return createAuthEndpoint(
-    "/api-key/update",
+    "/org-api-key/update",
     {
       method: "POST",
       body: z.object({
@@ -281,6 +282,16 @@ export function updateApiKey({
             message: ERROR_CODES.SERVER_ONLY_PROPERTY,
           });
         }
+      }
+
+      const isMember = await Organization.isMember({
+        organizationId: organizationId,
+        userId: user.id,
+      });
+      if (!isMember) {
+        throw new APIError("UNAUTHORIZED", {
+          message: ERROR_CODES.INVALID_MEMBER,
+        });
       }
 
       const apiKey = await ctx.context.adapter.findOne<ApiKey>({

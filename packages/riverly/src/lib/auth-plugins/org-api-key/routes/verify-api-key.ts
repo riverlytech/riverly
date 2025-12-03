@@ -191,12 +191,15 @@ export function verifyApiKey({
   deleteAllExpiredApiKeys(ctx: AuthContext, byPassLastCheckTime?: boolean): void;
 }) {
   return createAuthEndpoint(
-    "/api-key/verify",
+    "/org-api-key/verify",
     {
       method: "POST",
       body: z.object({
         key: z.string().meta({
           description: "The key to verify",
+        }),
+        organizationId: z.string().meta({
+          description: "The id of the organization",
         }),
         permissions: z
           .record(z.string(), z.array(z.string()))

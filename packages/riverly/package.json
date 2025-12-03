@@ -11,7 +11,8 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./auth": "./src/lib/auth.ts"
+    "./auth": "./src/lib/auth.ts",
+    "./auth/org-api-key": "./src/lib/auth-plugins/org-api-key/index.ts"
   },
   "dependencies": {
     "@riverly/config": "workspace:*",

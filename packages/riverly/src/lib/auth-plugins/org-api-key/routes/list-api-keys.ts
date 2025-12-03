@@ -6,8 +6,8 @@ import type { PredefinedApiKeyOptions } from ".";
 import { safeJSONParse } from "../utils";
 import { API_KEY_TABLE_NAME } from "..";
 import { ERROR_CODES } from "..";
-import { Organization } from "@/services/organization";
 import z from "zod";
+import { Organization } from "../../../../services/organization";
 
 export function listApiKeys({
   opts,

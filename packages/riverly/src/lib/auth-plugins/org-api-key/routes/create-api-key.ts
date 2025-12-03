@@ -8,7 +8,7 @@ import type { AuthContext } from "better-auth";
 import type { PredefinedApiKeyOptions } from ".";
 import { safeJSONParse } from "../utils.ts";
 import { defaultKeyHasher } from "../";
-import { Organization } from "@/services/organization";
+import { Organization } from "../../../../services/organization";
 
 export function createApiKey({
   keyGenerator,

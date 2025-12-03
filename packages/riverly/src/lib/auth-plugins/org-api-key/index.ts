@@ -175,6 +175,7 @@ export const orgApiKey = (options?: ApiKeyOptions) => {
                 id: apiKey.id,
                 token: key,
                 userId: apiKey.userId,
+                orgId: apiKey.organizationId,
                 userAgent: ctx.request?.headers.get("user-agent") ?? null,
                 ipAddress: ctx.request ? getIp(ctx.request, ctx.context.options) : null,
                 createdAt: new Date(),

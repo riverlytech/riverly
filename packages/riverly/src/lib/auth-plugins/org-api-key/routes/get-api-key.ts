@@ -6,7 +6,7 @@ import type { ApiKey } from "../ty";
 import type { AuthContext } from "better-auth";
 import type { PredefinedApiKeyOptions } from ".";
 import { safeJSONParse } from "../utils.ts";
-import { Organization } from "@/services/organization";
+import { Organization } from "../../../../services/organization";
 
 export function getApiKey({
   opts,
