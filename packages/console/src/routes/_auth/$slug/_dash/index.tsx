@@ -49,6 +49,7 @@ function RouteComponent() {
                     {deployments.map((deployment) => (
                       <DeploymentPreview
                         key={deployment.deploymentId}
+                        slug={membership.org.slug}
                         deployment={deployment}
                       />
                     ))}
