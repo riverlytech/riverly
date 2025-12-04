@@ -120,8 +120,9 @@ export namespace ServerDeployment {
         db
           .select({
             deploymentId: deploymentTable.id,
+            serverId: serverTable.id,
             title: serverTable.title,
-            avatarUrl: serverTable.image,
+            image: serverTable.image,
             status: deploymentTable.status,
             imageDigest: buildTable.imageDigest,
             buildId: buildTable.id,
