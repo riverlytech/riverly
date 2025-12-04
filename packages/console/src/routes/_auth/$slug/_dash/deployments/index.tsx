@@ -18,6 +18,7 @@ export const Route = createFileRoute('/_auth/$slug/_dash/deployments/')({
 })
 
 function RouteComponent() {
+  const { membership } = Route.useRouteContext()
   const { deployments } = Route.useLoaderData()
   return (
     <div className="flex flex-col space-y-4 w-full md:w-3/4">
@@ -25,6 +26,7 @@ function RouteComponent() {
         deployments.map((deployment) => (
           <DeploymentPreview
             key={deployment.deploymentId}
+            slug={membership.org.slug}
             deployment={deployment}
           />
         ))

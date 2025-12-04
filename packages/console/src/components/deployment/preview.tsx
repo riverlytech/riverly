@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { formatDistanceToNow } from 'date-fns'
-import { GitCommitHorizontal, Server as ServerIcon } from 'lucide-react'
+import { GitCommitHorizontal } from 'lucide-react'
 
 import { HashDisplay } from '@/components/commons/display-hash'
 import { Badge } from '@/components/ui/badge'
