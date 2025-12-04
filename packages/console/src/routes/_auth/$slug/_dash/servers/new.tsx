@@ -16,7 +16,7 @@ function RouteComponent() {
           <h1 className="text-2xl font-mono font-semibold">Add new Server</h1>
         </div>
         <div className="flex flex-col max-w-3xl space-y-6">
-          <GitHubSelectRepo slug={membership.org.slug} />
+          <GitHubSelectRepo organizationId={membership.org.id} slug={membership.org.slug} />
           <div className="flex items-center gap-4">
             <div className="flex-1 h-px bg-border"></div>
             <div className="text-sm text-muted-foreground">OR</div>

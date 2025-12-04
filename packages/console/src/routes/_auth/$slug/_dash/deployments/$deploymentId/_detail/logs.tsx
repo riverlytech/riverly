@@ -3,17 +3,19 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardContent } from '@/components/ui/card'
 
 export const Route = createFileRoute(
-  '/_auth/$slug/_dash/deployments/$deploymentId/logs',
+  '/_auth/$slug/_dash/deployments/$deploymentId/_detail/logs',
 )({
   component: RouteComponent,
 })
 
 function RouteComponent() {
   return (
-    <div className="py-12 px-4">
+    <div className="p-4 sm:px-8">
       <div className="max-w-7xl mx-auto">
-        <div className="h-14">
-          <h1 className="text-xl font-mono font-semibold">Logs</h1>
+        <div className="mb-4">
+          <h1 className="text-xl font-mono font-semibold">
+            Logs
+          </h1>
         </div>
         <Card className="max-w-4xl shadow-none">
           <CardContent className="font-thin">

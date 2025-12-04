@@ -3,15 +3,13 @@ import { createFileRoute } from '@tanstack/react-router'
 import { DeploymentPreview } from '@/components/deployment/preview'
 import { deploymentsFn } from '@/funcs'
 
-export const Route = createFileRoute(
-  '/_auth/$slug/_dash/deployments/production',
-)({
+export const Route = createFileRoute('/_auth/$slug/_dash/deployments/_list/')({
   loader: async ({ context: { membership } }) => {
     const deployments = await deploymentsFn({
       data: {
         organizationId: membership.org.id,
         limit: 100,
-        target: 'production',
+        target: 'all',
       },
     })
     return { deployments }
@@ -20,6 +18,7 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
+  const { membership } = Route.useRouteContext()
   const { deployments } = Route.useLoaderData()
   return (
     <div className="flex flex-col space-y-4 w-full md:w-3/4">
@@ -27,6 +26,7 @@ function RouteComponent() {
         deployments.map((deployment) => (
           <DeploymentPreview
             key={deployment.deploymentId}
+            slug={membership.org.slug}
             deployment={deployment}
           />
         ))
