@@ -154,7 +154,7 @@ export const getServerFromIDFn = createServerFn({ method: 'GET' })
       throw new BetterAuthError('Unauthorized')
     }
     const response = await Server.fromID({
-      organizationId: data.organizationId,
+      callerOrgId: data.organizationId,
       serverId: data.serverId,
     })
     return response

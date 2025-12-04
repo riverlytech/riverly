@@ -241,6 +241,3 @@ export const InsertDeploymentLog = createInsertSchema(deploymentLogTable, {
   message: z.string().default(""),
   level: z.string(),
 });
-
-export const SelectDeployment = createSelectSchema(deploymentLogTable);
-
