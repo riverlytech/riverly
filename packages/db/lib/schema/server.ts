@@ -32,6 +32,7 @@ import { members, organizations } from "./users";
 
 // TODO: add support for external servers
 // - they'll have defn but no infra parts
+// - add support for server type - MCP, Workflow, etc.
 export const serverTable = pgTable("server", {
   id: varchar("id", { length: 255 })
     .primaryKey()
@@ -55,6 +56,7 @@ export const serverTable = pgTable("server", {
   organizationId: text("organization_id")
     .references(() => organizations.id)
     .notNull(),
+  // TODO: add userID instead of memberId
   memberId: text("member_id")
     .references(() => members.id)
     .notNull(),

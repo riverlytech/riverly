@@ -30,7 +30,7 @@ const { createUpdateSchema } = createSchemaFactory({
   zodInstance: z,
 });
 
-export const serverBuildTable = pgTable("server_build", {
+export const buildTable = pgTable("build", {
   id: varchar("id", { length: 255 })
     .notNull()
     .primaryKey()
@@ -63,12 +63,13 @@ export const serverBuildTable = pgTable("server_build", {
   config: jsonb("config").$type<ServerConfigType>().notNull().default({}),
   configHash: varchar("config_hash", { length: 511 }).notNull(),
   rootDir: varchar("root_dir", { length: 255 }).default("./").notNull(),
+  //
   builtAt: timestamp("built_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const InsertServerBuild = createInsertSchema(serverBuildTable, {
+export const InsertBuild = createInsertSchema(buildTable, {
   serverId: z.string(),
   organizationId: z.string(),
   triggerType: triggerTypeSchema,
@@ -89,7 +90,7 @@ export const InsertServerBuild = createInsertSchema(serverBuildTable, {
   rootDir: z.string().default("./"),
 });
 
-export const UpdateServerBuild = createUpdateSchema(serverBuildTable, {
+export const UpdateBuild = createUpdateSchema(buildTable, {
   imageRef: z.string().optional(),
   imageDigest: z.string().optional(),
   builtAt: z.coerce.date().optional(),
@@ -101,7 +102,7 @@ export const UpdateServerBuild = createUpdateSchema(serverBuildTable, {
   status: true,
 });
 
-export const GitHubInsertServerBuild = InsertServerBuild.pick({
+export const GitHubInsertBuild = InsertBuild.pick({
   serverId: true,
   organizationId: true,
   gitHubRepo: true,
@@ -120,13 +121,13 @@ export const GitHubInsertServerBuild = InsertServerBuild.pick({
     rootDir: z.string().default("./"),
   });
 
-export const serverDeploymentTable = pgTable("server_deployment", {
+export const deploymentTable = pgTable("deployment", {
   id: varchar("id", { length: 255 })
     .primaryKey()
     .notNull()
     .$defaultFn(() => genId()),
   buildId: varchar("build_id", { length: 255 })
-    .references(() => serverBuildTable.id)
+    .references(() => buildTable.id)
     .notNull(),
   serverId: varchar("server_id", { length: 255 })
     .references(() => serverTable.id)
@@ -139,14 +140,11 @@ export const serverDeploymentTable = pgTable("server_deployment", {
     .notNull(),
   status: varchar("status", { length: 64 }).$type<DeploymentStatusType>().notNull(),
   target: varchar("target", { length: 64 }).$type<DeploymentTargetType>().notNull(),
-  publicId: varchar("public_id", { length: 255 })
-    .unique()
-    .$defaultFn(() => ulid().toLowerCase()),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const InsertServerDeployment = createInsertSchema(serverDeploymentTable, {
+export const InsertDeployment = createInsertSchema(deploymentTable, {
   buildId: z.string(),
   serverId: z.string(),
   organizationId: z.string(),
@@ -155,29 +153,29 @@ export const InsertServerDeployment = createInsertSchema(serverDeploymentTable, 
   target: deploymentTargetSchema,
 });
 
-export const UpdateServerDeployment = createUpdateSchema(serverDeploymentTable, {
+export const UpdateDeployment = createUpdateSchema(deploymentTable, {
   status: DeploymentStatus,
 }).pick({
   status: true,
 });
 
-export const UpdateServerBuildDeploy = z.object({
-  build: UpdateServerBuild,
-  deployment: UpdateServerDeployment,
+export const UpdateBuildDeploy = z.object({
+  build: UpdateBuild,
+  deployment: UpdateDeployment,
 });
 
-export const serverRevisionTable = pgTable(
-  "server_revision",
+export const revisionTable = pgTable(
+  "revision",
   {
-    revisionId: varchar("revision_id", { length: 255 })
+    id: varchar("revision_id", { length: 255 })
       .primaryKey()
       .notNull()
       .$defaultFn(() => genId()),
     buildId: varchar("build_id", { length: 255 })
-      .references(() => serverBuildTable.id)
+      .references(() => buildTable.id)
       .notNull(),
     deploymentId: varchar("deployment_id", { length: 255 })
-      .references(() => serverDeploymentTable.id)
+      .references(() => deploymentTable.id)
       .notNull(),
     serverId: varchar("server_id", { length: 255 })
       .references(() => serverTable.id)
@@ -194,12 +192,14 @@ export const serverRevisionTable = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
-  (table) => [unique("server_revision_server_id_version_key").on(table.serverId, table.version)],
+  (table) => [
+    unique("server_revision_server_id_version_key").on(table.serverId, table.version)
+  ],
 );
 
-export type ServerRevisionTable = typeof serverRevisionTable.$inferSelect;
+export type RevisionTable = typeof revisionTable.$inferSelect;
 
-export const InsertServerRevision = createInsertSchema(serverRevisionTable, {
+export const InsertRevision = createInsertSchema(revisionTable, {
   organizationId: z.string(),
   buildId: z.string(),
   deploymentId: z.string(),
@@ -207,13 +207,13 @@ export const InsertServerRevision = createInsertSchema(serverRevisionTable, {
   status: RevisionStatusSchema,
 });
 
-export const publishServerRevisionSchema = InsertServerRevision.pick({
-  revisionId: true,
+export const publishRevisionSchema = InsertRevision.pick({
+  id: true,
 }).extend({
   status: z.literal(RevisionStatusValue.PUBLISHED),
 });
 
-export const serverDeploymentLogTable = pgTable("server_deployment_log", {
+export const deploymentLogTable = pgTable("deployment_log", {
   logId: varchar("log_id", { length: 64 })
     .primaryKey()
     .notNull()
@@ -222,7 +222,7 @@ export const serverDeploymentLogTable = pgTable("server_deployment_log", {
     .references(() => organizations.id)
     .notNull(),
   deploymentId: varchar("deployment_id", { length: 255 })
-    .references(() => serverDeploymentTable.id)
+    .references(() => deploymentTable.id)
     .notNull(),
   timestamp: timestamp("timestamp", {
     mode: "date",
@@ -234,7 +234,7 @@ export const serverDeploymentLogTable = pgTable("server_deployment_log", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const InsertDeploymentLog = createInsertSchema(serverDeploymentLogTable, {
+export const InsertDeploymentLog = createInsertSchema(deploymentLogTable, {
   organizationId: z.string(),
   deploymentId: z.string(),
   timestamp: z.coerce.date(),
@@ -242,4 +242,5 @@ export const InsertDeploymentLog = createInsertSchema(serverDeploymentLogTable, 
   level: z.string(),
 });
 
-export const SelectDeployment = createSelectSchema(serverDeploymentLogTable);
+export const SelectDeployment = createSelectSchema(deploymentLogTable);
+
