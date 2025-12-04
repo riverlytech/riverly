@@ -1,18 +1,27 @@
-import { Link, Outlet, createFileRoute } from '@tanstack/react-router'
-import { Menu } from 'lucide-react'
+import React from 'react'
+
+import {
+  Link,
+  Outlet,
+  createFileRoute,
+  useMatchRoute,
+} from '@tanstack/react-router'
+import { Menu, SlashIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-} from '@/components/ui/navigation-menu'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'
 
 export const Route = createFileRoute(
   '/_auth/$slug/_dash/servers/$serverId/_detail',
@@ -22,6 +31,7 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const { membership, server } = Route.useRouteContext()
+  const matchRoute = useMatchRoute()
   const slug = membership.org.slug
   const navItems = [
     {
@@ -61,32 +71,42 @@ function RouteComponent() {
       <div className="w-full border-b sticky top-0 z-30 backdrop-blur bg-background/80 py-2">
         <div className="flex items-center justify-between gap-2">
           <div className="hidden sm:block w-full">
-            <NavigationMenu>
-              <NavigationMenuList className="flex gap-2">
-                {navItems.map(({ to, name: label, exact, params }) => (
-                  <NavigationMenuItem key={to}>
-                    <NavigationMenuLink asChild>
-                      <Link
-                        to={to}
-                        params={{ ...params }}
-                        className="px-3 py-2 text-sm font-medium rounded-md transition-colors hover:bg-accent focus:bg-accent focus:outline-none whitespace-nowrap relative"
-                        activeOptions={{ exact, includeSearch: false }}
-                        activeProps={{
-                          className:
-                            'px-3 py-2 text-sm font-medium rounded-md transition-colors hover:bg-accent focus:bg-accent focus:outline-none whitespace-nowrap relative text-foreground after:absolute after:left-0 after:right-0 after:-bottom-2 after:h-0.5 after:bg-primary',
-                        }}
-                        inactiveProps={{
-                          className:
-                            'px-3 py-2 text-sm font-medium rounded-md transition-colors hover:bg-accent focus:bg-accent focus:outline-none whitespace-nowrap relative text-muted-foreground hover:text-foreground',
-                        }}
-                      >
-                        {label}
-                      </Link>
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                ))}
-              </NavigationMenuList>
-            </NavigationMenu>
+            <Breadcrumb>
+              <BreadcrumbList>
+                {navItems.map(({ to, name: label, params, exact }, idx) => {
+                  const isActive = !!matchRoute({
+                    to,
+                    params,
+                    fuzzy: !exact,
+                  })
+                  return (
+                    <React.Fragment key={to}>
+                      {idx !== 0 && (
+                        <BreadcrumbSeparator>
+                          <SlashIcon />
+                        </BreadcrumbSeparator>
+                      )}
+                      <BreadcrumbItem>
+                        {isActive ? (
+                          <BreadcrumbPage>{label}</BreadcrumbPage>
+                        ) : (
+                          <BreadcrumbLink asChild>
+                            <Link
+                              to={to}
+                              params={{ ...params }}
+                              activeOptions={{ exact, includeSearch: false }}
+                              className="hover:text-foreground"
+                            >
+                              {label}
+                            </Link>
+                          </BreadcrumbLink>
+                        )}
+                      </BreadcrumbItem>
+                    </React.Fragment>
+                  )
+                })}
+              </BreadcrumbList>
+            </Breadcrumb>
           </div>
 
           <Popover>

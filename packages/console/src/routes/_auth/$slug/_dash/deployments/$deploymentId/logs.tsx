@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-import { Card, CardContent } from '@/components/ui/card'
+// import { Card, CardContent } from '@/components/ui/card'
 
 export const Route = createFileRoute(
   '/_auth/$slug/_dash/deployments/$deploymentId/logs',
@@ -17,11 +17,14 @@ function RouteComponent() {
             Logs
           </h1>
         </div>
-        <Card className="max-w-4xl shadow-none">
-          <CardContent className="font-thin">
-            <p>Coming Soon...</p>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col space-y-6">
+          ...
+          {/* <Card className="max-w-4xl shadow-none"> */}
+          {/*   <CardContent className="font-thin"> */}
+          {/*     <p>Coming Soon...</p> */}
+          {/*   </CardContent> */}
+          {/* </Card> */}
+        </div>
       </div>
     </div>
   )
