@@ -1,8 +1,14 @@
+import React from 'react'
+
 import { ServerNotFound } from '@/components/commons/notfound'
 import { orgDeployment } from '@/funcs'
-import { Link, Outlet, createFileRoute } from '@tanstack/react-router'
-import { Menu } from 'lucide-react'
-import { SlashIcon } from "lucide-react"
+import {
+  Link,
+  Outlet,
+  createFileRoute,
+  useMatchRoute,
+} from '@tanstack/react-router'
+import { Menu, SlashIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Popover,
@@ -16,7 +22,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
+} from '@/components/ui/breadcrumb'
 
 export const Route = createFileRoute(
   '/_auth/$slug/_dash/deployments/$deploymentId',
@@ -40,6 +46,7 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const { membership, deployment } = Route.useRouteContext()
+  const matchRoute = useMatchRoute()
   const slug = membership.org.slug
   const navItems = [
     {
@@ -64,60 +71,62 @@ function RouteComponent() {
 
             <Breadcrumb>
               <BreadcrumbList>
-
-                <BreadcrumbSeparator>
-                  <SlashIcon />
-                </BreadcrumbSeparator>
-
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to="/$slug/servers/$serverId"
-                      params={{ slug, serverId: deployment.serverId }}>
-                      {deployment.serverId.slice(0, 4)}...
-                    </Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-
-                <BreadcrumbSeparator>
-                  <SlashIcon />
-                </BreadcrumbSeparator>
-
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to="/$slug/deployments"
-                      params={{ slug }}>
-                      Deployments
-                    </Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-
-
-
-                <BreadcrumbSeparator>
-                  <SlashIcon />
-                </BreadcrumbSeparator>
-
-                <BreadcrumbItem>
-                  <BreadcrumbPage>{deployment.deploymentId.slice(0, 12)}...</BreadcrumbPage>
-                </BreadcrumbItem>
-
-                <BreadcrumbSeparator>
-                  <SlashIcon />
-                </BreadcrumbSeparator>
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to="/$slug/deployments/$deploymentId/logs"
-                      params={{ slug, deploymentId: deployment.deploymentId }}>
-                      Logs
-                    </Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-
-
-
+                {[
+                  {
+                    to: '/$slug/servers/$serverId',
+                    label: `${deployment.serverId.slice(0, 4)}...`,
+                    params: { slug, serverId: deployment.serverId },
+                  },
+                  {
+                    to: '/$slug/deployments',
+                    label: 'Deployments',
+                    params: { slug },
+                  },
+                  {
+                    to: '/$slug/deployments/$deploymentId',
+                    label: `${deployment.deploymentId.slice(0, 12)}...`,
+                    params: { slug, deploymentId: deployment.deploymentId },
+                  },
+                  {
+                    to: '/$slug/deployments/$deploymentId/logs',
+                    label: 'Logs',
+                    params: { slug, deploymentId: deployment.deploymentId },
+                  },
+                ].map((crumb, idx) => {
+                  const isActive = !!matchRoute({
+                    to: crumb.to,
+                    params: crumb.params,
+                    fuzzy: false,
+                  })
+                  return (
+                    <React.Fragment key={crumb.to}>
+                      {idx !== 0 && (
+                        <BreadcrumbSeparator>
+                          <SlashIcon />
+                        </BreadcrumbSeparator>
+                      )}
+                      <BreadcrumbItem>
+                        {isActive ? (
+                          <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+                        ) : (
+                          <BreadcrumbLink asChild>
+                            <Link
+                              to={crumb.to}
+                              params={crumb.params}
+                              activeOptions={{
+                                exact: true,
+                                includeSearch: false,
+                              }}
+                              className="hover:text-foreground"
+                            >
+                              {crumb.label}
+                            </Link>
+                          </BreadcrumbLink>
+                        )}
+                      </BreadcrumbItem>
+                    </React.Fragment>
+                  )
+                })}
               </BreadcrumbList>
             </Breadcrumb>
 
@@ -196,4 +205,3 @@ function RouteComponent() {
     </div>
   )
 }
-
