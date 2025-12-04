@@ -17,6 +17,7 @@ import {
 } from '@riverly/db'
 import { Organization } from '@riverly/riverly'
 import { authConfig } from '@riverly/riverly/auth'
+import { orgApiKey } from '@riverly/riverly/auth/org-api-key'
 import { genId } from '@riverly/utils'
 
 import type { AuthenticatedUser } from './auth-types'
@@ -48,6 +49,7 @@ export const auth = (db: Database.TxOrDb, env: Env) => {
         },
       }),
       organization(),
+      orgApiKey(),
       reactStartCookies(),
     ],
     session: {
@@ -78,7 +80,7 @@ export const auth = (db: Database.TxOrDb, env: Env) => {
       },
       session: {
         create: {
-          after: async () => {},
+          after: async () => { },
         },
       },
     },
