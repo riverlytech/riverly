@@ -1,6 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { getRequest, setResponseStatus } from '@tanstack/react-start/server'
 import { BetterAuthError } from 'better-auth'
+import z from 'zod'
 
 import { env } from '@riverly/config'
 import { Database } from '@riverly/db'
@@ -16,7 +17,6 @@ import {
   CreateAPIKeyForm,
 } from '@/validations'
 
-import z from 'zod'
 
 export const createNewOrg = createServerFn({ method: 'POST' })
   .inputValidator(CreateOrgForm)

@@ -1,5 +1,3 @@
-import React from 'react'
-
 import {
   Link,
   Outlet,
@@ -7,13 +5,9 @@ import {
   useMatchRoute,
 } from '@tanstack/react-router'
 import { Menu, SlashIcon } from 'lucide-react'
+import React from 'react'
 
-import { Button } from '@/components/ui/button'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -22,6 +16,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
+import { Button } from '@/components/ui/button'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 
 export const Route = createFileRoute(
   '/_auth/$slug/_dash/servers/$serverId/_detail',

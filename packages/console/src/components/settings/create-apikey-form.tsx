@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import z from 'zod'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -12,7 +13,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { orgCreateAPIKey } from '@/funcs/org'
 import { CreateAPIKeyForm } from '@/validations'
-import z from 'zod'
 
 type NameFormValues = z.infer<typeof CreateAPIKeyForm>
 
