@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react'
 
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { InfoIcon, PlusIcon } from 'lucide-react'
 
+import { APIKeyForm } from '@/components/settings/create-apikey-form'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -21,50 +22,7 @@ import {
 } from '@/components/ui/dialog'
 import { orgAPIKeys } from '@/funcs/org'
 
-type ApiKeyPreview = {
-  id: string
-  name: string | null
-  start: string | null
-  prefix: string | null
-  userId?: string
-  createdBy?: string
-  lastRequest?: string | null
-  createdAt: string
-  enabled: boolean
-}
 
-const mockApiKeys: ApiKeyPreview[] = [
-  {
-    id: '1',
-    name: 'Production Deployments',
-    start: 'rv_live_92JN-13n2',
-    prefix: 'rv_live',
-    createdBy: 'Alex Kim',
-    lastRequest: '2024-03-20T12:15:00Z',
-    createdAt: '2024-02-11T12:00:00Z',
-    enabled: true,
-  },
-  {
-    id: '2',
-    name: 'CI / CD Pipeline',
-    start: 'rv_test_81nxn3M',
-    prefix: 'rv_test',
-    createdBy: 'Priya Shah',
-    lastRequest: '2024-03-19T08:22:00Z',
-    createdAt: '2024-01-04T09:30:00Z',
-    enabled: true,
-  },
-  {
-    id: '3',
-    name: 'Local Development',
-    start: 'rv_dev_12b3c4d',
-    prefix: 'rv_dev',
-    createdBy: 'Taylor Brooks',
-    lastRequest: null,
-    createdAt: '2023-12-20T18:45:00Z',
-    enabled: false,
-  },
-]
 
 function maskApiKeyStart(keyStart: string | null) {
   if (!keyStart) return '—'
@@ -81,15 +39,24 @@ export const Route = createFileRoute('/_auth/$slug/_dash/settings/apikeys')({
 })
 
 function RouteComponent() {
+  const { membership } = Route.useRouteContext()
   const { apiKeys } = Route.useLoaderData()
-  const keysToRender = (apiKeys?.length ? apiKeys : mockApiKeys) as ApiKeyPreview[]
   const [selectedKeyId, setSelectedKeyId] = useState<string | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [createDialogOpen, setCreateDialogOpen] = useState(false)
+  const router = useRouter()
 
   const selectedKey = useMemo(
-    () => keysToRender.find((key) => key.id === selectedKeyId) ?? null,
-    [keysToRender, selectedKeyId],
+    () => apiKeys.find((key) => key.id === selectedKeyId) ?? null,
+    [apiKeys, selectedKeyId],
   )
+
+  async function handleKeyCreated() {
+    await router.invalidate({
+      filter: (match) => match.fullPath?.endsWith('/settings/apikeys'),
+    })
+    setCreateDialogOpen(false)
+  }
 
   return (
     <div className="flex flex-col space-y-4 w-full md:w-3/4">
@@ -101,7 +68,10 @@ function RouteComponent() {
               Manage your API keys. Only safe, partial key details are shown here.
             </CardDescription>
           </div>
-          <Button className="w-full sm:w-auto gap-2">
+          <Button
+            className="w-full sm:w-auto gap-2"
+            onClick={() => setCreateDialogOpen(true)}
+          >
             <PlusIcon className="h-4 w-4" />
             Create API Key
           </Button>
@@ -114,7 +84,7 @@ function RouteComponent() {
             <span className="sr-only">Actions</span>
           </div>
           <div className="divide-y divide-border rounded-lg border md:rounded-none md:border-0">
-            {keysToRender.map((apiKey) => (
+            {apiKeys.map((apiKey) => (
               <div
                 key={apiKey.id}
                 className="grid grid-cols-1 gap-3 p-4 md:p-0 md:grid-cols-[1.8fr_1.6fr_1.2fr_0.8fr] md:items-center md:py-3"
@@ -126,11 +96,10 @@ function RouteComponent() {
                   <div className="flex items-center gap-2">
                     <p className="text-sm">{apiKey.name ?? 'Untitled key'}</p>
                     <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] uppercase ${
-                        apiKey.enabled
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-amber-100 text-amber-800'
-                      }`}
+                      className={`rounded-full px-2 py-0.5 text-[10px] uppercase ${apiKey.enabled
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-amber-100 text-amber-800'
+                        }`}
                     >
                       {apiKey.enabled ? 'Enabled' : 'Disabled'}
                     </span>
@@ -142,7 +111,7 @@ function RouteComponent() {
                   </p>
                   <div className="flex flex-col gap-1">
                     <p className="font-mono text-sm break-all md:truncate">
-                      {maskApiKeyStart(apiKey.start)}
+                      {maskApiKeyStart(apiKey.key)}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {apiKey.lastRequest
@@ -156,7 +125,7 @@ function RouteComponent() {
                     Created By
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {apiKey.createdBy ?? apiKey.userId ?? '—'}
+                    {apiKey.user.name ?? '—'}
                   </p>
                 </div>
                 <div className="flex gap-2 md:justify-end">
@@ -169,7 +138,7 @@ function RouteComponent() {
                       setDialogOpen(true)
                     }}
                   >
-                    Expand
+                    More
                   </Button>
                 </div>
               </div>
@@ -177,6 +146,21 @@ function RouteComponent() {
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>New API Key</DialogTitle>
+            <DialogDescription>
+              Choose a unique name that helps you identify this key.
+            </DialogDescription>
+          </DialogHeader>
+          <APIKeyForm
+            organizationId={membership.org.id}
+            onSuccess={handleKeyCreated}
+          />
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={dialogOpen} onOpenChange={(open) => setDialogOpen(open)}>
         <DialogContent>
@@ -201,7 +185,7 @@ function RouteComponent() {
                 />
                 <InfoRow
                   label="Created By"
-                  value={selectedKey.createdBy ?? selectedKey.userId ?? '—'}
+                  value={selectedKey.user.name ?? '—'}
                 />
                 <InfoRow
                   label="Created At"

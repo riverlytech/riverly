@@ -286,7 +286,7 @@ export function createApiKey({
         });
       }
 
-      if (!organizationId || !ctx.body.userId) {
+      if (!organizationId) {
         throw new APIError("UNAUTHORIZED", {
           message: ERROR_CODES.UNAUTHORIZED_SESSION,
         });
@@ -295,7 +295,7 @@ export function createApiKey({
       // check for user membership
       const isMember = await Organization.isMember({
         organizationId: organizationId,
-        userId: ctx.body.userId,
+        userId: user.id,
       });
       if (!isMember) {
         throw new APIError("UNAUTHORIZED", {

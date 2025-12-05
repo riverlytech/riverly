@@ -5,10 +5,8 @@ import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -18,7 +16,13 @@ import z from 'zod'
 
 type NameFormValues = z.infer<typeof CreateAPIKeyForm>
 
-export function APIKeyForm({ organizationId }: { organizationId: string }) {
+export function APIKeyForm({
+  organizationId,
+  onSuccess,
+}: {
+  organizationId: string
+  onSuccess?: () => void | Promise<void>
+}) {
   const form = useForm<NameFormValues>({
     resolver: zodResolver(CreateAPIKeyForm),
     defaultValues: { name: "" },
@@ -27,6 +31,8 @@ export function APIKeyForm({ organizationId }: { organizationId: string }) {
 
   async function onSubmit(values: NameFormValues) {
     await orgCreateAPIKey({ data: { name: values.name, organizationId } })
+    await onSuccess?.()
+    form.reset()
   }
 
   return (
@@ -37,7 +43,6 @@ export function APIKeyForm({ organizationId }: { organizationId: string }) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Acme's Test Key"
@@ -45,19 +50,13 @@ export function APIKeyForm({ organizationId }: { organizationId: string }) {
                   {...field}
                 />
               </FormControl>
-              <FormDescription>
-                Choose a unique name that helps you identify this key.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
         <div className="flex justify-between items-center">
-          <p className="text-sm text-muted-foreground">
-            Name must not be longer than 32 characters.
-          </p>
           <Button type="submit" disabled={form.formState.isSubmitting}>
-            Save
+            Create Key
           </Button>
         </div>
       </form>
