@@ -15,6 +15,7 @@ import {
   organizations,
   members,
   invitations,
+  apikey
 } from "@riverly/db";
 
 export const authConfig = {
@@ -64,6 +65,7 @@ export const auth = betterAuth({
       organization: organizations,
       member: members,
       invitation: invitations,
+      apikey: apikey
     },
   }),
   plugins: [

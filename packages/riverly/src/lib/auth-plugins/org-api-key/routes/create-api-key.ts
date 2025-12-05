@@ -39,7 +39,6 @@ export function createApiKey({
           .optional()
           .nullable()
           .default(null),
-
         userId: z.coerce
           .string()
           .meta({

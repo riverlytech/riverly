@@ -9,7 +9,9 @@ import { genId } from '@riverly/utils'
 
 import { auth } from '@/lib/auth'
 import { authMiddleware } from '@/lib/auth-middleware'
-import { CreateOrgForm, OrgNameForm, OrgSlugForm } from '@/validations'
+import { CreateOrgForm, OrgNameForm, OrgSlugForm, CreateAPIKeyForm } from '@/validations'
+
+import z from 'zod'
 
 export const createNewOrg = createServerFn({ method: 'POST' })
   .inputValidator(CreateOrgForm)
@@ -135,3 +137,39 @@ export const orgMembership = createServerFn({ method: 'GET' })
     }
     return membership
   })
+
+export const orgAPIKeys = createServerFn({ method: 'GET' })
+  .inputValidator((data: { organizationId: string }) => data)
+  .middleware([authMiddleware])
+  .handler(async ({ data, context: { user } }) => {
+    if (!user) {
+      setResponseStatus(401)
+      throw new BetterAuthError('Unauthorized')
+    }
+    const apiKeys = await Organization.orgAPIKeys(data.organizationId)
+    return apiKeys
+  })
+
+
+export const orgCreateAPIKey = createServerFn({ method: 'POST' })
+  .inputValidator(CreateAPIKeyForm.extend({ organizationId: z.string() }))
+  .middleware([authMiddleware])
+  .handler(async ({ data, context: { user } }) => {
+    if (!user) {
+      setResponseStatus(401)
+      throw new BetterAuthError('Unauthorized')
+    }
+    const apiKeys = (await Database.transaction((db) =>
+      auth(db, env).api.createApiKey({
+        headers: getRequest().headers,
+        body: {
+          name: data.name,
+          organizationId: data.organizationId,
+          expiresIn: env.APIKEY_EXPIRES_IN,
+          prefix: env.APIKEY_PREFIX,
+        },
+      }),
+    ))
+    return apiKeys
+  })
+

@@ -1,6 +1,6 @@
 import { Database } from "@riverly/db";
 import { eq, desc, and, sql } from "drizzle-orm";
-import { organizations, members, InsertOrganization, users } from "@riverly/db";
+import { organizations, members, InsertOrganization, users, apikey } from "@riverly/db";
 import { fn, NamedError } from "@riverly/utils";
 import z from "zod/v4";
 
@@ -195,4 +195,34 @@ export namespace Organization {
       });
     },
   );
+
+  export const orgAPIKeys = fn(z.string(), async (organizationId) => {
+    return await Database.use(async (db) => {
+      return db
+        .select({
+          id: apikey.id,
+          name: apikey.name,
+          start: apikey.start,
+          prefix: apikey.prefix,
+          user: {
+            id: users.id,
+            name: users.name,
+            email: users.email,
+            image: users.image,
+          },
+          key: apikey.key,
+          enabled: apikey.enabled,
+          requestCount: apikey.requestCount,
+          lastRequest: apikey.lastRequest,
+          expiresAt: apikey.expiresAt,
+          createdAt: apikey.createdAt,
+          updatedAt: apikey.updatedAt,
+        })
+        .from(apikey)
+        .innerJoin(users, eq(apikey.userId, users.id))
+        .where(eq(apikey.organizationId, organizationId))
+        .execute()
+        .then((rows) => rows);
+    })
+  })
 }

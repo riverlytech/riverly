@@ -14,6 +14,7 @@ import {
   organizations,
   members,
   invitations,
+  apikey
 } from '@riverly/db'
 import { Organization } from '@riverly/riverly'
 import { authConfig } from '@riverly/riverly/auth'
@@ -38,6 +39,7 @@ export const auth = (db: Database.TxOrDb, env: Env) => {
         organization: organizations,
         member: members,
         invitation: invitations,
+        apikey: apikey
       },
     }),
     plugins: [
