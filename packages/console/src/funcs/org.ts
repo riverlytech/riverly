@@ -9,7 +9,12 @@ import { genId } from '@riverly/utils'
 
 import { auth } from '@/lib/auth'
 import { authMiddleware } from '@/lib/auth-middleware'
-import { CreateOrgForm, OrgNameForm, OrgSlugForm, CreateAPIKeyForm } from '@/validations'
+import {
+  CreateOrgForm,
+  OrgNameForm,
+  OrgSlugForm,
+  CreateAPIKeyForm,
+} from '@/validations'
 
 import z from 'zod'
 
@@ -150,7 +155,6 @@ export const orgAPIKeys = createServerFn({ method: 'GET' })
     return apiKeys
   })
 
-
 export const orgCreateAPIKey = createServerFn({ method: 'POST' })
   .inputValidator(CreateAPIKeyForm.extend({ organizationId: z.string() }))
   .middleware([authMiddleware])
@@ -159,7 +163,7 @@ export const orgCreateAPIKey = createServerFn({ method: 'POST' })
       setResponseStatus(401)
       throw new BetterAuthError('Unauthorized')
     }
-    const apiKeys = (await Database.transaction((db) =>
+    const apiKeys = await Database.transaction((db) =>
       auth(db, env).api.createApiKey({
         headers: getRequest().headers,
         body: {
@@ -169,7 +173,6 @@ export const orgCreateAPIKey = createServerFn({ method: 'POST' })
           prefix: env.APIKEY_PREFIX,
         },
       }),
-    ))
+    )
     return apiKeys
   })
-

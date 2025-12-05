@@ -13,9 +13,7 @@ function RouteComponent() {
     <div className="py-8 px-2 sm:px-4">
       <div className="max-w-7xl mx-auto">
         <div className="mb-4">
-          <h1 className="text-xl font-mono font-semibold">
-            Logs
-          </h1>
+          <h1 className="text-xl font-mono font-semibold">Logs</h1>
         </div>
         <div className="flex flex-col space-y-6">
           ...

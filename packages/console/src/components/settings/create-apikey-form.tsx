@@ -25,7 +25,7 @@ export function APIKeyForm({
 }) {
   const form = useForm<NameFormValues>({
     resolver: zodResolver(CreateAPIKeyForm),
-    defaultValues: { name: "" },
+    defaultValues: { name: '' },
     mode: 'onTouched',
   })
 

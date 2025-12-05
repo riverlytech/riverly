@@ -24,7 +24,6 @@ import {
 } from '@/components/ui/dialog'
 import { orgAPIKeys } from '@/funcs/org'
 
-
 function maskApiKeyStart(keyStart: string | null) {
   if (!keyStart) return '—'
   if (keyStart.length <= 11) return keyStart
@@ -45,7 +44,9 @@ function formatDateTime(value: Date | string | null | undefined) {
 
 export const Route = createFileRoute('/_auth/$slug/_dash/settings/apikeys')({
   loader: async ({ context: { membership } }) => {
-    const apiKeys = await orgAPIKeys({ data: { organizationId: membership.org.id } })
+    const apiKeys = await orgAPIKeys({
+      data: { organizationId: membership.org.id },
+    })
     return { apiKeys }
   },
   component: RouteComponent,
@@ -80,7 +81,8 @@ function RouteComponent() {
           <div className="space-y-1">
             <CardTitle>API Keys</CardTitle>
             <CardDescription>
-              Manage your API keys. Keys stay visible here, so copy or rotate anytime.
+              Manage your API keys. Keys stay visible here, so copy or rotate
+              anytime.
             </CardDescription>
           </div>
           <Button
@@ -116,10 +118,11 @@ function RouteComponent() {
                     <div className="flex items-center gap-2">
                       <p className="text-sm">{apiKey.name ?? 'Untitled key'}</p>
                       <span
-                        className={`rounded-full px-2 py-0.5 text-[10px] uppercase ${apiKey.enabled
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-amber-100 text-amber-800'
-                          }`}
+                        className={`rounded-full px-2 py-0.5 text-[10px] uppercase ${
+                          apiKey.enabled
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-amber-100 text-amber-800'
+                        }`}
                       >
                         {apiKey.enabled ? 'Enabled' : 'Disabled'}
                       </span>
@@ -155,7 +158,10 @@ function RouteComponent() {
                       onClick={async () => {
                         if (!rawKey) return
                         await copyToClipboard(rawKey)
-                        setCopiedStates((prev) => ({ ...prev, [apiKey.id]: true }))
+                        setCopiedStates((prev) => ({
+                          ...prev,
+                          [apiKey.id]: true,
+                        }))
                         setTimeout(
                           () =>
                             setCopiedStates((prev) => ({
@@ -166,7 +172,9 @@ function RouteComponent() {
                         )
                       }}
                       disabled={!rawKey}
-                      aria-label={copiedStates[apiKey.id] ? 'Copied' : 'Copy API key'}
+                      aria-label={
+                        copiedStates[apiKey.id] ? 'Copied' : 'Copy API key'
+                      }
                     >
                       {copiedStates[apiKey.id] ? (
                         <CheckIcon className="h-4 w-4" />
@@ -219,7 +227,10 @@ function RouteComponent() {
           {selectedKey ? (
             <div className="space-y-4">
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <InfoRow label="Name" value={selectedKey.name ?? 'Untitled key'} />
+                <InfoRow
+                  label="Name"
+                  value={selectedKey.name ?? 'Untitled key'}
+                />
                 <InfoRow label="Prefix" value={selectedKey.prefix ?? '—'} />
                 <InfoRow
                   label="Key Start"
@@ -239,14 +250,16 @@ function RouteComponent() {
                 />
                 <InfoRow
                   label="Last Used"
-                  value={formatRelativeTime(selectedKey.lastRequest?.toDateString())}
+                  value={formatRelativeTime(
+                    selectedKey.lastRequest?.toDateString(),
+                  )}
                 />
               </div>
               <div className="flex items-start gap-2 rounded-md bg-muted/60 p-3 text-xs text-muted-foreground">
                 <InfoIcon className="h-4 w-4 shrink-0" />
                 <p>
-                  Keys remain visible here. Rotate and delete any key you no longer
-                  need.
+                  Keys remain visible here. Rotate and delete any key you no
+                  longer need.
                 </p>
               </div>
             </div>
@@ -263,11 +276,14 @@ function RouteComponent() {
                   await copyToClipboard(toCopy)
                   setCopiedStates((prev) => ({ ...prev, dialog: true }))
                   setTimeout(
-                    () => setCopiedStates((prev) => ({ ...prev, dialog: false })),
+                    () =>
+                      setCopiedStates((prev) => ({ ...prev, dialog: false })),
                     1500,
                   )
                 }}
-                disabled={!selectedKey || (!selectedKey.key && !selectedKey.start)}
+                disabled={
+                  !selectedKey || (!selectedKey.key && !selectedKey.start)
+                }
                 aria-label={copiedStates.dialog ? 'Copied' : 'Copy API key'}
               >
                 {copiedStates.dialog ? (

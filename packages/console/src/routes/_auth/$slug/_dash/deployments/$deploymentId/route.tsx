@@ -43,7 +43,6 @@ export const Route = createFileRoute(
   component: RouteComponent,
 })
 
-
 function RouteComponent() {
   const { membership, deployment } = Route.useRouteContext()
   const matchRoute = useMatchRoute()
@@ -68,7 +67,6 @@ function RouteComponent() {
       <div className="w-full border-b sticky top-0 z-30 backdrop-blur bg-background/80 py-2">
         <div className="flex items-center justify-between gap-2">
           <div className="hidden sm:block w-full">
-
             <Breadcrumb>
               <BreadcrumbList>
                 {[
@@ -129,8 +127,6 @@ function RouteComponent() {
                 })}
               </BreadcrumbList>
             </Breadcrumb>
-
-
 
             {/* <NavigationMenu> */}
             {/*   <NavigationMenuList className="flex gap-2"> */}

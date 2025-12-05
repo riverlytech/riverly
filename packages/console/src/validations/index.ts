@@ -82,4 +82,3 @@ export const CreateAPIKeyForm = z.object({
     .min(2, { message: 'Name must be at least 2 characters.' })
     .max(22, { message: 'Name must not be longer than 22 characters.' }),
 })
-

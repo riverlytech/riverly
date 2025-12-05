@@ -5,7 +5,10 @@ import { GitCommitHorizontal } from 'lucide-react'
 import { HashDisplay } from '@/components/commons/display-hash'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
-import { deploymentStatusColors, getVerboseStatusName } from '@/components/utils'
+import {
+  deploymentStatusColors,
+  getVerboseStatusName,
+} from '@/components/utils'
 
 type DeploymentList = Awaited<
   ReturnType<
@@ -41,9 +44,7 @@ export function DeploymentPreview({
                 <span className="text-base font-semibold text-zinc-900 dark:text-zinc-100 truncate">
                   {deployment.title}
                 </span>
-                <Badge variant="outline">
-                  Build {buildLabel}...
-                </Badge>
+                <Badge variant="outline">Build {buildLabel}...</Badge>
               </div>
               <div
                 className={`flex items-center gap-2 text-xs ${deploymentStatusColors[deployment.status]}`}

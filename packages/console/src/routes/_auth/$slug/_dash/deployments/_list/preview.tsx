@@ -3,7 +3,9 @@ import { createFileRoute } from '@tanstack/react-router'
 import { DeploymentPreview } from '@/components/deployment/preview'
 import { deploymentsFn } from '@/funcs'
 
-export const Route = createFileRoute('/_auth/$slug/_dash/deployments/_list/preview')({
+export const Route = createFileRoute(
+  '/_auth/$slug/_dash/deployments/_list/preview',
+)({
   loader: async ({ context: { membership } }) => {
     const deployments = await deploymentsFn({
       data: {
