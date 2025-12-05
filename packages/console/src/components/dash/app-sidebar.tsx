@@ -15,6 +15,7 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 
+// FIX: use membership data
 const data = {
   user: {
     name: 'shadcn',
@@ -24,9 +25,10 @@ const data = {
 }
 
 export function AppSidebar({
+  name,
   slug,
   ...props
-}: { slug: string } & React.ComponentProps<typeof Sidebar>) {
+}: { name: string; slug: string } & React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -38,7 +40,7 @@ export function AppSidebar({
                   <Command className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">Riverly</span>
+                  <span className="truncate font-medium">{name}</span>
                 </div>
               </Link>
             </SidebarMenuButton>

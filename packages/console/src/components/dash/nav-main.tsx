@@ -10,6 +10,7 @@ import {
   FlaskConical,
   Rocket,
   ChevronRight,
+  Key,
 } from 'lucide-react'
 
 import { GitHubIcon } from '@/components/icons/icons'
@@ -384,6 +385,36 @@ export function NavMain({
                               <>
                                 <Webhook className="h-3 w-3" />
                                 <span className="font-normal">Webhooks</span>
+                              </>
+                            )}
+                          </>
+                        )}
+                      </Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuSubItem>
+                </SidebarMenuSub>
+                <SidebarMenuSub>
+                  <SidebarMenuSubItem>
+                    <SidebarMenuSubButton asChild>
+                      <Link
+                        activeOptions={{ exact: true, includeSearch: false }}
+                        activeProps={{
+                          className: 'bg-accent',
+                        }}
+                        params={{ slug }}
+                        to="/$slug/settings/apikeys"
+                      >
+                        {({ isActive }: { isActive: boolean }) => (
+                          <>
+                            {isActive ? (
+                              <>
+                                <Key className="h-3 w-3" />
+                                <span className="font-semibold">API Keys</span>
+                              </>
+                            ) : (
+                              <>
+                                <Key className="h-3 w-3" />
+                                <span className="font-normal">API Keys</span>
                               </>
                             )}
                           </>

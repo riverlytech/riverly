@@ -28,6 +28,7 @@ import { Route as AuthSlugDashSettingsRouteRouteImport } from './routes/_auth/$s
 import { Route as AuthSlugDashSettingsIndexRouteImport } from './routes/_auth/$slug/_dash/settings/index'
 import { Route as AuthSlugDashSettingsWebhooksRouteImport } from './routes/_auth/$slug/_dash/settings/webhooks'
 import { Route as AuthSlugDashSettingsGithubRouteImport } from './routes/_auth/$slug/_dash/settings/github'
+import { Route as AuthSlugDashSettingsApikeysRouteImport } from './routes/_auth/$slug/_dash/settings/apikeys'
 import { Route as AuthSlugDashServersNewRouteImport } from './routes/_auth/$slug/_dash/servers/new'
 import { Route as AuthSlugDashServersImportRouteImport } from './routes/_auth/$slug/_dash/servers/import'
 import { Route as AuthSlugDashServersListRouteRouteImport } from './routes/_auth/$slug/_dash/servers/_list/route'
@@ -156,6 +157,12 @@ const AuthSlugDashSettingsGithubRoute =
   AuthSlugDashSettingsGithubRouteImport.update({
     id: '/github',
     path: '/github',
+    getParentRoute: () => AuthSlugDashSettingsRouteRoute,
+  } as any)
+const AuthSlugDashSettingsApikeysRoute =
+  AuthSlugDashSettingsApikeysRouteImport.update({
+    id: '/apikeys',
+    path: '/apikeys',
     getParentRoute: () => AuthSlugDashSettingsRouteRoute,
   } as any)
 const AuthSlugDashServersNewRoute = AuthSlugDashServersNewRouteImport.update({
@@ -321,6 +328,7 @@ export interface FileRoutesByFullPath {
   '/$slug/servers': typeof AuthSlugDashServersListRouteRouteWithChildren
   '/$slug/servers/import': typeof AuthSlugDashServersImportRoute
   '/$slug/servers/new': typeof AuthSlugDashServersNewRoute
+  '/$slug/settings/apikeys': typeof AuthSlugDashSettingsApikeysRoute
   '/$slug/settings/github': typeof AuthSlugDashSettingsGithubRoute
   '/$slug/settings/webhooks': typeof AuthSlugDashSettingsWebhooksRoute
   '/$slug/settings/': typeof AuthSlugDashSettingsIndexRoute
@@ -358,6 +366,7 @@ export interface FileRoutesByTo {
   '/$slug/servers': typeof AuthSlugDashServersListIndexRoute
   '/$slug/servers/import': typeof AuthSlugDashServersImportRoute
   '/$slug/servers/new': typeof AuthSlugDashServersNewRoute
+  '/$slug/settings/apikeys': typeof AuthSlugDashSettingsApikeysRoute
   '/$slug/settings/github': typeof AuthSlugDashSettingsGithubRoute
   '/$slug/settings/webhooks': typeof AuthSlugDashSettingsWebhooksRoute
   '/$slug/settings': typeof AuthSlugDashSettingsIndexRoute
@@ -399,6 +408,7 @@ export interface FileRoutesById {
   '/_auth/$slug/_dash/servers/_list': typeof AuthSlugDashServersListRouteRouteWithChildren
   '/_auth/$slug/_dash/servers/import': typeof AuthSlugDashServersImportRoute
   '/_auth/$slug/_dash/servers/new': typeof AuthSlugDashServersNewRoute
+  '/_auth/$slug/_dash/settings/apikeys': typeof AuthSlugDashSettingsApikeysRoute
   '/_auth/$slug/_dash/settings/github': typeof AuthSlugDashSettingsGithubRoute
   '/_auth/$slug/_dash/settings/webhooks': typeof AuthSlugDashSettingsWebhooksRoute
   '/_auth/$slug/_dash/settings/': typeof AuthSlugDashSettingsIndexRoute
@@ -442,6 +452,7 @@ export interface FileRouteTypes {
     | '/$slug/servers'
     | '/$slug/servers/import'
     | '/$slug/servers/new'
+    | '/$slug/settings/apikeys'
     | '/$slug/settings/github'
     | '/$slug/settings/webhooks'
     | '/$slug/settings/'
@@ -479,6 +490,7 @@ export interface FileRouteTypes {
     | '/$slug/servers'
     | '/$slug/servers/import'
     | '/$slug/servers/new'
+    | '/$slug/settings/apikeys'
     | '/$slug/settings/github'
     | '/$slug/settings/webhooks'
     | '/$slug/settings'
@@ -519,6 +531,7 @@ export interface FileRouteTypes {
     | '/_auth/$slug/_dash/servers/_list'
     | '/_auth/$slug/_dash/servers/import'
     | '/_auth/$slug/_dash/servers/new'
+    | '/_auth/$slug/_dash/settings/apikeys'
     | '/_auth/$slug/_dash/settings/github'
     | '/_auth/$slug/_dash/settings/webhooks'
     | '/_auth/$slug/_dash/settings/'
@@ -687,6 +700,13 @@ declare module '@tanstack/react-router' {
       path: '/github'
       fullPath: '/$slug/settings/github'
       preLoaderRoute: typeof AuthSlugDashSettingsGithubRouteImport
+      parentRoute: typeof AuthSlugDashSettingsRouteRoute
+    }
+    '/_auth/$slug/_dash/settings/apikeys': {
+      id: '/_auth/$slug/_dash/settings/apikeys'
+      path: '/apikeys'
+      fullPath: '/$slug/settings/apikeys'
+      preLoaderRoute: typeof AuthSlugDashSettingsApikeysRouteImport
       parentRoute: typeof AuthSlugDashSettingsRouteRoute
     }
     '/_auth/$slug/_dash/servers/new': {
@@ -861,6 +881,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthSlugDashSettingsRouteRouteChildren {
+  AuthSlugDashSettingsApikeysRoute: typeof AuthSlugDashSettingsApikeysRoute
   AuthSlugDashSettingsGithubRoute: typeof AuthSlugDashSettingsGithubRoute
   AuthSlugDashSettingsWebhooksRoute: typeof AuthSlugDashSettingsWebhooksRoute
   AuthSlugDashSettingsIndexRoute: typeof AuthSlugDashSettingsIndexRoute
@@ -868,6 +889,7 @@ interface AuthSlugDashSettingsRouteRouteChildren {
 
 const AuthSlugDashSettingsRouteRouteChildren: AuthSlugDashSettingsRouteRouteChildren =
   {
+    AuthSlugDashSettingsApikeysRoute: AuthSlugDashSettingsApikeysRoute,
     AuthSlugDashSettingsGithubRoute: AuthSlugDashSettingsGithubRoute,
     AuthSlugDashSettingsWebhooksRoute: AuthSlugDashSettingsWebhooksRoute,
     AuthSlugDashSettingsIndexRoute: AuthSlugDashSettingsIndexRoute,
