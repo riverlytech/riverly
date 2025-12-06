@@ -125,6 +125,7 @@ export namespace Organization {
               image: users.image,
               username: users.username,
               createdAt: users.createdAt,
+              updatedAt: users.updatedAt,
               defaultOrgId: users.defaultOrgId,
             },
           })
