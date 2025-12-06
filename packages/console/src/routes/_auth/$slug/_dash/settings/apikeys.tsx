@@ -57,6 +57,7 @@ function RouteComponent() {
   const [selectedKeyId, setSelectedKeyId] = useState<string | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
   const router = useRouter()
   const [, copyToClipboard] = useCopyToClipboard()
   const [copiedStates, setCopiedStates] = useState<Record<string, boolean>>({})
@@ -75,13 +76,21 @@ function RouteComponent() {
 
   async function handleKeyDelete(keyId: string | null | undefined) {
     if (!keyId) return
-    await orgDeleteAPIKey({
-      data: { organizationId: membership.org.id, keyId },
-    })
-    await router.invalidate({
-      filter: (match) => match.fullPath?.endsWith('/settings/apikeys'),
-    })
-    setDialogOpen(false)
+    setDeletingId(keyId)
+    try {
+      await orgDeleteAPIKey({
+        data: { organizationId: membership.org.id, keyId },
+      })
+      await router.invalidate({
+        filter: (match) => match.fullPath?.endsWith('/settings/apikeys'),
+      })
+      setDialogOpen(false)
+      setSelectedKeyId(null)
+    } catch (error) {
+      console.error('Failed to delete API key', error)
+    } finally {
+      setDeletingId(null)
+    }
   }
 
   return (
@@ -225,7 +234,13 @@ function RouteComponent() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={dialogOpen} onOpenChange={(open) => setDialogOpen(open)}>
+      <Dialog
+        open={dialogOpen}
+        onOpenChange={(open) => {
+          setDialogOpen(open)
+          if (!open) setSelectedKeyId(null)
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>API Key Details</DialogTitle>
@@ -310,8 +325,9 @@ function RouteComponent() {
                 onClick={() =>
                   handleKeyDelete(selectedKey ? selectedKey.id : undefined)
                 }
+                disabled={deletingId === selectedKey?.id}
               >
-                Delete Key
+                {deletingId === selectedKey?.id ? 'Deleting…' : 'Delete Key'}
               </Button>
             </div>
           </DialogFooter>
