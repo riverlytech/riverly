@@ -176,3 +176,25 @@ export const orgCreateAPIKey = createServerFn({ method: 'POST' })
     )
     return apiKeys
   })
+
+
+export const orgDeleteAPIKey = createServerFn({ method: 'POST' })
+  .inputValidator((data: { organizationId: string, keyId: string }) => data)
+  .middleware([authMiddleware])
+  .handler(async ({ data, context: { user } }) => {
+    if (!user) {
+      setResponseStatus(401)
+      throw new BetterAuthError('Unauthorized')
+    }
+    const apiKeys = await Database.transaction((db) =>
+      auth(db, env).api.deleteApiKey({
+        headers: getRequest().headers,
+        body: {
+          keyId: data.keyId,
+          organizationId: data.organizationId,
+        },
+      }),
+    )
+    return apiKeys
+  })
+

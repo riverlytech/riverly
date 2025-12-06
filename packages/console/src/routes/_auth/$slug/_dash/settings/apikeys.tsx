@@ -1,4 +1,3 @@
-
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useCopyToClipboard } from '@uidotdev/usehooks'
 import { format, formatDistanceToNow } from 'date-fns'
@@ -22,7 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { orgAPIKeys } from '@/funcs/org'
+import { orgAPIKeys, orgDeleteAPIKey } from '@/funcs/org'
 
 function maskApiKeyStart(keyStart: string | null) {
   if (!keyStart) return '—'
@@ -74,6 +73,17 @@ function RouteComponent() {
     setCreateDialogOpen(false)
   }
 
+  async function handleKeyDelete(keyId: string | null | undefined) {
+    if (!keyId) return
+    await orgDeleteAPIKey({
+      data: { organizationId: membership.org.id, keyId },
+    })
+    await router.invalidate({
+      filter: (match) => match.fullPath?.endsWith('/settings/apikeys'),
+    })
+    setDialogOpen(false)
+  }
+
   return (
     <div className="flex flex-col space-y-4 w-full md:w-3/4">
       <Card className="shadow-none">
@@ -118,11 +128,10 @@ function RouteComponent() {
                     <div className="flex items-center gap-2">
                       <p className="text-sm">{apiKey.name ?? 'Untitled key'}</p>
                       <span
-                        className={`rounded-full px-2 py-0.5 text-[10px] uppercase ${
-                          apiKey.enabled
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-amber-100 text-amber-800'
-                        }`}
+                        className={`rounded-full px-2 py-0.5 text-[10px] uppercase ${apiKey.enabled
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-amber-100 text-amber-800'
+                          }`}
                       >
                         {apiKey.enabled ? 'Enabled' : 'Disabled'}
                       </span>
@@ -295,7 +304,13 @@ function RouteComponent() {
                   {copiedStates.dialog ? 'Copied' : 'Copy Key'}
                 </span>
               </Button>
-              <Button variant="destructive" className="w-full">
+              <Button
+                variant="destructive"
+                className="w-full"
+                onClick={() =>
+                  handleKeyDelete(selectedKey ? selectedKey.id : undefined)
+                }
+              >
                 Delete Key
               </Button>
             </div>
