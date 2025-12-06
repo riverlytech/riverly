@@ -1,6 +1,5 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import { bearerAuth } from "hono/bearer-auth";
 import z from "zod/v4";
 
 import { env } from "@riverly/config";
@@ -13,7 +12,7 @@ import { DeployWithGitHubRequest } from "@riverly/ty";
 import { toAsyncErrorValue } from "@riverly/utils";
 
 import { ErrorCodeEnum } from "./errors";
-import { verifyBetterAuthToken, orgMembership } from "../middlewares/middlewares";
+import { authMiddleware, orgMembership } from "../middlewares/middlewares";
 
 const app = new Hono();
 
@@ -56,7 +55,7 @@ const DeploymentRequest = z
 
 app.post(
   "/",
-  bearerAuth({ verifyToken: verifyBetterAuthToken }),
+  authMiddleware,
   zValidator("json", DeploymentRequest, (result, c) => {
     if (!result.success) {
       return c.json(

@@ -1,14 +1,13 @@
 import { Storage } from "@google-cloud/storage";
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import { bearerAuth } from "hono/bearer-auth";
 import { z } from "zod";
 
 import { Server } from "@riverly/riverly";
 import { ServerModeEnum } from "@riverly/ty";
 
 import { ErrorCodeEnum } from "./errors";
-import { verifyBetterAuthToken, orgMembership } from "../middlewares/middlewares";
+import { authMiddleware, orgMembership } from "../middlewares/middlewares";
 
 const app = new Hono();
 
@@ -22,7 +21,7 @@ const artifactSchema = z.object({
 
 app.post(
   "/",
-  bearerAuth({ verifyToken: verifyBetterAuthToken }),
+  authMiddleware,
   zValidator("json", artifactSchema, (result, c) => {
     if (!result.success) {
       return c.json(

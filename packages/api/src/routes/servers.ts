@@ -1,6 +1,5 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import { bearerAuth } from "hono/bearer-auth";
 import { z } from "zod";
 
 import { env } from "@riverly/config";
@@ -8,7 +7,7 @@ import { AddServer } from "@riverly/db";
 import { Server } from "@riverly/riverly";
 
 import { ErrorCodeEnum } from "./errors";
-import { verifyBetterAuthToken, orgMembership } from "../middlewares/middlewares";
+import { authMiddleware, orgMembership } from "../middlewares/middlewares";
 
 const app = new Hono();
 
@@ -25,7 +24,7 @@ const AddServerRequest = AddServer.omit({
 
 app.post(
   "/",
-  bearerAuth({ verifyToken: verifyBetterAuthToken }),
+  authMiddleware,
   zValidator("json", AddServerRequest, (result, c) => {
     if (!result.success) {
       return c.json(

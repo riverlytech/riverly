@@ -10,9 +10,11 @@ import type { ApiKey } from '@riverly/riverly/auth/org-api-key/ty'
 import type { JWTVerifiedUser } from "../lib/auth-types";
 import type { Context } from "hono";
 
+// Hoist JWKS loader so remote keys are cached across requests.
+const JWKS = createRemoteJWKSet(new URL(`${env.BASEURL}/api/auth/jwks`));
+
 export async function verifyBetterAuthToken(token: string, c: Context) {
   try {
-    const JWKS = createRemoteJWKSet(new URL(`${env.BASEURL}/api/auth/jwks`));
     const { payload } = (await jwtVerify(token, JWKS, {
       issuer: env.BASEURL, // Should match your JWT issuer, which is the BASE_URL
       audience: env.API_BASEURL, // Should match your JWT audience, which is the BASE_URL by default
@@ -88,37 +90,46 @@ export type MembershipCtx = {
 
 async function verifyAPIKey(key: string, c: Context) {
   const url = new URL(`${env.BASEURL}/api/auth/org-api-key/verify`);
-  const resp = await fetch(url.toString(), {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    // for now we are not concerned with permissions
-    body: JSON.stringify({
-      key,
-    }),
-  })
+  try {
+    const resp = await fetch(url.toString(), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      // for now we are not concerned with permissions
+      body: JSON.stringify({
+        key,
+      }),
+    });
 
-  if (!resp.ok) {
+    if (!resp.ok) {
+      return {
+        valid: false,
+        error: "Invalid API Key",
+        key: null,
+      };
+    }
+    const data = (await resp.json()) as {
+      valid: boolean;
+      error: string | null;
+      key: Omit<ApiKey, "key"> | null;
+    };
+    return data;
+  } catch (err) {
+    console.error("api key verification failed", err);
     return {
       valid: false,
-      error: "Invalid API Key",
+      error: "Auth service unavailable",
       key: null,
-    }
+    };
   }
-  const data = (await resp.json()) as {
-    valid: boolean;
-    error: string | null;
-    key: Omit<ApiKey, "key"> | null;
-  };
-  return data;
 }
 
 // This middlware combines the Bearer <Token> and x-api-key <Key> auth headers
 // and validates the tokens based on the auth methods
 export const authMiddleware = createMiddleware(async (c, next) => {
   const authHeader = c.req.header("Authorization");
-  const apiKey = c.req.header("x-api-key")
+  const apiKey = c.req.header("x-api-key");
 
   if (authHeader && authHeader.startsWith("Bearer ")) {
     const middleware = bearerAuth({ verifyToken: verifyBetterAuthToken });
@@ -128,12 +139,13 @@ export const authMiddleware = createMiddleware(async (c, next) => {
   if (apiKey) {
     const apiKeyVerified = await verifyAPIKey(apiKey, c);
     if (!apiKeyVerified.valid || !apiKeyVerified.key) {
+      const status = apiKeyVerified.error === "Auth service unavailable" ? 503 : 401;
       return c.json({
         error: {
           "code": "forbidden",
-          "message": "Invalid or missing API Key"
+          "message": apiKeyVerified.error ?? "Invalid or missing API Key"
         }
-      }, 401);
+      }, status);
     }
 
     const membership = await Organization.orgMembershipFromID({
@@ -174,9 +186,8 @@ export const authMiddleware = createMiddleware(async (c, next) => {
   }
   return c.json({
     error: {
-      "code": "forbidden",
-      "message": "Invalid or missing API Key"
+      "code": "unauthorized",
+      "message": "Missing or invalid authentication"
     }
   }, 401);
 });
-

@@ -1,11 +1,10 @@
 import { Hono } from "hono";
-import { bearerAuth } from "hono/bearer-auth";
 
-import { verifyBetterAuthToken } from "../middlewares/middlewares";
+import { authMiddleware } from "../middlewares/middlewares";
 
 const app = new Hono();
 
-app.get("/validate", bearerAuth({ verifyToken: verifyBetterAuthToken }), async (c) => {
+app.get("/validate", authMiddleware, async (c) => {
   // Just respond with ok: true
   // This is to validate JWT token without fuss
   return c.json(

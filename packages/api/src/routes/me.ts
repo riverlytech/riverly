@@ -1,13 +1,12 @@
 import { Hono } from "hono";
-import { bearerAuth } from "hono/bearer-auth";
 
 import { User } from "@riverly/riverly";
 
-import { verifyBetterAuthToken } from "../middlewares/middlewares";
+import { authMiddleware } from "../middlewares/middlewares";
 
 const app = new Hono();
 
-app.get("/", bearerAuth({ verifyToken: verifyBetterAuthToken }), async (c) => {
+app.get("/", authMiddleware, async (c) => {
   const sessionUser = c.get("user");
   const user = await User.fromIDWithDefaultOrg(sessionUser.userId);
   return c.json({ ...user });
