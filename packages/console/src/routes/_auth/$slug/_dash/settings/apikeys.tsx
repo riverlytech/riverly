@@ -57,6 +57,7 @@ function RouteComponent() {
   const [selectedKeyId, setSelectedKeyId] = useState<string | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
+  const [createdKey, setCreatedKey] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const router = useRouter()
   const [, copyToClipboard] = useCopyToClipboard()
@@ -67,11 +68,16 @@ function RouteComponent() {
     [apiKeys, selectedKeyId],
   )
 
-  async function handleKeyCreated() {
+  async function handleKeyCreated(payload: any) {
+    const newKey =
+      payload?.key ??
+      payload?.apiKey?.key ??
+      (typeof payload === 'string' ? payload : null)
+    setCreatedKey(newKey ?? null)
     await router.invalidate({
       filter: (match) => match.fullPath?.endsWith('/settings/apikeys'),
     })
-    setCreateDialogOpen(false)
+    setCreateDialogOpen(true)
   }
 
   async function handleKeyDelete(keyId: string | null | undefined) {
@@ -121,7 +127,6 @@ function RouteComponent() {
           </div>
           <div className="divide-y divide-border rounded-lg border md:rounded-none md:border-0">
             {apiKeys.map((apiKey) => {
-              const rawKey = apiKey.key ?? apiKey.start ?? null
               const lastUsedLabel = apiKey.lastRequest
                 ? formatRelativeTime(apiKey.lastRequest)
                 : 'Not used yet'
@@ -152,7 +157,7 @@ function RouteComponent() {
                     </p>
                     <div className="flex flex-col gap-1">
                       <p className="font-mono text-sm break-all md:truncate">
-                        {maskApiKeyStart(rawKey)}
+                        {apiKey.start}...
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {apiKey.lastRequest
@@ -170,36 +175,6 @@ function RouteComponent() {
                     </p>
                   </div>
                   <div className="flex gap-2 md:justify-end">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={async () => {
-                        if (!rawKey) return
-                        await copyToClipboard(rawKey)
-                        setCopiedStates((prev) => ({
-                          ...prev,
-                          [apiKey.id]: true,
-                        }))
-                        setTimeout(
-                          () =>
-                            setCopiedStates((prev) => ({
-                              ...prev,
-                              [apiKey.id]: false,
-                            })),
-                          1500,
-                        )
-                      }}
-                      disabled={!rawKey}
-                      aria-label={
-                        copiedStates[apiKey.id] ? 'Copied' : 'Copy API key'
-                      }
-                    >
-                      {copiedStates[apiKey.id] ? (
-                        <CheckIcon className="h-4 w-4" />
-                      ) : (
-                        <CopyIcon className="h-4 w-4" />
-                      )}
-                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
@@ -219,18 +194,75 @@ function RouteComponent() {
         </CardContent>
       </Card>
 
-      <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+      <Dialog
+        open={createDialogOpen}
+        onOpenChange={(open) => {
+          setCreateDialogOpen(open)
+          if (!open) setCreatedKey(null)
+        }}
+      >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>New API Key</DialogTitle>
+            <DialogTitle>
+              {createdKey ? 'Save Your Key' : 'New API Key'}
+            </DialogTitle>
             <DialogDescription>
-              Choose a unique name that helps you identify this key.
+              {createdKey
+                ? "This key grants full API access and won't be shown again. Store it securely. Learn more"
+                : 'Choose a unique name that helps you identify this key.'}
             </DialogDescription>
           </DialogHeader>
-          <APIKeyForm
-            organizationId={membership.org.id}
-            onSuccess={handleKeyCreated}
-          />
+          {createdKey ? (
+            <div className="space-y-4">
+              <div className="space-y-2 rounded-md border p-4">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs uppercase text-muted-foreground">
+                    X-API-Key
+                  </p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={async () => {
+                      await copyToClipboard(createdKey)
+                      setCopiedStates((prev) => ({ ...prev, create: true }))
+                      setTimeout(
+                        () =>
+                          setCopiedStates((prev) => ({ ...prev, create: false })),
+                        1500,
+                      )
+                    }}
+                    aria-label={
+                      copiedStates.create ? 'Copied API key' : 'Copy API key'
+                    }
+                  >
+                    {copiedStates.create ? (
+                      <CheckIcon className="h-4 w-4" />
+                    ) : (
+                      <CopyIcon className="h-4 w-4" />
+                    )}
+                    <span className="ml-1 text-sm">
+                      {copiedStates.create ? 'Copied' : 'Copy'}
+                    </span>
+                  </Button>
+                </div>
+                <p className="font-mono break-all text-sm">{createdKey}</p>
+              </div>
+              <Button
+                className="w-full"
+                onClick={() => {
+                  setCreatedKey(null)
+                  setCreateDialogOpen(false)
+                }}
+              >
+                I Have Saved This Key
+              </Button>
+            </div>
+          ) : (
+            <APIKeyForm
+              organizationId={membership.org.id}
+              onSuccess={handleKeyCreated}
+            />
+          )}
         </DialogContent>
       </Dialog>
 
@@ -270,13 +302,11 @@ function RouteComponent() {
                 />
                 <InfoRow
                   label="Created At"
-                  value={formatDateTime(selectedKey.createdAt.toDateString())}
+                  value={formatDateTime(selectedKey.createdAt)}
                 />
                 <InfoRow
                   label="Last Used"
-                  value={formatRelativeTime(
-                    selectedKey.lastRequest?.toDateString(),
-                  )}
+                  value={formatRelativeTime(selectedKey.lastRequest)}
                 />
               </div>
               <div className="flex items-start gap-2 rounded-md bg-muted/60 p-3 text-xs text-muted-foreground">
@@ -289,47 +319,16 @@ function RouteComponent() {
             </div>
           ) : null}
           <DialogFooter>
-            <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2">
-              <Button
-                variant="outline"
-                className="w-full justify-center gap-2"
-                onClick={async () => {
-                  if (!selectedKey) return
-                  const toCopy = selectedKey.key ?? selectedKey.start ?? ''
-                  if (!toCopy) return
-                  await copyToClipboard(toCopy)
-                  setCopiedStates((prev) => ({ ...prev, dialog: true }))
-                  setTimeout(
-                    () =>
-                      setCopiedStates((prev) => ({ ...prev, dialog: false })),
-                    1500,
-                  )
-                }}
-                disabled={
-                  !selectedKey || (!selectedKey.key && !selectedKey.start)
-                }
-                aria-label={copiedStates.dialog ? 'Copied' : 'Copy API key'}
-              >
-                {copiedStates.dialog ? (
-                  <CheckIcon className="h-4 w-4" />
-                ) : (
-                  <CopyIcon className="h-4 w-4" />
-                )}
-                <span className="text-sm">
-                  {copiedStates.dialog ? 'Copied' : 'Copy Key'}
-                </span>
-              </Button>
-              <Button
-                variant="destructive"
-                className="w-full"
-                onClick={() =>
-                  handleKeyDelete(selectedKey ? selectedKey.id : undefined)
-                }
-                disabled={deletingId === selectedKey?.id}
-              >
-                {deletingId === selectedKey?.id ? 'Deleting…' : 'Delete Key'}
-              </Button>
-            </div>
+            <Button
+              variant="destructive"
+              className="w-full"
+              onClick={() =>
+                handleKeyDelete(selectedKey ? selectedKey.id : undefined)
+              }
+              disabled={deletingId === selectedKey?.id}
+            >
+              {deletingId === selectedKey?.id ? 'Deleting…' : 'Delete Key'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

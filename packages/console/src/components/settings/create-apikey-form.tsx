@@ -21,7 +21,9 @@ export function APIKeyForm({
   onSuccess,
 }: {
   organizationId: string
-  onSuccess?: () => void | Promise<void>
+  onSuccess?: (
+    payload: Awaited<ReturnType<typeof orgCreateAPIKey>>,
+  ) => void | Promise<void>
 }) {
   const form = useForm<NameFormValues>({
     resolver: zodResolver(CreateAPIKeyForm),
@@ -30,8 +32,10 @@ export function APIKeyForm({
   })
 
   async function onSubmit(values: NameFormValues) {
-    await orgCreateAPIKey({ data: { name: values.name, organizationId } })
-    await onSuccess?.()
+    const payload = await orgCreateAPIKey({
+      data: { name: values.name, organizationId },
+    })
+    await onSuccess?.(payload)
     form.reset()
   }
 
