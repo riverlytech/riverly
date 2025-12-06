@@ -1,15 +1,16 @@
+import { bearerAuth } from "hono/bearer-auth";
 import { createMiddleware } from "hono/factory";
 import { jwtVerify, createRemoteJWKSet } from "jose";
-import { bearerAuth } from "hono/bearer-auth";
 
 import { env } from "@riverly/config";
 import { Organization } from "@riverly/riverly";
+import type { ApiKey } from "@riverly/riverly/auth/org-api-key/ty";
 import { MemberRole } from "@riverly/ty";
-import type { ApiKey } from '@riverly/riverly/auth/org-api-key/ty'
+
+import { getApiLogger } from "../lib/logging";
 
 import type { JWTVerifiedUser } from "../lib/auth-types";
 import type { Context } from "hono";
-import { getApiLogger } from "../lib/logging";
 
 // Hoist JWKS loader so remote keys are cached across requests.
 const JWKS = createRemoteJWKSet(new URL(`${env.BASEURL}/api/auth/jwks`));
@@ -90,7 +91,7 @@ export type MembershipCtx = {
   metadata: string | null;
 };
 
-async function verifyAPIKey(key: string, c: Context) {
+async function verifyAPIKey(key: string) {
   const url = new URL(`${env.BASEURL}/api/auth/org-api-key/verify`);
   try {
     const resp = await fetch(url.toString(), {
@@ -139,15 +140,18 @@ export const authMiddleware = createMiddleware(async (c, next) => {
   }
 
   if (apiKey) {
-    const apiKeyVerified = await verifyAPIKey(apiKey, c);
+    const apiKeyVerified = await verifyAPIKey(apiKey);
     if (!apiKeyVerified.valid || !apiKeyVerified.key) {
       const status = apiKeyVerified.error === "Auth service unavailable" ? 503 : 401;
-      return c.json({
-        error: {
-          "code": "forbidden",
-          "message": apiKeyVerified.error ?? "Invalid or missing API Key"
-        }
-      }, status);
+      return c.json(
+        {
+          error: {
+            code: "forbidden",
+            message: apiKeyVerified.error ?? "Invalid or missing API Key",
+          },
+        },
+        status,
+      );
     }
 
     const membership = await Organization.orgMembershipFromID({
@@ -155,12 +159,15 @@ export const authMiddleware = createMiddleware(async (c, next) => {
       userId: apiKeyVerified.key.userId,
     });
     if (!membership) {
-      return c.json({
-        error: {
-          "code": "forbidden",
-          "message": "Invalid or missing API Key"
-        }
-      }, 401);
+      return c.json(
+        {
+          error: {
+            code: "forbidden",
+            message: "Invalid or missing API Key",
+          },
+        },
+        401,
+      );
     }
 
     const userCtx = {
@@ -173,7 +180,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
       createdAt: membership.user.createdAt,
       updatedAt: membership.user.updatedAt,
       defaultOrgId: membership.org.id,
-    }
+    };
     const membershipCtx = {
       memberId: membership.id,
       role: membership.role as MemberRole,
@@ -186,10 +193,13 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     c.set("membership", membershipCtx);
     return next();
   }
-  return c.json({
-    error: {
-      "code": "unauthorized",
-      "message": "Missing or invalid authentication"
-    }
-  }, 401);
+  return c.json(
+    {
+      error: {
+        code: "unauthorized",
+        message: "Missing or invalid authentication",
+      },
+    },
+    401,
+  );
 });

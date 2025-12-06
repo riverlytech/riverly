@@ -205,9 +205,10 @@ export function verifyApiKey({
           })
           .optional(),
       }),
-      metadata: {
-        SERVER_ONLY: true,
-      },
+      // Disabled: make sure the API is publicly accessible
+      // metadata: {
+      //   SERVER_ONLY: true,
+      // },
     },
     async (ctx) => {
       const { key } = ctx.body;
