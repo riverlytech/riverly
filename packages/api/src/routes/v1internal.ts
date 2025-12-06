@@ -10,7 +10,10 @@ import {
 import { ServerDeployment } from "@riverly/riverly";
 import { DeploymentStatusEnum } from "@riverly/ty";
 
+import { getApiLogger } from "../lib/logging";
+
 const app = new Hono();
+const logger = getApiLogger(["routes", "v1internal"]);
 
 const internalWebhookUsername = process.env.INTERNAL_WEBHOOK_USERNAME || "riverlybot";
 const internalWebhookPassword = process.env.INTERNAL_WEBHOOK_PASSWORD || "VeryS3Cure";
@@ -34,12 +37,12 @@ app.post(
 
     const tags: string[] = body?.build?.tags || [];
 
-    console.info(
+    logger.info(
       `Received Event ID: ${eventId ?? "unknown"} for build ID: ${cbBuildID ?? "unknown"}`,
     );
 
     if (!eventId && !cbBuildID) {
-      console.warn(`Ignoring event has missing identifiers`);
+      logger.warn("Ignoring event has missing identifiers");
       return c.json({ ok: false }, 200);
     }
 
@@ -49,7 +52,7 @@ app.post(
       (tag) => tag === "event-build-n-deploy" || tag === "event-deploy" || tag === "event-build",
     );
     if (!deploymentTag || !buildTag || !eventType) {
-      console.warn(
+      logger.warn(
         `Ignoring event has missing tag(s) 'deployment-id-*', 'build-id-*' or 'event-*' is not set or unavailable`,
       );
       return c.json({ ok: false }, 200);
@@ -60,7 +63,7 @@ app.post(
     const status = toDeploymentStatusEnum(cbStatus);
     if (eventType === "event-build-n-deploy") {
       const isTerminal = isTerminalStatus(cbStatus);
-      console.info(`Updating DeploymentID: ${deploymentId} BuildID: ${buildId} Status: ${status}`);
+      logger.info(`Updating DeploymentID: ${deploymentId} BuildID: ${buildId} Status: ${status}`);
 
       let finalImageRef: string | null = null;
       let imageDigest: string | null = null;
@@ -89,9 +92,9 @@ app.post(
         deploymentId,
       });
     } else if (eventType === "event-build") {
-      console.log("TODO: handle event-build");
+      logger.warn("TODO: handle event-build");
     } else if (eventType === "event-deploy") {
-      console.log("TODO: handle event-deploy");
+      logger.warn("TODO: handle event-deploy");
     }
 
     return c.json(

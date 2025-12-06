@@ -3,6 +3,7 @@ import { Hono } from "hono";
 
 import type { SessionUser } from "@riverly/ty";
 
+import { logger } from "./lib/logging";
 import { type MembershipCtx } from "./middlewares/middlewares";
 import authRoutes from "./routes/auth";
 import deploymentRoutes from "./routes/deployments";
@@ -37,12 +38,13 @@ app.route("/__/v1", v1internalRoutes);
 // };
 
 const port = Number(process.env.PORT ?? "5000");
+const host = process.env.HOST ?? "0.0.0.0";
 
 Bun.serve({
   fetch: app.fetch,
   port,
-  hostname: "0.0.0.0",
+  hostname: host,
   idleTimeout: 120,
 });
 
-console.info(`API listening on http://0.0.0.0:${port}`);
+logger.info(`API listening on http://${host}:${port}`);

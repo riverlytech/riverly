@@ -34,6 +34,7 @@
       "dependencies": {
         "@google-cloud/storage": "^7.17.1",
         "@hono/zod-validator": "^0.7.2",
+        "@logtape/logtape": "^1.2.2",
         "@riverly/config": "workspace:*",
         "@riverly/db": "workspace:*",
         "@riverly/infra": "workspace:*",
@@ -620,6 +621,8 @@
     "@js-sdsl/ordered-map": ["@js-sdsl/ordered-map@4.4.2", "", {}, "sha512-iUKgm52T8HOE/makSxjqoWhe95ZJA1/G1sYsGev2JDKUSS14KAgg1LHb+Ba+IPow0xflbnSkOsZcO08C7w1gYw=="],
 
     "@levischuck/tiny-cbor": ["@levischuck/tiny-cbor@0.2.11", "", {}, "sha512-llBRm4dT4Z89aRsm6u2oEZ8tfwL/2l6BwpZ7JcyieouniDECM5AqNgr/y08zalEIvW3RSK4upYyybDcmjXqAow=="],
+
+    "@logtape/logtape": ["@logtape/logtape@1.2.2", "", {}, "sha512-yx4uj7NUXo5pOk2lljtAf7UN9oDBw9xfxSDC4jxdbfnGDGmq4iJhenWBbU9XV8ilm8AUUMYXq2nk+qvz8E21DA=="],
 
     "@microsoft/fetch-event-source": ["@microsoft/fetch-event-source@2.0.1", "", {}, "sha512-W6CLUJ2eBMw3Rec70qrsEW0jOm/3twwJv21mrmj2yORiaVmVYGS4sSS5yUwvQc1ZlDLYGPnClVWmUUMagKNsfA=="],
 

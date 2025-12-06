@@ -9,9 +9,11 @@ import type { ApiKey } from '@riverly/riverly/auth/org-api-key/ty'
 
 import type { JWTVerifiedUser } from "../lib/auth-types";
 import type { Context } from "hono";
+import { getApiLogger } from "../lib/logging";
 
 // Hoist JWKS loader so remote keys are cached across requests.
 const JWKS = createRemoteJWKSet(new URL(`${env.BASEURL}/api/auth/jwks`));
+const logger = getApiLogger(["middleware", "auth"]);
 
 export async function verifyBetterAuthToken(token: string, c: Context) {
   try {
@@ -35,7 +37,7 @@ export async function verifyBetterAuthToken(token: string, c: Context) {
     c.set("user", user);
     return true;
   } catch (error) {
-    console.error(error, "token validation failed");
+    logger.error("Token validation failed", { error });
     return false;
   }
 }
@@ -116,7 +118,7 @@ async function verifyAPIKey(key: string, c: Context) {
     };
     return data;
   } catch (err) {
-    console.error("api key verification failed", err);
+    logger.error("API key verification failed", { error: err });
     return {
       valid: false,
       error: "Auth service unavailable",

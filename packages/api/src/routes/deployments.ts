@@ -13,8 +13,10 @@ import { toAsyncErrorValue } from "@riverly/utils";
 
 import { ErrorCodeEnum } from "./errors";
 import { authMiddleware, orgMembership } from "../middlewares/middlewares";
+import { getApiLogger } from "../lib/logging";
 
 const app = new Hono();
+const logger = getApiLogger(["routes", "deployments"]);
 
 const DeploymentRequest = z
   .object({
@@ -307,19 +309,18 @@ app.post(
           400,
         );
       }
-    } catch (err) {
-      console.error(err, "Unexpected error on deployment");
-      return c.json(
-        {
-          error: {
-            code: ErrorCodeEnum.INTERNAL_SERVER_ERROR,
-            message: "Internal server error occurred",
-          },
+  } catch (err) {
+    logger.error("Unexpected error on deployment", { error: err });
+    return c.json(
+      {
+        error: {
+          code: ErrorCodeEnum.INTERNAL_SERVER_ERROR,
+          message: "Internal server error occurred",
         },
-        500,
-      );
-    }
-  },
-);
+      },
+      500,
+    );
+  }
+});
 
 export default app;
