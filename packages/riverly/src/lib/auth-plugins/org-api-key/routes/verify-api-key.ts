@@ -74,8 +74,8 @@ export async function validateApiKey({
   if (permissions) {
     const apiKeyPermissions = apiKey.permissions
       ? safeJSONParse<{
-          [key: string]: string[];
-        }>(apiKey.permissions)
+        [key: string]: string[];
+      }>(apiKey.permissions)
       : null;
 
     if (!apiKeyPermissions) {
@@ -198,9 +198,6 @@ export function verifyApiKey({
         key: z.string().meta({
           description: "The key to verify",
         }),
-        organizationId: z.string().meta({
-          description: "The id of the organization",
-        }),
         permissions: z
           .record(z.string(), z.array(z.string()))
           .meta({
@@ -292,8 +289,8 @@ export function verifyApiKey({
 
       returningApiKey.permissions = returningApiKey.permissions
         ? safeJSONParse<{
-            [key: string]: string[];
-          }>(returningApiKey.permissions)
+          [key: string]: string[];
+        }>(returningApiKey.permissions)
         : null;
 
       return ctx.json({

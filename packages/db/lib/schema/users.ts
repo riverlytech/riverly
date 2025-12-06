@@ -156,11 +156,11 @@ export const apikey = pgTable("apikey", {
   name: text("name"),
   start: text("start"),
   prefix: text("prefix"),
-  key: text("key").notNull(),
-  userId: text("user_id")
+  key: varchar("key", { length: 255 }).notNull().unique(), // hashed key
+  userId: varchar("user_id", { length: 255 })
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-  organizationId: text("organization_id")
+  organizationId: varchar("organization_id", { length: 255 })
     .notNull()
     .references(() => organizations.id, { onDelete: "cascade" }),
   refillInterval: integer("refill_interval"),
