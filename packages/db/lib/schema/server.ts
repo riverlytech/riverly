@@ -28,7 +28,7 @@ import {
   ServerVisibility,
   ServerVisibilityEnum,
 } from "@riverly/ty";
-import { members, organizations } from "./users";
+import { users, organizations } from "./users";
 
 // TODO: add support for external servers
 // - they'll have definition but no infra parts
@@ -56,9 +56,8 @@ export const serverTable = pgTable("server", {
   organizationId: text("organization_id")
     .references(() => organizations.id)
     .notNull(),
-  // TODO: add userID instead of memberId
-  memberId: text("member_id")
-    .references(() => members.id)
+  userId: text("user_id")
+    .references(() => users.id)
     .notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -92,7 +91,7 @@ export const CreateServer = createInsertSchema(serverTable, {
     .optional()
     .default(ServerTransportEnum.HTTP),
   organizationId: z.string(),
-  memberId: z.string(),
+  userId: z.string(),
   readme: ServerReadmeSchema.optional(),
   license: ServerLicenseSchema.optional(),
 });
@@ -111,7 +110,7 @@ export const AddServer = CreateServer.pick({
   title: true,
   visibility: true,
   organizationId: true,
-  memberId: true,
+  userId: true,
 })
   .required()
   .extend({
@@ -129,7 +128,7 @@ export const GitHubCreateServer = CreateServer.pick({
   githubRepo: true,
   branch: true,
   organizationId: true,
-  memberId: true,
+  userId: true,
 })
   .required()
   .extend({

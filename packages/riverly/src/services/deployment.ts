@@ -84,9 +84,9 @@ export namespace ServerDeployment {
       const condition =
         filter.target === "all"
           ? or(
-            eq(deploymentTable.target, DeploymentTarget.PREVIEW),
-            eq(deploymentTable.target, DeploymentTarget.PRODUCTION),
-          )
+              eq(deploymentTable.target, DeploymentTarget.PREVIEW),
+              eq(deploymentTable.target, DeploymentTarget.PRODUCTION),
+            )
           : eq(deploymentTable.target, filter.target as DeploymentTargetType);
 
       return await Database.use((db) =>
@@ -164,9 +164,9 @@ export namespace ServerDeployment {
       const condition =
         filter.target === "all"
           ? or(
-            eq(deploymentTable.target, DeploymentTarget.PREVIEW),
-            eq(deploymentTable.target, DeploymentTarget.PRODUCTION),
-          )
+              eq(deploymentTable.target, DeploymentTarget.PREVIEW),
+              eq(deploymentTable.target, DeploymentTarget.PRODUCTION),
+            )
           : eq(deploymentTable.target, filter.target as DeploymentTargetType);
 
       return await Database.use((db) =>
@@ -306,11 +306,10 @@ export namespace ServerDeployment {
           organizationId: deploy.org.organizationId,
           name: deploy.org.name,
         },
-        member: {
-          memberId: deploy.member.memberId,
-          userId: deploy.member.userId,
-          role: deploy.member.role,
-          username: deploy.member.username,
+        user: {
+          userId: deploy.user.userId,
+          role: deploy.user.role,
+          username: deploy.user.username,
         },
         server: {
           serverId: deploy.server.serverId,
@@ -333,7 +332,6 @@ export namespace ServerDeployment {
         deployment: {
           deploymentId: newDeployment.id,
           target: newDeployment.target,
-          publicId: newDeployment.target,
         },
       };
 
@@ -430,25 +428,22 @@ export namespace ServerDeployment {
     },
   );
 
-  export const updateBuild = fn(
-    UpdateBuild.extend({ buildId: z.string() }),
-    async (updates) => {
-      return await Database.transaction(async (tx) => {
-        await tx
-          .update(buildTable)
-          .set({
-            imageRef: updates.imageRef,
-            imageDigest: updates.imageDigest,
-            builtAt: updates.builtAt,
-            status: updates.status,
-          })
-          .where(eq(buildTable.id, updates.buildId))
-          .returning()
-          .execute()
-          .then((row) => row[0] ?? null);
-      });
-    },
-  );
+  export const updateBuild = fn(UpdateBuild.extend({ buildId: z.string() }), async (updates) => {
+    return await Database.transaction(async (tx) => {
+      await tx
+        .update(buildTable)
+        .set({
+          imageRef: updates.imageRef,
+          imageDigest: updates.imageDigest,
+          builtAt: updates.builtAt,
+          status: updates.status,
+        })
+        .where(eq(buildTable.id, updates.buildId))
+        .returning()
+        .execute()
+        .then((row) => row[0] ?? null);
+    });
+  });
 
   export const updateDeploy = fn(
     UpdateDeployment.extend({ deploymentId: z.string() }),

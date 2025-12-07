@@ -9,7 +9,11 @@ import { GitHub, Server, ServerDeployment, User } from '@riverly/riverly'
 import type { DeploymentTargetType, ServerVisibility } from '@riverly/ty'
 
 import { authMiddleware } from '@/lib/auth-middleware'
-import { GitHubImportForm, NewServerForm, ProfileEditForm } from '@/validations'
+import {
+  ImportServerFromGitHubForm,
+  NewServerForm,
+  ProfileEditForm,
+} from '@/validations'
 
 type DeploymentTarget = DeploymentTargetType | 'all'
 
@@ -133,7 +137,7 @@ export const addNewServerFn = createServerFn({ method: 'POST' })
     }
     const newServer = {
       organizationId: data.organizationId,
-      memberId: data.memberId,
+      userId: sessionUser.userId,
       title: data.title,
       description: data.description,
       isClaimed: false,
@@ -245,7 +249,7 @@ export const orgGitHubInstallationsFn = createServerFn({ method: 'GET' })
   })
 
 export const importServerFromGitHub = createServerFn({ method: 'POST' })
-  .inputValidator(GitHubImportForm.extend({ repoUrl: z.string() }))
+  .inputValidator(ImportServerFromGitHubForm.extend({ repoUrl: z.string() }))
   .middleware([authMiddleware])
   .handler(async ({ data, context: { user: sessionUser } }) => {
     if (!sessionUser) {
@@ -257,7 +261,7 @@ export const importServerFromGitHub = createServerFn({ method: 'POST' })
       description: data.description,
       visibility: data.visibility,
       organizationId: data.organizationId,
-      memberId: data.memberId,
+      userId: sessionUser.userId,
       repoUrl: data.repoUrl,
     }
     const response = await Server.importFromGitHub({

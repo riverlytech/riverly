@@ -42,11 +42,9 @@ type NewServerFormValues = z.infer<typeof NewServerForm>
 export function AddServerForm({
   slug,
   organizationId,
-  memberId,
 }: {
   slug: string
   organizationId: string
-  memberId: string
 }) {
   const navigate = useNavigate()
   const form = useForm<NewServerFormValues>({
@@ -55,7 +53,6 @@ export function AddServerForm({
       title: '',
       description: '',
       organizationId: organizationId,
-      memberId: memberId,
       visibility: ServerVisibilityEnum.PRIVATE,
     },
     mode: 'onTouched',
@@ -65,7 +62,6 @@ export function AddServerForm({
     const response = await addNewServerFn({
       data: {
         organizationId: values.organizationId,
-        memberId: values.memberId,
         title: values.title,
         description: values.description,
         visibility: values.visibility,
@@ -85,17 +81,6 @@ export function AddServerForm({
             <FormField
               control={form.control}
               name="organizationId"
-              render={({ field }) => (
-                <Input
-                  className="hidden"
-                  disabled={form.formState.isSubmitting}
-                  {...field}
-                />
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="memberId"
               render={({ field }) => (
                 <Input
                   className="hidden"

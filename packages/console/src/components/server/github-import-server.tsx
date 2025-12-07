@@ -33,22 +33,20 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { importServerFromGitHub } from '@/funcs'
-import { GitHubImportForm } from '@/validations'
+import { ImportServerFromGitHubForm } from '@/validations'
 
 import type z from 'zod/v4'
 
-type GitHubImportFormValues = z.infer<typeof GitHubImportForm>
+type GitHubImportFormValues = z.infer<typeof ImportServerFromGitHubForm>
 
 export function GitHubImportServerForm({
   slug,
   organizationId,
-  memberId,
   repoFullName,
   isPrivate,
 }: {
   slug: string
   organizationId: string
-  memberId: string
   repoFullName: string // sanchitrk/mcping
   isPrivate: boolean
 }) {
@@ -57,12 +55,11 @@ export function GitHubImportServerForm({
     ? ServerVisibilityEnum.PRIVATE
     : ServerVisibilityEnum.PUBLIC
   const form = useForm<GitHubImportFormValues>({
-    resolver: zodResolver(GitHubImportForm),
+    resolver: zodResolver(ImportServerFromGitHubForm),
     defaultValues: {
       title: '',
       description: '',
       organizationId: organizationId,
-      memberId: memberId,
       visibility: visibility,
       repoUrl: repoFullName,
     },
@@ -72,7 +69,6 @@ export function GitHubImportServerForm({
   async function onSubmit(values: GitHubImportFormValues) {
     const request = {
       organizationId: values.organizationId,
-      memberId: values.memberId,
       title: values.title,
       description: values.description,
       visibility: values.visibility,
@@ -96,17 +92,6 @@ export function GitHubImportServerForm({
             <FormField
               control={form.control}
               name="organizationId"
-              render={({ field }) => (
-                <Input
-                  className="hidden"
-                  disabled={form.formState.isSubmitting}
-                  {...field}
-                />
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="memberId"
               render={({ field }) => (
                 <Input
                   className="hidden"

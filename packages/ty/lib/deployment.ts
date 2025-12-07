@@ -51,9 +51,8 @@ export const BaseDeployRequest = z.object({
     organizationId: z.string(),
     name: z.string(),
   }),
-  member: z
+  user: z
     .object({
-      memberId: z.string(),
       role: MemberRole,
       userId: z.string(),
       username: z.string(),

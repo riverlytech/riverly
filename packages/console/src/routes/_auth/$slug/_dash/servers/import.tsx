@@ -87,7 +87,6 @@ function RouteComponent() {
                 <GitHubImportServerForm
                   slug={membership.org.slug}
                   organizationId={membership.org.id}
-                  memberId={membership.id}
                   repoFullName={repo.fullName}
                   isPrivate={repo.private}
                 />

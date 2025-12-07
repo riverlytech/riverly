@@ -10,9 +10,8 @@ export const GitHubSourceBuilder = z.object({
       name: z.string(),
     })
     .required(),
-  member: z
+  user: z
     .object({
-      memberId: z.string(),
       userId: z.string(),
       role: MemberRole,
       username: z.string(),
@@ -51,7 +50,6 @@ export const GitHubSourceBuilder = z.object({
     })
     .required(),
 });
-
 export type GitHubSourceBuilder = z.infer<typeof GitHubSourceBuilder>;
 
 //
@@ -61,7 +59,6 @@ export const GitHubSourceDeployer = GitHubSourceBuilder.extend({
     .object({
       deploymentId: z.string(),
       target: z.string(),
-      publicId: z.string(),
     })
     .required(),
 });

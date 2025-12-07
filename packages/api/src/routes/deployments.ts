@@ -79,7 +79,7 @@ app.post(
 
     try {
       // fetch server details
-      // server must exist for owned server deployments and public server deployments
+      // server must exist for owned server deployments or must be public
       const server = await Server.fromID({
         callerOrgId: membership.orgId,
         serverId: body.serverId,
@@ -96,7 +96,7 @@ app.post(
         );
       }
       //
-      // checks if server belongs to the same organization as the member
+      // check if server belongs to the same organization as the member
       // then deploys server as owner
       // Public server deployments require the `revisionId` for deployments
       const isOwner = membership.orgId === server.org.organizationId;
@@ -145,7 +145,7 @@ app.post(
         // `repo` has highest priority,
         // next `artifact`, artifact involves uploading sources to storage,
         // least `revisionId`
-        // revisionId is when you want to do a re-deployment without build
+        // revisionId is when you want to do a re-deploy without build
         //
         // Do deployment for the connected GitHub repository
         if (body.repo) {
@@ -219,8 +219,7 @@ app.post(
               organizationId: membership.orgId,
               name: membership.orgName,
             },
-            member: {
-              memberId: membership.memberId,
+            user: {
               role: membership.role,
               userId: sessionUser.userId,
               username: sessionUser.username,

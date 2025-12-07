@@ -4,7 +4,6 @@ import { ServerVisibilityEnum, DeploymentTarget, EnvsSchema } from '@riverly/ty'
 
 export const NewServerForm = z.object({
   organizationId: z.string(),
-  memberId: z.string(),
   title: z
     .string()
     .min(3, { message: 'Title must be at least 3 characters.' })
@@ -18,9 +17,8 @@ export const NewServerForm = z.object({
   ]),
 })
 
-export const GitHubImportForm = z.object({
+export const ImportServerFromGitHubForm = z.object({
   organizationId: z.string(),
-  memberId: z.string(),
   repoUrl: z.string(),
   title: z
     .string()

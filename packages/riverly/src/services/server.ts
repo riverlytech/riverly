@@ -336,7 +336,7 @@ export namespace Server {
         description: server.description,
         visibility: server.visibility,
         organizationId: server.organizationId,
-        memberId: server.memberId,
+        userId: server.userId,
         githubRepo: repo.name,
         githubOwner: repo.owner.login,
         branch: repo.defaultBranch,

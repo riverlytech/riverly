@@ -28,7 +28,6 @@ function RouteComponent() {
           <AddServerForm
             slug={membership.org.slug}
             organizationId={membership.org.id}
-            memberId={membership.id}
           />
         </div>
       </div>
